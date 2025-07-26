@@ -25,6 +25,7 @@
                     <flux:navlist.group :heading="__('Transactions')" class="grid">
                         <flux:navlist.item icon="layout-grid" :href="route('purchases.index')" :current="request()->routeIs('purchases.*')" wire:navigate>Pembelian</flux:navlist.item>
                         <flux:navlist.item icon="layout-grid" :href="route('transactions.index')" :current="request()->routeIs('transactions.*')" wire:navigate>Transaksi</flux:navlist.item>
+                    <flux:navlist.item icon="layout-grid" :href="route('pos.index')" :current="request()->routeIs('pos.index')" wire:navigate>Point of Sale</flux:navlist.item>
                     </flux:navlist.group>
                 </flux:navlist.group>
             </flux:navlist>

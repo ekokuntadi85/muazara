@@ -10,6 +10,7 @@ use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class PointOfSale extends Component
 {
@@ -23,6 +24,10 @@ class PointOfSale extends Component
 
     public $amount_paid;
     public $change = 0;
+
+    public $currentDateTime;
+    public $loggedInUser;
+    public $invoiceNumber;
 
     protected $rules = [
         'customer_id' => 'nullable|exists:customers,id',
@@ -46,6 +51,14 @@ class PointOfSale extends Component
             ['phone' => null, 'address' => null]
         );
         $this->customer_id = $umumCustomer->id;
+
+        $this->updateDateTimeAndUser();
+    }
+
+    private function updateDateTimeAndUser()
+    {
+        $this->currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
+        $this->loggedInUser = Auth::check() ? Auth::user()->name : 'Guest';
     }
 
     public function updatedSearch($value)
@@ -191,6 +204,8 @@ class PointOfSale extends Component
         }
 
         DB::transaction(function () {
+            $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis') . '-' . uniqid();
+
             $transaction = Transaction::create([
                 'type' => 'pos',
                 'payment_status' => 'paid',
@@ -198,6 +213,7 @@ class PointOfSale extends Component
                 'due_date' => null, // POS transactions usually don't have due date
                 'customer_id' => $this->customer_id,
                 'user_id' => Auth::id(),
+                'invoice_number' => $this->invoiceNumber, // Add invoice number
             ]);
 
             foreach ($this->cart_items as $item) {
@@ -223,7 +239,7 @@ class PointOfSale extends Component
             }
         });
 
-        session()->flash('message', 'Transaksi POS berhasil dicatat.');
+        session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
         $this->resetAll();
         $this->dispatch('focusSearchInput'); // Dispatch event to focus search input
     }
@@ -237,6 +253,8 @@ class PointOfSale extends Component
         $this->amount_paid = null;
         $this->change = 0;
         $this->highlightedIndex = 0;
+        $this->invoiceNumber = null; // Reset invoice number
+        $this->updateDateTimeAndUser(); // Update date/time and user
         // Reset customer to UMUM
         $umumCustomer = Customer::firstOrCreate(
             ['name' => 'UMUM'],
