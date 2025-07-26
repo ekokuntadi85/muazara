@@ -9,56 +9,58 @@
         <input type="hidden" wire:model="customerId">
         <div class="mb-4">
             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama Customer:</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" placeholder="Masukkan Nama Customer" wire:model="name">
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" wire:model="name">
             @error('name') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="mb-4">
             <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Telepon:</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="phone" placeholder="Masukkan Nomor Telepon" wire:model="phone">
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="phone" wire:model="phone">
             @error('phone') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="mb-6">
             <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Alamat:</label>
-            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" placeholder="Masukkan Alamat" wire:model="address"></textarea>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" wire:model="address"></textarea>
             @error('address') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="flex items-center justify-between">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                {{ $isUpdateMode ? 'Update' : 'Simpan' }}
-            </button>
-            <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Batal
-            </button>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">{{ $isUpdateMode ? 'Update' : 'Simpan' }}</button>
+            <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Batal</button>
         </div>
     </form>
 
     <hr class="my-8">
 
     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($customers as $customer)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $customer->phone }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $customer->address }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button wire:click="edit({{ $customer->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2">Edit</button>
-                        <button wire:click="delete({{ $customer->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus customer ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="overflow-x-auto"> <!-- Added for responsiveness -->
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($customers as $customer)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->phone }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $customer->address }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button wire:click="edit({{ $customer->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2">Edit</button>
+                            <button wire:click="delete({{ $customer->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus customer ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {{ $customers->links() }}
     </div>
 </div>

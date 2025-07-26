@@ -9,7 +9,7 @@
         <input type="hidden" wire:model="supplierId">
         <div class="mb-4">
             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama Supplier:</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" placeholder="Masukkan Nama Supplier" wire:model="name">
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" wire:model="name">
             @error('name') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="mb-4">
@@ -19,7 +19,7 @@
         </div>
         <div class="mb-6">
             <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Alamat:</label>
-            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" placeholder="Masukkan Alamat" wire:model="address"></textarea>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" wire:model="address"></textarea>
             @error('address') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="flex items-center justify-between">
@@ -31,31 +31,33 @@
     <hr class="my-8">
 
     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
-                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th> --}}
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($suppliers as $supplier)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->phone }}</td>
-                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->address }}</td> --}}
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button wire:click="edit({{ $supplier->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2">Edit</button>
-                        <button wire:click="delete({{ $supplier->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus supplier ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="overflow-x-auto"> <!-- Added for responsiveness -->
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($suppliers as $supplier)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->phone }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->address }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button wire:click="edit({{ $supplier->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2">Edit</button>
+                            <button wire:click="delete({{ $supplier->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus supplier ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="mt-4">
