@@ -14,17 +14,11 @@
         </div>
         <div class="mb-6">
             <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Masukkan Deskripsi" wire:model="description"></textarea>
+            <textarea class="form-control" id="description" placeholder="Masukkan Deskripsi" wire:model="description"></textarea>
             @error('description') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
-        <div class="flex items-center justify-between">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                {{ $isUpdateMode ? 'Update' : 'Simpan' }}
-            </button>
-            <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Batal
-            </button>
-        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">{{ $isUpdateMode ? 'Update' : 'Simpan' }}</button>
+        <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Batal</button>
     </form>
 
     <hr class="my-8">
@@ -53,5 +47,9 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div class="mt-4">
+        {{ $categories->links() }}
     </div>
 </div>

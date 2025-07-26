@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
+use Livewire\WithPagination;
 
 class CategoryManager extends Component
 {
+    use WithPagination;
+
     public $name;
     public $description;
     public $categoryId;
@@ -33,7 +36,7 @@ class CategoryManager extends Component
 
     public function render()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::latest()->paginate(5);
         return view('livewire.category-manager', compact('categories'));
     }
 

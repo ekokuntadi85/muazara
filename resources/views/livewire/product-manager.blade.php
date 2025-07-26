@@ -14,7 +14,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> --}}
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Produk</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
@@ -24,7 +24,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach($products as $product)
                 <tr class="cursor-pointer hover:bg-gray-100" onclick="window.location='{{ route('products.show', $product->id) }}'">
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $product->id }}</td>
+                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $product->id }}</td> --}}
                     <td class="px-6 py-4 whitespace-nowrap">{{ $product->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $product->unit->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $product->total_stock }}</td>

@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\Unit;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
+use Livewire\WithPagination;
 
 class UnitManager extends Component
 {
+    use WithPagination;
+
     public $name;
     public $short_name;
     public $unitId;
@@ -33,7 +36,7 @@ class UnitManager extends Component
 
     public function render()
     {
-        $units = Unit::latest()->get();
+        $units = Unit::latest()->paginate(5);
         return view('livewire.unit-manager', compact('units'));
     }
 

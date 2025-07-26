@@ -204,7 +204,7 @@ class PointOfSale extends Component
         }
 
         DB::transaction(function () {
-            $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis') . '-' . uniqid();
+            $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
 
             $transaction = Transaction::create([
                 'type' => 'pos',

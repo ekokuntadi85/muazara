@@ -14,7 +14,7 @@
         </div>
         <div class="mb-4">
             <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Telepon:</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="phone" placeholder="Masukkan Nomor Telepon" wire:model="phone">
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="phone" wire:model="phone">
             @error('phone') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="mb-6">
@@ -23,12 +23,8 @@
             @error('address') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
         </div>
         <div class="flex items-center justify-between">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                {{ $isUpdateMode ? 'Update' : 'Simpan' }}
-            </button>
-            <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Batal
-            </button>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">{{ $isUpdateMode ? 'Update' : 'Simpan' }}</button>
+            <button type="button" wire:click="resetInput()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Batal</button>
         </div>
     </form>
 
@@ -41,7 +37,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th> --}}
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
@@ -51,7 +47,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->phone }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->address }}</td>
+                    {{-- <td class="px-6 py-4 whitespace-nowrap">{{ $supplier->address }}</td> --}}
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button wire:click="edit({{ $supplier->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2">Edit</button>
                         <button wire:click="delete({{ $supplier->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus supplier ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
@@ -60,5 +56,9 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div class="mt-4">
+        {{ $suppliers->links() }}
     </div>
 </div>

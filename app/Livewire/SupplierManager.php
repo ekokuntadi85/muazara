@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\Supplier;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
+use Livewire\WithPagination;
 
 class SupplierManager extends Component
 {
+    use WithPagination;
+
     public $name;
     public $phone;
     public $address;
@@ -35,7 +38,7 @@ class SupplierManager extends Component
 
     public function render()
     {
-        $suppliers = Supplier::latest()->get();
+        $suppliers = Supplier::latest()->paginate(5);
         return view('livewire.supplier-manager', compact('suppliers'));
     }
 

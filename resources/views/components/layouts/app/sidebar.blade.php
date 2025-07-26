@@ -18,14 +18,14 @@
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Manajemen Data')" class="grid">
-                        <flux:navlist.item icon="layout-grid" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>Kategori</flux:navlist.item>
-                        <flux:navlist.item icon="layout-grid" :href="route('units.index')" :current="request()->routeIs('units.index')" wire:navigate>Satuan</flux:navlist.item>
-                        <flux:navlist.item icon="layout-grid" :href="route('suppliers.index')" :current="request()->routeIs('suppliers.*')" wire:navigate>Supplier</flux:navlist.item>
-                        <flux:navlist.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>Daftar Produk</flux:navlist.item>
+                        <flux:navlist.item icon="building-storefront" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>Daftar Produk</flux:navlist.item>
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>Kategori</flux:navlist.item>
+                        <flux:navlist.item icon="clipboard-document" :href="route('units.index')" :current="request()->routeIs('units.index')" wire:navigate>Satuan</flux:navlist.item>
+                        <flux:navlist.item icon="building-office-2" :href="route('suppliers.index')" :current="request()->routeIs('suppliers.*')" wire:navigate>Supplier</flux:navlist.item>
                     <flux:navlist.group :heading="__('Transactions')" class="grid">
-                        <flux:navlist.item icon="layout-grid" :href="route('purchases.index')" :current="request()->routeIs('purchases.*')" wire:navigate>Pembelian</flux:navlist.item>
-                        <flux:navlist.item icon="layout-grid" :href="route('transactions.index')" :current="request()->routeIs('transactions.*')" wire:navigate>Transaksi</flux:navlist.item>
-                    <flux:navlist.item icon="layout-grid" :href="route('pos.index')" :current="request()->routeIs('pos.index')" wire:navigate>Point of Sale</flux:navlist.item>
+                        <flux:navlist.item icon="credit-card" :href="route('purchases.index')" :current="request()->routeIs('purchases.*')" wire:navigate>Pembelian</flux:navlist.item>
+                        <flux:navlist.item icon="currency-dollar" :href="route('transactions.index')" :current="request()->routeIs('transactions.*')" wire:navigate>Transaksi</flux:navlist.item>
+                        <flux:navlist.item icon="computer-desktop" :href="route('pos.index')" :current="request()->routeIs('pos.index')" wire:navigate>Point of Sale</flux:navlist.item>
                     </flux:navlist.group>
                 </flux:navlist.group>
             </flux:navlist>
@@ -33,13 +33,13 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
+                {{-- <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
                 {{ __('Repository') }}
                 </flux:navlist.item>
 
                 <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
                 {{ __('Documentation') }}
-                </flux:navlist.item>
+                </flux:navlist.item> --}}
             </flux:navlist>
 
             <!-- Desktop User Menu -->
