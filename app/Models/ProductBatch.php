@@ -10,12 +10,12 @@ class ProductBatch extends Model
     use HasFactory;
 
     protected $fillable = [
+        'purchase_id',
         'batch_number',
         'purchase_price',
         'stock',
         'expiration_date',
         'product_id',
-        'supplier_id',
     ];
 
     public function product()
@@ -23,8 +23,8 @@ class ProductBatch extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function supplier()
+    public function purchase()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Purchase::class);
     }
 }

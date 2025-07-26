@@ -8,6 +8,16 @@ use App\Livewire\CustomerManager;
 use App\Livewire\ProductManager;
 use App\Livewire\UnitManager;
 use App\Livewire\SupplierManager;
+use App\Livewire\ProductCreate;
+use App\Livewire\ProductEdit;
+use App\Livewire\PurchaseCreate;
+use App\Livewire\PurchaseManager;
+use App\Livewire\PurchaseShow;
+use App\Livewire\PurchaseEdit;
+use App\Livewire\TransactionManager;
+use App\Livewire\TransactionCreate;
+use App\Livewire\TransactionShow;
+use App\Livewire\TransactionEdit;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,5 +45,18 @@ Route::get('/suppliers', SupplierManager::class)->name('suppliers.index');
 Route::get('/customers', CustomerManager::class)->name('customers.index');
 
 Route::get('/products', ProductManager::class)->name('products.index');
+Route::get('/products/create', ProductCreate::class)->name('products.create');
+Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
+
+Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
+
+Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
+Route::get('/purchases/{purchase}', PurchaseShow::class)->name('purchases.show');
+Route::get('/purchases/{purchase}/edit', PurchaseEdit::class)->name('purchases.edit');
+
+Route::get('/transactions', TransactionManager::class)->name('transactions.index');
+Route::get('/transactions/create', TransactionCreate::class)->name('transactions.create');
+Route::get('/transactions/{transaction}', TransactionShow::class)->name('transactions.show');
+Route::get('/transactions/{transaction}/edit', TransactionEdit::class)->name('transactions.edit');
 
 require __DIR__.'/auth.php';
