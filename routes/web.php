@@ -5,6 +5,8 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\CategoryManager;
 use App\Livewire\CustomerManager;
+use App\Livewire\CustomerShow;
+use App\Livewire\CustomerEdit;
 use App\Livewire\ProductManager;
 use App\Livewire\UnitManager;
 use App\Livewire\SupplierManager;
@@ -20,6 +22,12 @@ use App\Livewire\TransactionCreate;
 use App\Livewire\TransactionShow;
 use App\Livewire\TransactionEdit;
 use App\Livewire\PointOfSale;
+use App\Livewire\AccountsReceivable;
+use App\Livewire\InvoiceCreate;
+use App\Livewire\SalesReport;
+use App\Livewire\UserManager;
+use App\Livewire\ExpiringStockReport;
+use App\Livewire\LowStockReport;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/units', UnitManager::class)->name('units.index');
     Route::get('/suppliers', SupplierManager::class)->name('suppliers.index');
     Route::get('/customers', CustomerManager::class)->name('customers.index');
+Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
+Route::get('/customers/{customer}/edit', CustomerEdit::class)->name('customers.edit');
 
     // Product Modules
     Route::get('/products', ProductManager::class)->name('products.index');
@@ -63,6 +73,19 @@ Route::middleware(['auth'])->group(function () {
 
     // Point of Sale Module
     Route::get('/pos', PointOfSale::class)->name('pos.index');
+
+    // Accounts Receivable Module
+    Route::get('/accounts-receivable', AccountsReceivable::class)->name('accounts-receivable.index');
+
+    Route::get('/invoices/create', InvoiceCreate::class)->name('invoices.create');
+
+    // Reporting Modules
+    Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
+    Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
+    Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
+
+    // User Management Module
+    Route::get('/users', UserManager::class)->name('users.index');
 });
 
 require __DIR__.'/auth.php';

@@ -68,4 +68,33 @@
             </tbody>
         </table>
     </div>
+
+    <h2 class="text-2xl font-bold mb-4 mt-10">Pembelian Mendekati Jatuh Tempo</h2>
+
+    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor Invoice</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Harga</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Jatuh Tempo</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($upcomingUnpaidPurchases as $purchase)
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->invoice_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->supplier->name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ number_format($purchase->total_price, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($purchase->due_date)->format('Y-m-d') }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Tidak ada pembelian mendekati jatuh tempo.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>

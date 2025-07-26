@@ -17,6 +17,7 @@ class PurchaseCreate extends Component
     public $purchase_date;
     public $due_date;
     public $total_purchase_price = 0;
+    public $payment_status = 'unpaid';
 
     // For product search
     public $searchProduct = '';
@@ -158,6 +159,7 @@ class PurchaseCreate extends Component
                 'due_date' => $this->due_date,
                 'total_price' => $this->total_purchase_price,
                 'supplier_id' => $this->supplier_id,
+                'payment_status' => $this->payment_status,
             ]);
 
             foreach ($this->purchase_items as $item) {
@@ -198,6 +200,7 @@ class PurchaseCreate extends Component
         $this->due_date = now()->addDays(30)->format('Y-m-d');
         $this->total_purchase_price = 0;
         $this->purchase_items = [];
+        $this->payment_status = 'unpaid';
         $this->resetItemForm();
         $this->resetErrorBag();
     }

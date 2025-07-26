@@ -44,7 +44,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($customers as $customer)
-                    <tr>
+                    <tr class="cursor-pointer hover:bg-gray-100" onclick="window.location='{{ route('customers.show', $customer->id) }}'">
                         <td class="px-6 py-4 whitespace-nowrap">{{ $customer->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $customer->phone }}</td>

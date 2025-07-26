@@ -1,6 +1,14 @@
 <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-4">
         <input type="text" wire:model.live="search" placeholder="Cari pembelian..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-1/3">
+        <div class="flex items-center">
+            <label for="filterStatus" class="mr-2 text-gray-700 text-sm font-bold">Status:</label>
+            <select id="filterStatus" wire:model.live="filterStatus" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="all">Semua</option>
+                <option value="unpaid">Belum Lunas</option>
+                <option value="paid">Lunas</option>
+            </select>
+        </div>
         <a href="{{ route('purchases.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Tambah Pembelian</a>
     </div>
 
@@ -15,6 +23,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Pembelian</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Jatuh Tempo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Pembayaran</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -26,6 +35,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->supplier->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ number_format($purchase->total_price, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->due_date ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($purchase->payment_status) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

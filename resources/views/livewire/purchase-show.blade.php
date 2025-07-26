@@ -28,8 +28,18 @@
             <p class="text-gray-700 text-sm font-bold">Tanggal Jatuh Tempo:</p>
             <p class="text-gray-900">{{ $purchase->due_date ?? '-' }}</p>
         </div>
+        <div class="mb-4">
+            <p class="text-gray-700 text-sm font-bold">Status Pembayaran:</p>
+            <p class="text-gray-900">{{ ucfirst($purchase->payment_status) }}</p>
+        </div>
 
         <hr class="my-6">
+
+        @if ($purchase->payment_status === 'unpaid')
+            <div class="flex justify-end mb-4">
+                <button wire:click="markAsPaid()" onclick="confirm('Apakah Anda yakin ingin menandai pembelian ini sebagai lunas?') || event.stopImmediatePropagation()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Tandai Lunas</button>
+            </div>
+        @endif
 
         <h3 class="text-xl font-semibold mb-4">Item Pembelian</h3>
         @if(count($purchase->productBatches) > 0)

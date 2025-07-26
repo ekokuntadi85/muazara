@@ -15,6 +15,12 @@ class PurchaseShow extends Component
         $this->purchase = $purchase->load(['supplier', 'productBatches.product']);
     }
 
+    public function markAsPaid()
+    {
+        $this->purchase->update(['payment_status' => 'paid']);
+        session()->flash('message', 'Pembelian berhasil ditandai lunas.');
+    }
+
     public function deletePurchase()
     {
         DB::transaction(function () {

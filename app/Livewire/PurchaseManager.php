@@ -8,6 +8,7 @@ use App\Models\Purchase;
 class PurchaseManager extends Component
 {
     public $search = '';
+    public $filterStatus = 'all';
 
     public function render()
     {
@@ -17,6 +18,9 @@ class PurchaseManager extends Component
                                           ->orWhereHas('supplier', function ($query) {
                                               $query->where('name', 'like', '%' . $this->search . '%');
                                           });
+                                })
+                                ->when($this->filterStatus !== 'all', function ($query) {
+                                    $query->where('payment_status', $this->filterStatus);
                                 })
                                 ->latest()
                                 ->get();

@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\Customer;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
+use Livewire\WithPagination;
 
 class CustomerManager extends Component
 {
+    use WithPagination;
+
     public $name;
     public $phone;
     public $address;
@@ -35,7 +38,7 @@ class CustomerManager extends Component
 
     public function render()
     {
-        $customers = Customer::latest()->get();
+        $customers = Customer::latest()->paginate(5);
         return view('livewire.customer-manager', compact('customers'));
     }
 
