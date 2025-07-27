@@ -57,7 +57,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->created_at->format('Y-m-d H:i') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->type }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->customer->name ?? 'Umum' }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ number_format($transaction->total_price, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_price, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->payment_status }}</td>
                 </tr>
                 @empty
@@ -86,7 +86,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->invoice_number }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->supplier->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ number_format($purchase->total_price, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($purchase->total_price, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($purchase->due_date)->format('Y-m-d') }}</td>
                 </tr>
                 @empty

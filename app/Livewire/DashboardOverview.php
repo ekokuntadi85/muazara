@@ -25,10 +25,8 @@ class DashboardOverview extends Component
         // Sales Today
         $this->salesToday = Transaction::whereDate('created_at', $today)->sum('total_price');
 
-        // Visits Today (Unique Customers)
-        $this->visitsToday = Transaction::whereDate('created_at', $today)
-                                        ->distinct('customer_id')
-                                        ->count('customer_id');
+        // Visits Today (Counting each transaction)
+        $this->visitsToday = Transaction::whereDate('created_at', $today)->count();
 
         // Expiring Products Count (e.g., within next 30 days)
         $expiringDate = Carbon::now()->addDays(30);

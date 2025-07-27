@@ -7,14 +7,27 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
+use Spatie\Permission\PermissionRegistrar;
 
 class ProfileUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Reset cached roles and permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Run the seeder to create roles and permissions
+        $this->seed('RolesAndPermissionsSeeder');
+    }
+
     public function test_profile_page_is_displayed(): void
     {
         $this->actingAs($user = User::factory()->create());
+        $user->givePermissionTo('manage-settings');
 
         $this->get('/settings/profile')->assertOk();
     }

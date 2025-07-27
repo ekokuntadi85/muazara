@@ -36,56 +36,71 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'dashboard')
-        ->middleware(['verified'])
+        ->middleware(['verified', 'can:view-dashboard'])
         ->name('dashboard');
 
-    Route::redirect('settings', 'settings/profile');
+    Route::middleware(['can:manage-settings'])->group(function () {
+        Route::redirect('settings', 'settings/profile');
 
-    Route::get('settings/profile', Profile::class)->name('settings.profile');
-    Route::get('settings/password', Password::class)->name('settings.password');
-    Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+        Route::get('settings/profile', Profile::class)->name('settings.profile');
+        Route::get('settings/password', Password::class)->name('settings.password');
+        Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+    });
 
     // Data Management Modules
     Route::get('/categories', CategoryManager::class)->name('categories.index');
     Route::get('/units', UnitManager::class)->name('units.index');
     Route::get('/suppliers', SupplierManager::class)->name('suppliers.index');
     Route::get('/customers', CustomerManager::class)->name('customers.index');
-Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
-Route::get('/customers/{customer}/edit', CustomerEdit::class)->name('customers.edit');
+    Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
+    Route::get('/customers/{customer}/edit', CustomerEdit::class)->name('customers.edit');
 
     // Product Modules
-    Route::get('/products', ProductManager::class)->name('products.index');
-    Route::get('/products/create', ProductCreate::class)->name('products.create');
-    Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
-    Route::get('/products/{product}', ProductShow::class)->name('products.show');
+    Route::middleware(['can:manage-products'])->group(function () {
+        Route::get('/products', ProductManager::class)->name('products.index');
+        Route::get('/products/create', ProductCreate::class)->name('products.create');
+        Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
+        Route::get('/products/{product}', ProductShow::class)->name('products.show');
+    });
 
     // Purchase Modules
-    Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
-    Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
-    Route::get('/purchases/{purchase}', PurchaseShow::class)->name('purchases.show');
-    Route::get('/purchases/{purchase}/edit', PurchaseEdit::class)->name('purchases.edit');
+    Route::middleware(['can:manage-purchases'])->group(function () {
+        Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
+        Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
+        Route::get('/purchases/{purchase}', PurchaseShow::class)->name('purchases.show');
+        Route::get('/purchases/{purchase}/edit', PurchaseEdit::class)->name('purchases.edit');
+    });
 
     // Transaction Modules
-    Route::get('/transactions', TransactionManager::class)->name('transactions.index');
-    Route::get('/transactions/create', TransactionCreate::class)->name('transactions.create');
-    Route::get('/transactions/{transaction}', TransactionShow::class)->name('transactions.show');
-    Route::get('/transactions/{transaction}/edit', TransactionEdit::class)->name('transactions.edit');
-
-    // Point of Sale Module
-    Route::get('/pos', PointOfSale::class)->name('pos.index');
-
-    // Accounts Receivable Module
-    Route::get('/accounts-receivable', AccountsReceivable::class)->name('accounts-receivable.index');
-
-    Route::get('/invoices/create', InvoiceCreate::class)->name('invoices.create');
+    Route::middleware(['can:manage-sales'])->group(function () {
+        Route::get('/transactions', TransactionManager::class)->name('transactions.index');
+        Route::get('/transactions/create', TransactionCreate::class)->name('transactions.create');
+        Route::get('/transactions/{transaction}', TransactionShow::class)->name('transactions.show');
+        
+        // Point of Sale Module
+        Route::get('/pos', PointOfSale::class)->name('pos.index');
+        
+        // Accounts Receivable Module
+        Route::get('/accounts-receivable', AccountsReceivable::class)->name('accounts-receivable.index');
+        
+        Route::get('/invoices/create', InvoiceCreate::class)->name('invoices.create');
+    });
+    
+    Route::middleware(['can:delete-sales'])->group(function(){
+        Route::get('/transactions/{transaction}/edit', TransactionEdit::class)->name('transactions.edit');
+    });
 
     // Reporting Modules
-    Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
-    Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
-    Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
+    Route::middleware(['can:view-reports'])->group(function () {
+        Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
+        Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
+        Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
+    });
 
     // User Management Module
-    Route::get('/users', UserManager::class)->name('users.index');
+    Route::middleware(['can:manage-users'])->group(function () {
+        Route::get('/users', UserManager::class)->name('users.index');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -18,7 +18,7 @@
         </div>
         <div class="mb-4">
             <p class="text-gray-700 text-sm font-bold">Total Harga:</p>
-            <p class="text-gray-900">{{ number_format($transaction->total_price, 2) }}</p>
+            <p class="text-gray-900">Rp {{ number_format($transaction->total_price, 2) }}</p>
         </div>
         <div class="mb-4">
             <p class="text-gray-700 text-sm font-bold">Tanggal Jatuh Tempo:</p>
@@ -53,8 +53,8 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->product->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->quantity }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ number_format($item->price, 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ number_format($item->quantity * $item->price, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item->price, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item->quantity * $item->price, 2) }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -66,8 +66,12 @@
         @endif
 
         <div class="flex justify-end mt-4">
+            @can('delete-sales')
             <a href="{{ route('transactions.edit', $transaction->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mr-2">Edit Transaksi</a>
-            <button wire:click="deleteTransaction()" onclick="confirm('Apakah Anda yakin ingin menghapus transaksi ini? Semua detail transaksi terkait juga akan dihapus.') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">Hapus Transaksi</button>
+            <button wire:click="deleteTransaction()" onclick="confirm('Apakah Anda yakin ingin menghapus transaksi ini? Semua detail transaksi terkait juga akan dihapus.') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
+                Hapus Transaksi
+            </button>
+            @endcan
         </div>
     </div>
 </div>

@@ -12,19 +12,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a default user if not exists
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            ['name' => 'Test User', 'password' => bcrypt('password')]
-        );
-
         // Call other seeders
         $this->call([
+            RolesAndPermissionsSeeder::class,
             CategorySeeder::class,
             UnitSeeder::class,
             SupplierSeeder::class,
             ProductSeeder::class,
             PurchaseSeeder::class,
         ]);
+
+        // Create users with different roles
+        $owner = User::firstOrCreate(
+            ['email' => 'owner@example.com'],
+            ['name' => 'Owner User', 'password' => bcrypt('password')]
+        );
+        $owner->assignRole('owner');
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin User', 'password' => bcrypt('password')]
+        );
+        $admin->assignRole('admin');
+
+        $kasir = User::firstOrCreate(
+            ['email' => 'kasir@example.com'],
+            ['name' => 'Kasir User', 'password' => bcrypt('password')]
+        );
+        $kasir->assignRole('kasir');
     }
 }

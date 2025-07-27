@@ -104,10 +104,10 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['product_name'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['batch_number'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($item['purchase_price'], 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['purchase_price'], 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['stock'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['expiration_date'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($item['subtotal'], 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['subtotal'], 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button type="button" wire:click="removeItem({{ $index }})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
                         </td>
@@ -116,7 +116,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-right text-2xl font-bold mb-4">Total Pembelian: {{ number_format($total_purchase_price, 2) }}</div>
+        <div class="text-right text-2xl font-bold mb-4">Total Pembelian: Rp {{ number_format($total_purchase_price, 2) }}</div>
         <button type="button" wire:click="savePurchase()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Simpan Pembelian</button>
     @else
         <p class="text-gray-600">Belum ada item pembelian.</p>

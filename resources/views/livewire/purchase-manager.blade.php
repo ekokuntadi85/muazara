@@ -33,7 +33,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->purchase_date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->invoice_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->supplier->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($purchase->total_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($purchase->total_price, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $purchase->due_date ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($purchase->payment_status) }}</td>
                     </tr>

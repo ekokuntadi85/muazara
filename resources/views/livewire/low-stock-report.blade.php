@@ -29,7 +29,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->sku }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->productBatches->sum('stock') }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($product->selling_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($product->selling_price, 2) }}</td>
                     </tr>
                     @empty
                     <tr>

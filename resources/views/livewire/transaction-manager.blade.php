@@ -23,7 +23,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->created_at->format('Y-m-d') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->customer->name ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($transaction->total_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_price, 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

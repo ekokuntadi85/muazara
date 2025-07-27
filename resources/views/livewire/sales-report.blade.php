@@ -62,7 +62,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->created_at->format('Y-m-d H:i') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->customer->name ?? 'Umum' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($transaction->total_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_price, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->payment_status }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->user->name ?? '-' }}</td>
                     </tr>

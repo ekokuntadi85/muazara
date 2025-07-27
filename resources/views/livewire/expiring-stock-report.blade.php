@@ -38,7 +38,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->batch_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('Y-m-d') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->stock }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ number_format($batch->purchase_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($batch->purchase_price, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->purchase->supplier->name ?? 'N/A' }}</td>
                     </tr>
                     @empty

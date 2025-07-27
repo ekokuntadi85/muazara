@@ -8,29 +8,31 @@
     <h2 class="text-2xl font-bold mb-4">Detail Pembelian #{{ $purchase->invoice_number }}</h2>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Supplier:</p>
-            <p class="text-gray-900">{{ $purchase->supplier->name }}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Tanggal Pembelian:</p>
-            <p class="text-gray-900">{{ $purchase->purchase_date }}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Nomor Invoice:</p>
-            <p class="text-gray-900">{{ $purchase->invoice_number }}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Total Pembelian:</p>
-            <p class="text-gray-900">{{ number_format($purchase->total_price, 2) }}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Tanggal Jatuh Tempo:</p>
-            <p class="text-gray-900">{{ $purchase->due_date ?? '-' }}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-gray-700 text-sm font-bold">Status Pembayaran:</p>
-            <p class="text-gray-900">{{ ucfirst($purchase->payment_status) }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Supplier:</p>
+                <p class="text-gray-900">{{ $purchase->supplier->name }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Tanggal Pembelian:</p>
+                <p class="text-gray-900">{{ $purchase->purchase_date }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Nomor Invoice:</p>
+                <p class="text-gray-900">{{ $purchase->invoice_number }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Total Pembelian:</p>
+                <p class="text-gray-900">Rp {{ number_format($purchase->total_price, 2) }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Tanggal Jatuh Tempo:</p>
+                <p class="text-gray-900">{{ $purchase->due_date ?? '-' }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 text-sm font-bold">Status Pembayaran:</p>
+                <p class="text-gray-900">{{ ucfirst($purchase->payment_status) }}</p>
+            </div>
         </div>
 
         <hr class="my-6">
@@ -61,7 +63,7 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->product->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->batch_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ number_format($item->purchase_price, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item->purchase_price, 2) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->getOriginal('stock') }}</td> <!-- Assuming original stock is needed -->
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->stock }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->expiration_date }}</td>
