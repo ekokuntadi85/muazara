@@ -26,7 +26,10 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->customer->name ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                            <span class="currency-symbol">Rp</span>
+                            <span class="currency-value">{{ number_format($transaction->total_price, 2) }}</span>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->due_date ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button wire:click="markAsPaid({{ $transaction->id }})" onclick="confirm('Apakah Anda yakin ingin menandai transaksi ini sebagai lunas?') || event.stopImmediatePropagation()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-full">Tandai Lunas</button>

@@ -147,7 +147,7 @@ class InvoiceCreate extends Component
 
         DB::transaction(function () {
             $transaction = Transaction::create([
-                'type' => 'invoice',
+                'type' => 'INV',
                 'payment_status' => 'unpaid',
                 'total_price' => $this->total_price,
                 'due_date' => $this->due_date,

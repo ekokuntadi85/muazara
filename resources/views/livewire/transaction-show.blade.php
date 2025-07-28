@@ -66,6 +66,10 @@
         @endif
 
         <div class="flex justify-end mt-4">
+            @can('manage-sales')
+            <a href="{{ route('transactions.print-receipt', $transaction->id) }}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mr-2">Cetak Struk</a>
+            <a href="{{ route('transactions.print-invoice', $transaction->id) }}" target="_blank" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full mr-2">Cetak Invoice</a>
+            @endcan
             @can('delete-sales')
             <a href="{{ route('transactions.edit', $transaction->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mr-2">Edit Transaksi</a>
             <button wire:click="deleteTransaction()" onclick="confirm('Apakah Anda yakin ingin menghapus transaksi ini? Semua detail transaksi terkait juga akan dihapus.') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">

@@ -2,15 +2,21 @@
     <h2 class="text-2xl font-bold mb-4">Laporan Stok Kedaluwarsa</h2>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div class="mb-4">
-            <label for="expiry_threshold_months" class="block text-gray-700 text-sm font-bold mb-2">Ambang Batas Kedaluwarsa:</label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="expiry_threshold_months" wire:model.live="expiry_threshold_months">
-                <option value="2">2 Bulan</option>
-                <option value="3">3 Bulan</option>
-                <option value="4">4 Bulan</option>
-                <option value="5">5 Bulan</option>
-                <option value="6">6 Bulan</option>
-            </select>
+        <div class="flex justify-between items-center mb-4">
+            <div class="w-1/3">
+                <label for="expiry_threshold_months" class="block text-gray-700 text-sm font-bold mb-2">Ambang Batas Kedaluwarsa:</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="expiry_threshold_months" wire:model.live="expiry_threshold_months">
+                    <option value="2">2 Bulan</option>
+                    <option value="3">3 Bulan</option>
+                    <option value="4">4 Bulan</option>
+                    <option value="5">5 Bulan</option>
+                    <option value="6">6 Bulan</option>
+                </select>
+            </div>
+            <input type="text" wire:model.live="search" placeholder="Cari produk atau batch..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-1/3">
+        </div>
+        <div class="flex justify-end">
+            <a href="{{ route('reports.expiring-stock.print', ['expiry_threshold_months' => $expiry_threshold_months]) }}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cetak Laporan</a>
         </div>
     </div>
 
@@ -38,7 +44,10 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->batch_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('Y-m-d') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->stock }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($batch->purchase_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                            <span class="currency-symbol">Rp</span>
+                            <span class="currency-value">{{ number_format($batch->purchase_price, 2) }}</span>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $batch->purchase->supplier->name ?? 'N/A' }}</td>
                     </tr>
                     @empty
@@ -49,5 +58,8 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="mt-4">
+        {{ $productBatches->links() }}
     </div>
 </div>

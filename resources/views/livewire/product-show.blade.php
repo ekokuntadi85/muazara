@@ -55,7 +55,10 @@
                             <tr class="cursor-pointer hover:bg-gray-100" onclick="window.location='{{ route('purchases.show', $batch->purchase->id) }}'">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $batch->purchase->purchase_date }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $batch->purchase->supplier->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($batch->purchase_price, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($batch->purchase_price, 2) }}</span>
+                            </td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $batch->stock }}</td>
                             </tr>
                             @endforeach

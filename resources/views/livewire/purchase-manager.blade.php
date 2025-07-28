@@ -3,11 +3,11 @@
         <input type="text" wire:model.live="search" placeholder="Cari pembelian..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-1/3">
         <div class="flex items-center">
             <label for="filterStatus" class="mr-2 text-gray-700 text-sm font-bold">Status:</label>
-            <select id="filterStatus" wire:model.live="filterStatus" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option value="all">Semua</option>
-                <option value="unpaid">Belum Lunas</option>
-                <option value="paid">Lunas</option>
-            </select>
+            <x-flux.button.group wire:model.live="filterStatus">
+                <x-flux.button.group.option property="filterStatus" value="all" label="Semua" />
+                <x-flux.button.group.option property="filterStatus" value="unpaid" label="Belum Lunas" />
+                <x-flux.button.group.option property="filterStatus" value="paid" label="Lunas" />
+            </x-flux.button.group>
         </div>
         <a href="{{ route('purchases.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Tambah Pembelian</a>
     </div>

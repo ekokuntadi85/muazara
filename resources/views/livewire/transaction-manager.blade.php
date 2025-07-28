@@ -1,7 +1,14 @@
 <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-4">
         <input type="text" wire:model.live="search" placeholder="Cari transaksi..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-1/3">
-        <a href="{{ route('transactions.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Tambah Transaksi</a>
+        <div class="flex items-center">
+            <x-flux.button.group wire:model.live="filterType">
+                <x-flux.button.group.option property="filterType" value="all" label="ALL" />
+                <x-flux.button.group.option property="filterType" value="INV" label="INV" />
+                <x-flux.button.group.option property="filterType" value="POS" label="POS" />
+            </x-flux.button.group>
+        </div>
+        
     </div>
 
     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">

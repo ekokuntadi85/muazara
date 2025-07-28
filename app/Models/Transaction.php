@@ -13,6 +13,8 @@ class Transaction extends Model
         'type',
         'payment_status',
         'total_price',
+        'amount_paid',
+        'change',
         'invoice_number',
         'due_date',
         'user_id',

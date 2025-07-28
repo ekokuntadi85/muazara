@@ -98,8 +98,14 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['product_name'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $item['quantity'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['price'], 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['subtotal'], 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($item['price'], 2) }}</span>
+                            </td>
+                        <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($item['subtotal'], 2) }}</span>
+                            </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button type="button" wire:click="removeItem({{ $index }})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
                         </td>

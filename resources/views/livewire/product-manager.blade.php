@@ -28,7 +28,10 @@
                     <tr class="cursor-pointer hover:bg-gray-100" onclick="window.location='{{ route('products.show', $product->id) }}'">
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($product->selling_price, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                            <span class="currency-symbol">Rp</span>
+                            <span class="currency-value">{{ number_format($product->selling_price, 2) }}</span>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->unit->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $product->total_stock }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

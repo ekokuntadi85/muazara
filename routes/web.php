@@ -30,11 +30,8 @@ use App\Livewire\ExpiringStockReport;
 use App\Livewire\LowStockReport;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
 Route::middleware(['auth'])->group(function () {
+    Route::get('/', ProductManager::class)->name('home');
     Route::view('dashboard', 'dashboard')
         ->middleware(['verified', 'can:view-dashboard'])
         ->name('dashboard');
@@ -56,11 +53,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customers/{customer}/edit', CustomerEdit::class)->name('customers.edit');
 
     // Product Modules
+    Route::get('/products', ProductManager::class)->name('products.index');
+    Route::get('/products/create', ProductCreate::class)->name('products.create');
+    Route::get('/products/{product}', ProductShow::class)->name('products.show');
     Route::middleware(['can:manage-products'])->group(function () {
-        Route::get('/products', ProductManager::class)->name('products.index');
-        Route::get('/products/create', ProductCreate::class)->name('products.create');
         Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
-        Route::get('/products/{product}', ProductShow::class)->name('products.show');
     });
 
     // Purchase Modules
@@ -84,6 +81,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/accounts-receivable', AccountsReceivable::class)->name('accounts-receivable.index');
         
         Route::get('/invoices/create', InvoiceCreate::class)->name('invoices.create');
+
+        // Document Printing Routes
+        Route::get('/transactions/{transaction}/receipt', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('transactions.print-receipt');
+        Route::get('/transactions/{transaction}/invoice', [App\Http\Controllers\DocumentController::class, 'printInvoice'])->name('transactions.print-invoice');
     });
     
     Route::middleware(['can:delete-sales'])->group(function(){
@@ -95,12 +96,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
         Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
+        Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');
     });
 
     // User Management Module
     Route::middleware(['can:manage-users'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
     });
+
+    // cetak
+    Route::get('/print/receipt/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('print.receipt');
+    Route::get('/print/invoice/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printInvoice'])->name('print.invoice');
 });
 
 require __DIR__.'/auth.php';

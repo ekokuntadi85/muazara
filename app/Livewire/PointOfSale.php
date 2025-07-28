@@ -203,13 +203,15 @@ class PointOfSale extends Component
             ]);
         }
 
-        DB::transaction(function () {
+        DB::transaction(function () use (&$transaction) {
             $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
 
             $transaction = Transaction::create([
-                'type' => 'pos',
+                'type' => 'POS',
                 'payment_status' => 'paid',
                 'total_price' => $this->total_price,
+                'amount_paid' => $this->amount_paid,
+                'change' => $this->change,
                 'due_date' => null, // POS transactions usually don't have due date
                 'customer_id' => $this->customer_id,
                 'user_id' => Auth::id(),
@@ -240,6 +242,9 @@ class PointOfSale extends Component
         });
 
         session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
+        $this->dispatch('transaction-completed', [
+            'transactionId' => $transaction->id,
+        ]);
         $this->resetAll();
         $this->dispatch('focusSearchInput'); // Dispatch event to focus search input
     }

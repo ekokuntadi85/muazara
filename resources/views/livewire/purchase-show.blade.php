@@ -63,7 +63,10 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->product->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->batch_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item->purchase_price, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($item->purchase_price, 2) }}</span>
+                            </td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->getOriginal('stock') }}</td> <!-- Assuming original stock is needed -->
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->stock }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item->expiration_date }}</td>

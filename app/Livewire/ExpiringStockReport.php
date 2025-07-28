@@ -5,10 +5,14 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\ProductBatch;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 
 class ExpiringStockReport extends Component
 {
+    use WithPagination;
+
     public $expiry_threshold_months = 2;
+    public $search = '';
 
     public function render()
     {
@@ -17,8 +21,17 @@ class ExpiringStockReport extends Component
         $productBatches = ProductBatch::with(['product', 'purchase.supplier'])
                                     ->where('stock', '>', 0)
                                     ->where('expiration_date', '<=', $thresholdDate)
+                                    ->where(function ($query) {
+                                        $query->whereHas('product', function ($query) {
+                                            $query->where('name', 'like', '%' . $this->search . '%');
+                                        })
+                                        ->orWhereHas('purchase.supplier', function ($query) {
+                                            $query->where('name', 'like', '%' . $this->search . '%');
+                                        })
+                                        ->orWhere('batch_number', 'like', '%' . $this->search . '%');
+                                    })
                                     ->orderBy('expiration_date', 'asc')
-                                    ->get();
+                                    ->paginate(10);
 
         return view('livewire.expiring-stock-report', compact('productBatches'));
     }

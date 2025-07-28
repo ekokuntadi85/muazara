@@ -53,7 +53,10 @@
                             @foreach($cart_items as $index => $item)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $item['product_name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['price'], 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($item['price'], 2) }}</span>
+                            </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <button type="button" wire:click="updateQuantity({{ $index }}, {{ $item['quantity'] - 1 }})" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-2 rounded-l focus:outline-none focus:shadow-outline">-</button>
@@ -62,7 +65,10 @@
                                     </div>
                                     @error('cart_items.' . $index . '.quantity') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['subtotal'], 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap currency-cell">
+                                <span class="currency-symbol">Rp</span>
+                                <span class="currency-value">{{ number_format($item['subtotal'], 2) }}</span>
+                            </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button type="button" wire:click="removeItem({{ $index }})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
                                 </td>
@@ -112,3 +118,17 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+    Livewire.on('transaction-completed', (event) => {
+        const { transactionId } = event[0];
+        const printReceipt = confirm('Transaksi berhasil! Apakah Anda ingin mencetak struk?');
+
+        if (printReceipt) {
+            const url = `/transactions/${transactionId}/receipt`;
+            window.open(url, '_blank');
+        }
+    });
+</script>
+@endscript
