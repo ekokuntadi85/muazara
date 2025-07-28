@@ -128,3 +128,14 @@
         <p class="text-gray-600">Belum ada item pembelian.</p>
     @endif
 </div>
+
+@script
+<script>
+    Livewire.on('confirm-lower-price', (message) => {
+        console.log('Message received:', message);
+        if (confirm(message)) {
+            Livewire.dispatch('confirmedAddItem');
+        }
+    });
+</script>
+@endscript
