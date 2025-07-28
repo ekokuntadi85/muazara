@@ -4,9 +4,12 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ProductManager extends Component
 {
+    use WithPagination;
+
     public $search = '';
 
     public function render()
@@ -17,7 +20,7 @@ class ProductManager extends Component
                                       ->orWhere('sku', 'like', '%' . $this->search . '%');
                             })
                             ->latest()
-                            ->get();
+                            ->paginate(10);
 
         return view('livewire.product-manager', compact('products'));
     }
@@ -26,5 +29,10 @@ class ProductManager extends Component
     {
         Product::find($id)->delete();
         session()->flash('message', 'Produk berhasil dihapus.');
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
     }
 }

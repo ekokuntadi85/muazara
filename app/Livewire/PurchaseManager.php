@@ -4,9 +4,12 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Purchase;
+use Livewire\WithPagination;
 
 class PurchaseManager extends Component
 {
+    use WithPagination;
+
     public $search = '';
     public $filterStatus = 'all';
 
@@ -23,8 +26,18 @@ class PurchaseManager extends Component
                                     $query->where('payment_status', $this->filterStatus);
                                 })
                                 ->latest()
-                                ->get();
+                                ->paginate(10);
 
         return view('livewire.purchase-manager', compact('purchases'));
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterStatus()
+    {
+        $this->resetPage();
     }
 }
