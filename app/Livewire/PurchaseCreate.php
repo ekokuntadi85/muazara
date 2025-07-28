@@ -42,7 +42,7 @@ class PurchaseCreate extends Component
         'purchase_items.*.batch_number' => 'nullable|string|max:255',
         'purchase_items.*.purchase_price' => 'required|numeric|min:0',
         'purchase_items.*.stock' => 'required|integer|min:1',
-        'purchase_items.*.expiration_date' => 'nullable|date',
+        'purchase_items.*.expiration_date' => 'required|date',
     ];
 
     protected $itemRules = [
@@ -50,7 +50,7 @@ class PurchaseCreate extends Component
         'batch_number' => 'nullable|string|max:255',
         'purchase_price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:1',
-        'expiration_date' => 'nullable|date',
+        'expiration_date' => 'required|date',
     ];
 
     protected $messages = [
@@ -163,10 +163,11 @@ class PurchaseCreate extends Component
             ]);
 
             foreach ($this->purchase_items as $item) {
+                $batchNumber = empty($item['batch_number']) ? '-' : $item['batch_number'];
                 ProductBatch::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $item['product_id'],
-                    'batch_number' => $item['batch_number'],
+                    'batch_number' => $batchNumber,
                     'purchase_price' => $item['purchase_price'],
                     'stock' => $item['stock'],
                     'expiration_date' => $item['expiration_date'],
