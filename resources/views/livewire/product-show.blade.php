@@ -72,7 +72,7 @@
 
         <div class="flex justify-end mt-4">
             <a href="{{ route('products.edit', $product->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mr-2 dark:bg-green-600 dark:hover:bg-green-700">Edit Produk</a>
-            <button wire:click="deleteProduct()" onclick="confirm('Apakah Anda yakin ingin menghapus produk ini? Semua batch terkait juga akan dihapus.') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full dark:bg-red-600 dark:hover:bg-red-700">Hapus Produk</button>
+            <button wire:click="deleteProduct()" wire:confirm="Apakah Anda yakin ingin menghapus produk ini?" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full mr-2 dark:bg-red-600 dark:hover:bg-red-700">Hapus Produk</button>
         </div>
     </div>
 </div>

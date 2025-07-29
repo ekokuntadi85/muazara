@@ -27,8 +27,18 @@ class ProductManager extends Component
 
     public function delete($id)
     {
-        Product::find($id)->delete();
-        session()->flash('message', 'Produk berhasil dihapus.');
+        \Illuminate\Support\Facades\Log::info('ProductManager: Delete method called for product ID: ' . $id);
+
+        $product = Product::withCount(['productBatches', 'transactionDetails'])->find($id);
+
+        if ($product->product_batches_count > 0 || $product->transaction_details_count > 0) {
+            session()->flash('error', 'Produk tidak dapat dihapus karena memiliki riwayat transaksi pembelian atau penjualan.');
+            return;
+        }
+
+        if ($product->delete()) {
+            session()->flash('message', 'Produk berhasil dihapus.');
+        }
     }
 
     public function updatedSearch()

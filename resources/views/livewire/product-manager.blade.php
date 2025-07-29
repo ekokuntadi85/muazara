@@ -5,6 +5,12 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 dark:bg-red-800 dark:border-red-700 dark:text-red-200" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
+
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-4 md:space-y-0">
         <input type="text" wire:model.live="search" placeholder="Cari produk..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full md:w-1/3 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
         <a href="{{ route('products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto dark:bg-blue-600 dark:hover:bg-blue-700">Tambah Produk</a>
@@ -21,7 +27,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Jual</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Satuan</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Aksi</th>
+                        
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -35,10 +41,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->unit->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->total_stock }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('products.edit', $product->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full mr-2 dark:bg-green-600 dark:hover:bg-green-700">Edit</a>
-                            <button wire:click="delete({{ $product->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus produk ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full dark:bg-red-600 dark:hover:bg-red-700">Hapus</button>
-                        </td>
+                        
                     </tr>
                     @endforeach
                 </tbody>
@@ -63,10 +66,7 @@
             <div class="text-gray-700 dark:text-gray-200 mb-1">
                 <span class="font-medium">Stok:</span> {{ $product->total_stock }}
             </div>
-            <div class="flex justify-end mt-2 space-x-2">
-                <a href="{{ route('products.edit', $product->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full text-xs dark:bg-green-600 dark:hover:bg-green-700">Edit</a>
-                <button wire:click="delete({{ $product->id }})" onclick="confirm('Apakah Anda yakin ingin menghapus produk ini?') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full text-xs dark:bg-red-600 dark:hover:bg-red-700">Hapus</button>
-            </div>
+            
         </div>
         @empty
         <p class="text-gray-600 dark:text-gray-400 text-center">Tidak ada produk ditemukan.</p>
