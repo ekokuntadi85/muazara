@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -78,5 +79,12 @@ class Login extends Component
     protected function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+    }
+
+    public function render()
+    {
+        return view('livewire.auth.login', [
+            'users' => User::all(),
+        ]);
     }
 }
