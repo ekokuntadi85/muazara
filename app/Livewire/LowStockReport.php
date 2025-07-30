@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Product;
-
+use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 
 class LowStockReport extends Component
@@ -14,9 +14,8 @@ class LowStockReport extends Component
 
     public function render()
     {
-        $products = Product::with('productBatches')
-            ->withSum('productBatches as total_stock', 'stock')
-            ->having('total_stock', '<', $this->stock_threshold)
+        $products = Product::withSum('productBatches as total_stock', 'stock')
+            ->whereRaw('COALESCE((SELECT SUM(stock) FROM product_batches WHERE products.id = product_batches.product_id), 0) < ?', [$this->stock_threshold])
             ->orderBy('total_stock', 'asc')
             ->paginate(10);
 

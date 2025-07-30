@@ -1,80 +1,64 @@
 <div class="container mx-auto p-4 dark:bg-gray-800 dark:text-gray-200">
-    <style>
-        @media (max-width: 768px) {
-            .mobile-card table, .mobile-card thead, .mobile-card tbody, .mobile-card th, .mobile-card td, .mobile-card tr {
-                display: block;
-            }
-            .mobile-card thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            .mobile-card tr {
-                border: 1px solid #ccc;
-                border-radius: 0.5rem;
-                margin-bottom: 1rem;
-            }
-            .mobile-card td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
-                text-align: right;
-            }
-            .mobile-card td:before {
-                position: absolute;
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                content: attr(data-label);
-                font-weight: bold;
-                text-align: left;
-            }
-        }
-    </style>
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Laporan Stok Menipis</h2>
 
-    <h2 class="text-2xl font-bold mb-4 dark:text-gray-100">Laporan Stok Menipis</h2>
-
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 dark:bg-gray-700 dark:shadow-lg">
-        <div class="mb-4">
-            <label for="stock_threshold" class="block text-gray-700 text-sm font-bold mb-2 dark:text-gray-300">Ambang Batas Stok:</label>
-            <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" id="stock_threshold" wire:model.live="stock_threshold" min="0">
+    <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6 mb-6">
+        <div class="max-w-sm">
+            <label for="stock_threshold" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tampilkan produk dengan stok di bawah:</label>
+            <input type="number" id="stock_threshold" wire:model.live="stock_threshold" min="0" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
     </div>
 
-    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg dark:border-gray-700 mobile-card">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Produk</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">SKU</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Total Stok</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    @forelse($products as $product)
-                    <tr class="dark:hover:bg-gray-700">
-                        <td data-label="Produk" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">
-                            <a href="{{ route('products.show', $product->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500">
-                                {{ $product->name }}
-                            </a>
-                        </td>
-                        <td data-label="SKU" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->sku }}</td>
-                        <td data-label="Total Stok" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->productBatches->sum('stock') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="3" class="px-6 py-4 whitespace-nowrap text-center text-gray-500 dark:text-gray-400">Tidak ada produk dengan stok menipis.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            <div class="p-4">
-                {{ $products->links() }}
+    <!-- Desktop Table View -->
+    <div class="hidden md:block bg-white dark:bg-gray-700 shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Produk</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">SKU</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stok Saat Ini</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                @forelse($products as $product)
+                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $product->name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $product->sku }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ $product->total_stock <= 5 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
+                        {{ $product->total_stock ?? 0 }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="text-center py-10 text-gray-500 dark:text-gray-400">Tidak ada produk dengan stok menipis.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="block md:hidden space-y-4">
+        @forelse($products as $product)
+        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $product->name }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $product->sku }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Sisa Stok</p>
+                    <p class="text-2xl font-bold {{ $product->total_stock <= 5 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">{{ $product->total_stock ?? 0 }}</p>
+                </div>
             </div>
         </div>
+        @empty
+        <div class="text-center py-10 px-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <p class="text-gray-500 dark:text-gray-400">Tidak ada produk dengan stok menipis.</p>
+        </div>
+        @endforelse
+    </div>
+
+    <div class="mt-4">
+        {{ $products->links() }}
     </div>
 </div>

@@ -5,107 +5,65 @@
         </div>
     @endif
 
-    <h2 class="text-2xl font-bold mb-4 dark:text-gray-100">Detail Pembelian #{{ $purchase->invoice_number }}</h2>
-
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 dark:bg-gray-700">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Supplier:</p>
-                <p class="text-gray-900 dark:text-gray-200">{{ $purchase->supplier->name }}</p>
+    <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-start mb-6">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Pembelian #{{ $purchase->invoice_number }}</h2>
+                <p class="text-md text-gray-500 dark:text-gray-400">Dari: {{ $purchase->supplier->name }}</p>
             </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Tanggal Pembelian:</p>
-                <p class="text-gray-900 dark:text-gray-200">{{ $purchase->purchase_date }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Nomor Invoice:</p>
-                <p class="text-gray-900 dark:text-gray-200">{{ $purchase->invoice_number }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Total Pembelian:</p>
-                <p class="text-gray-900 dark:text-gray-200">Rp {{ number_format($purchase->total_price, 2) }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Tanggal Jatuh Tempo:</p>
-                <p class="text-gray-900 dark:text-gray-200">{{ $purchase->due_date ?? '-' }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold dark:text-gray-300">Status Pembayaran:</p>
-                <p class="text-gray-900 dark:text-gray-200">{{ ucfirst($purchase->payment_status) }}</p>
+            <div class="mt-4 md:mt-0 text-right">
+                <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">Total: Rp {{ number_format($purchase->total_price, 2) }}</p>
+                <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
+                    {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
+                    {{ ucfirst($purchase->payment_status) }}
+                </span>
             </div>
         </div>
 
-        <hr class="my-6 border-gray-300 dark:border-gray-600">
-
-        @if ($purchase->payment_status === 'unpaid')
-            <div class="flex justify-end mb-4">
-                <button wire:click="markAsPaid()" onclick="confirm('Apakah Anda yakin ingin menandai pembelian ini sebagai lunas?') || event.stopImmediatePropagation()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full md:w-auto dark:bg-blue-600 dark:hover:bg-blue-700">Tandai Lunas</button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-b py-6 border-gray-200 dark:border-gray-600">
+            <div>
+                <h4 class="font-semibold text-gray-600 dark:text-gray-300">Tanggal Pembelian</h4>
+                <p class="text-gray-900 dark:text-white">{{ $purchase->purchase_date }}</p>
             </div>
-        @endif
-
-        <h3 class="text-xl font-semibold mb-4 dark:text-gray-100">Item Pembelian</h3>
-        <!-- Desktop Table View -->
-        <div class="hidden md:block shadow overflow-hidden border-b border-gray-200 sm:rounded-lg mb-4 dark:border-gray-700">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Produk</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nomor Batch</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Beli</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok Awal</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok Saat Ini</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Tgl Kadaluarsa</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                        @foreach($purchase->productBatches as $item)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $item->product->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $item->batch_number }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap currency-cell text-gray-900 dark:text-gray-200">
-                                <span class="currency-symbol">Rp</span>
-                                <span class="currency-value">{{ number_format($item->purchase_price, 2) }}</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $item->getOriginal('stock') }}</td> <!-- Assuming original stock is needed -->
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $item->stock }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $item->expiration_date }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div>
+                <h4 class="font-semibold text-gray-600 dark:text-gray-300">Nomor Invoice</h4>
+                <p class="text-gray-900 dark:text-white">{{ $purchase->invoice_number }}</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-600 dark:text-gray-300">Jatuh Tempo</h4>
+                <p class="text-gray-900 dark:text-white">{{ $purchase->due_date ?? '-' }}</p>
             </div>
         </div>
 
-        <!-- Mobile Card View for Items -->
-        <div class="block md:hidden space-y-4 mb-4">
-            @forelse($purchase->productBatches as $item)
-            <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">{{ $item->product->name }}</div>
-                <div class="text-gray-700 dark:text-gray-200 mb-1">
-                    <span class="font-medium">Batch:</span> {{ $item->batch_number }}
-                </div>
-                <div class="text-gray-700 dark:text-gray-200 mb-1">
-                    <span class="font-medium">Harga Beli:</span> Rp {{ number_format($item->purchase_price, 2) }}
-                </div>
-                <div class="text-gray-700 dark:text-gray-200 mb-1">
-                    <span class="font-medium">Stok Awal:</span> {{ $item->getOriginal('stock') }}
-                </div>
-                <div class="text-gray-700 dark:text-gray-200 mb-1">
-                    <span class="font-medium">Stok Saat Ini:</span> {{ $item->stock }}
-                </div>
-                <div class="text-gray-700 dark:text-gray-200">
-                    <span class="font-medium">Tgl Kadaluarsa:</span> {{ $item->expiration_date }}
-                </div>
+        <div class="mt-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Item Pembelian</h3>
+            <div class="space-y-4">
+                @forelse($purchase->productBatches as $item)
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex flex-col md:flex-row justify-between">
+                        <div class="mb-4 md:mb-0">
+                            <p class="font-bold text-gray-900 dark:text-white">{{ $item->product->name }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Batch: {{ $item->batch_number }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Kadaluarsa: {{ $item->expiration_date }}</p>
+                        </div>
+                        <div class="flex md:flex-col justify-between items-end">
+                            <p class="text-md font-semibold text-gray-800 dark:text-gray-100">{{ $item->stock }} {{ $item->product->unit->short_name ?? $item->product->unit->name }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">@ Rp {{ number_format($item->purchase_price, 2) }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-gray-500 dark:text-gray-400">Tidak ada item dalam pembelian ini.</p>
+                @endforelse
             </div>
-            @empty
-            <p class="text-gray-600 dark:text-gray-400">Tidak ada item pembelian untuk transaksi ini.</p>
-            @endforelse
         </div>
 
-        <div class="flex flex-col md:flex-row justify-end mt-4 space-y-2 md:space-y-0 md:space-x-2">
-            <a href="{{ route('purchases.edit', $purchase->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full w-full md:w-auto dark:bg-green-600 dark:hover:bg-green-700">Edit Pembelian</a>
-            <button wire:click="deletePurchase()" onclick="confirm('Apakah Anda yakin ingin menghapus pembelian ini? Semua item batch terkait juga akan dihapus.') || event.stopImmediatePropagation()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full w-full md:w-auto dark:bg-red-600 dark:hover:bg-red-700">Hapus Pembelian</button>
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex flex-col-reverse md:flex-row md:justify-between md:items-center">
+            <div class="flex space-x-2 mt-4 md:mt-0">
+                <a href="{{ route('purchases.edit', $purchase->id) }}" class="w-full md:w-auto text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">Edit</a>
+                <button wire:click="deletePurchase()" wire:confirm="Yakin hapus pembelian ini?" class="w-full md:w-auto text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">Hapus</button>
+            </div>
+            @if ($purchase->payment_status === 'unpaid')
+                <button wire:click="markAsPaid()" wire:confirm="Tandai lunas?" class="w-full md:w-auto px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">Tandai Lunas</button>
+            @endif
         </div>
     </div>
 </div>

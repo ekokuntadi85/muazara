@@ -27,7 +27,6 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Jual</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Satuan</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok</th>
-                        
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -41,7 +40,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->unit->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->total_stock }}</td>
-                        
                     </tr>
                     @endforeach
                 </tbody>
@@ -53,20 +51,22 @@
     <div class="block md:hidden space-y-4">
         @forelse($products as $product)
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $product->name }} ({{ $product->sku }})</span>
-                <span class="text-xs text-gray-600 dark:text-gray-300">ID: {{ $product->id }}</span>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $product->name }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $product->sku }}</p>
+                </div>
             </div>
-            <div class="text-gray-700 dark:text-gray-200 mb-1">
-                <span class="font-medium">Harga Jual:</span> Rp {{ number_format($product->selling_price, 2) }}
+            <div class="mt-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Harga Jual</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 2) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <span class="text-gray-600 dark:text-gray-400">Stok</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $product->total_stock }} {{ $product->unit->name }}</span>
+                </div>
             </div>
-            <div class="text-gray-700 dark:text-gray-200 mb-1">
-                <span class="font-medium">Satuan:</span> {{ $product->unit->name }}
-            </div>
-            <div class="text-gray-700 dark:text-gray-200 mb-1">
-                <span class="font-medium">Stok:</span> {{ $product->total_stock }}
-            </div>
-            
         </div>
         @empty
         <p class="text-gray-600 dark:text-gray-400 text-center">Tidak ada produk ditemukan.</p>

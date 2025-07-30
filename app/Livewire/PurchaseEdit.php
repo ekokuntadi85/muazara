@@ -109,15 +109,47 @@ class PurchaseEdit extends Component
         }
     }
 
+    public function updatedSearchProduct($value)
+    {
+        if (strlen($this->searchProduct) >= 1) {
+            $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
+                ->orWhere('sku', 'like', '%' . $value . '%')
+                ->limit(5)
+                ->get();
+        } else {
+            $this->searchResults = [];
+        }
+    }
+
+    public function selectProduct($productId)
+    {
+        $product = Product::find($productId);
+        $this->product_id = $product->id;
+        $this->selectedProductName = $product->name;
+        
+        // Get the last purchase price for the selected product
+        $lastPurchase = ProductBatch::where('product_id', $productId)->latest()->first();
+        $this->purchase_price = $lastPurchase ? $lastPurchase->purchase_price : 0;
+
+        $this->searchProduct = '';
+        $this->searchResults = [];
+    }
+
     public function addItem()
     {
-        $this->validate($this->itemRules);
+        $this->validate([
+            'product_id' => 'required|exists:products,id',
+            'purchase_price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:1',
+            'batch_number' => 'nullable|string|max:255',
+            'expiration_date' => 'nullable|date',
+        ]);
 
         $product = Product::find($this->product_id);
 
         $this->purchase_items[] = [
             'product_id' => $this->product_id,
-            'product_name' => $product->name, // Store product name for display
+            'product_name' => $product->name,
             'batch_number' => $this->batch_number,
             'purchase_price' => $this->purchase_price,
             'stock' => $this->stock,
@@ -132,7 +164,7 @@ class PurchaseEdit extends Component
     public function removeItem($index)
     {
         unset($this->purchase_items[$index]);
-        $this->purchase_items = array_values($this->purchase_items); // Re-index the array
+        $this->purchase_items = array_values($this->purchase_items);
         $this->calculateTotalPurchasePrice();
     }
 
@@ -155,13 +187,11 @@ class PurchaseEdit extends Component
                 'supplier_id' => $this->supplier_id,
             ]);
 
-            // Sync product batches
             $existingBatchIds = $purchase->productBatches->pluck('id')->toArray();
             $updatedBatchIds = [];
 
             foreach ($this->purchase_items as $item) {
                 if (isset($item['id'])) {
-                    // Update existing batch
                     $batch = ProductBatch::find($item['id']);
                     if ($batch) {
                         $batch->update([
@@ -174,7 +204,6 @@ class PurchaseEdit extends Component
                         $updatedBatchIds[] = $batch->id;
                     }
                 } else {
-                    // Create new batch
                     $batch = ProductBatch::create([
                         'purchase_id' => $purchase->id,
                         'product_id' => $item['product_id'],
@@ -187,7 +216,6 @@ class PurchaseEdit extends Component
                 }
             }
 
-            // Delete batches that are no longer in the list
             ProductBatch::where('purchase_id', $purchase->id)
                         ->whereNotIn('id', $updatedBatchIds)
                         ->delete();
@@ -200,6 +228,7 @@ class PurchaseEdit extends Component
     private function resetItemForm()
     {
         $this->product_id = '';
+        $this->selectedProductName = '';
         $this->batch_number = '';
         $this->purchase_price = '';
         $this->stock = '';
@@ -210,7 +239,6 @@ class PurchaseEdit extends Component
     public function render()
     {
         $suppliers = Supplier::all();
-        $products = Product::all();
-        return view('livewire.purchase-edit', compact('suppliers', 'products'));
+        return view('livewire.purchase-edit', compact('suppliers'));
     }
 }

@@ -20,27 +20,34 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Tanggal Pembelian</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nomor Invoice</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Invoice</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Supplier</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Total Pembelian</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Tanggal Jatuh Tempo</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Status Pembayaran</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Tanggal</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Total</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Jatuh Tempo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Status</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    @foreach($purchases as $purchase)
+                    @forelse($purchases as $purchase)
                     <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onclick="window.location='{{ route('purchases.show', $purchase->id) }}'">
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->purchase_date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->invoice_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ $purchase->invoice_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->supplier->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->purchase_date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($purchase->total_price, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->due_date ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ ucfirst($purchase->payment_status) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
+                                {{ ucfirst($purchase->payment_status) }}
+                            </span>
+                        </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-gray-500 dark:text-gray-400">Tidak ada data pembelian.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -50,24 +57,32 @@
     <div class="block md:hidden space-y-4">
         @forelse($purchases as $purchase)
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('purchases.show', $purchase->id) }}'">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-semibold text-gray-800 dark:text-gray-100">#{{ $purchase->invoice_number }}</span>
-                <span class="text-xs text-gray-600 dark:text-gray-300">{{ $purchase->purchase_date }}</span>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $purchase->supplier->name }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">#{{ $purchase->invoice_number }}</p>
+                </div>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
+                    {{ ucfirst($purchase->payment_status) }}
+                </span>
             </div>
-            <div class="text-gray-700 dark:text-gray-200 mb-1">
-                <span class="font-medium">Supplier:</span> {{ $purchase->supplier->name }}
+            <div class="mt-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Total Pembelian</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($purchase->total_price, 2) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <span class="text-gray-600 dark:text-gray-400">Tanggal</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $purchase->purchase_date }}</span>
+                </div>
+                @if($purchase->due_date)
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <span class="text-gray-600 dark:text-gray-400">Jatuh Tempo</span>
+                    <span class="font-semibold text-red-500 dark:text-red-400">{{ $purchase->due_date }}</span>
+                </div>
+                @endif
             </div>
-            <div class="text-gray-700 dark:text-gray-200 mb-1">
-                <span class="font-medium">Total:</span> Rp {{ number_format($purchase->total_price, 2) }}
-            </div>
-            <div class="text-gray-700 dark:text-gray-200">
-                <span class="font-medium">Status:</span> {{ ucfirst($purchase->payment_status) }}
-            </div>
-            @if($purchase->due_date)
-            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Jatuh Tempo: {{ $purchase->due_date }}
-            </div>
-            @endif
         </div>
         @empty
         <p class="text-gray-600 dark:text-gray-400 text-center">Tidak ada pembelian ditemukan.</p>
