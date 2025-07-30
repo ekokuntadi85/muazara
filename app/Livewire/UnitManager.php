@@ -15,6 +15,8 @@ class UnitManager extends Component
     public $short_name;
     public $unitId;
     public $isUpdateMode = false;
+    public $showModal = false; // New property for modal visibility
+    public $search = ''; // Added for search functionality
 
     protected function rules()
     {
@@ -36,7 +38,13 @@ class UnitManager extends Component
 
     public function render()
     {
-        $units = Unit::latest()->paginate(5);
+        $units = Unit::query()
+                    ->when($this->search, function ($query) {
+                        $query->where('name', 'like', '%' . $this->search . '%')
+                              ->orWhere('short_name', 'like', '%' . $this->search . '%');
+                    })
+                    ->latest()
+                    ->paginate(10);
         return view('livewire.unit-manager', compact('units'));
     }
 
@@ -59,7 +67,13 @@ class UnitManager extends Component
             session()->flash('message', 'Unit berhasil ditambahkan.');
         }
 
-        $this->resetInput();
+        $this->closeModal(); // Close modal and reset form
+    }
+
+    public function createUnit() // Method to open modal for new unit
+    {
+        $this->resetInput(); // Clear form fields
+        $this->showModal = true; // Open the modal
     }
 
     public function edit($id)
@@ -69,12 +83,21 @@ class UnitManager extends Component
         $this->name = $unit->name;
         $this->short_name = $unit->short_name;
         $this->isUpdateMode = true;
+        $this->showModal = true; // Open modal for edit
     }
 
     public function delete($id)
     {
-        Unit::find($id)->delete();
-        session()->flash('message', 'Unit berhasil dihapus.');
+        // Add logic to check for related products before deleting
+        $unit = Unit::find($id);
+        if ($unit->products()->count() > 0) {
+            session()->flash('error', 'Unit tidak dapat dihapus karena memiliki produk terkait.');
+            return;
+        }
+
+        if ($unit->delete()) {
+            session()->flash('message', 'Unit berhasil dihapus.');
+        }
     }
 
     public function resetInput()
@@ -83,5 +106,17 @@ class UnitManager extends Component
         $this->short_name = '';
         $this->unitId = null;
         $this->isUpdateMode = false;
+        $this->resetErrorBag(); // Clear validation errors
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetInput(); // Reset form when closing modal
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 }

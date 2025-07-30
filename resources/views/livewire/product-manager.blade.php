@@ -12,7 +12,12 @@
     @endif
 
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-4 md:space-y-0">
-        <input type="text" wire:model.live="search" placeholder="Cari produk..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full md:w-1/3 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+        <div class="relative w-full md:w-1/3">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari produk..." class="shadow appearance-none border rounded py-2 pl-10 pr-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+        </div>
         <a href="{{ route('products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto dark:bg-blue-600 dark:hover:bg-blue-700">Tambah Produk</a>
     </div>
 
@@ -51,25 +56,20 @@
     <div class="block md:hidden space-y-4">
         @forelse($products as $product)
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $product->name }}</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $product->sku }}</p>
-                </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
+            <div class="flex justify-between items-center text-sm mb-1">
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Stok: {{ $product->total_stock }}</span>
             </div>
-            <div class="mt-4">
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">Harga Jual</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 2) }}</span>
-                </div>
-                <div class="flex items-center justify-between text-sm mt-2">
-                    <span class="text-gray-600 dark:text-gray-400">Stok</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ $product->total_stock }} {{ $product->unit->name }}</span>
-                </div>
+            <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-600 dark:text-gray-400">SKU: {{ $product->sku }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $product->unit->name }}</span>
             </div>
         </div>
         @empty
-        <p class="text-gray-600 dark:text-gray-400 text-center">Tidak ada produk ditemukan.</p>
+        <div class="text-center py-10 px-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <p class="text-gray-600 dark:text-gray-400">Tidak ada produk ditemukan.</p>
+        </div>
         @endforelse
     </div>
 

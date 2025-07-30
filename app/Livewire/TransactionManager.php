@@ -4,9 +4,12 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Transaction;
+use Livewire\WithPagination;
 
 class TransactionManager extends Component
 {
+    use WithPagination;
+
     public $search = '';
     public $filterType = 'all';
 
@@ -26,8 +29,18 @@ class TransactionManager extends Component
                                         $query->whereRaw('UPPER(type) = ?', [strtoupper($this->filterType)]);
                                     })
                                     ->latest()
-                                    ->get();
+                                    ->paginate(10);
 
         return view('livewire.transaction-manager', compact('transactions'));
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterType()
+    {
+        $this->resetPage();
     }
 }

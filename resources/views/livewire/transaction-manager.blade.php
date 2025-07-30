@@ -1,40 +1,83 @@
 <div class="container mx-auto p-4 dark:bg-gray-800 dark:text-gray-200">
-    <div class="flex justify-between items-center mb-4">
-        <input type="text" wire:model.live="search" placeholder="Cari transaksi..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-1/3 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-4 md:space-y-0">
+        <input type="text" wire:model.live="search" placeholder="Cari no. invoice atau pelanggan..." class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full md:w-1/3 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
         <div class="flex items-center">
             <x-flux.button.group wire:model.live="filterType">
-                <x-flux.button.group.option property="filterType" value="all" label="ALL" />
-                <x-flux.button.group.option property="filterType" value="INV" label="INV" />
-                <x-flux.button.group.option property="filterType" value="POS" label="POS" />
+                <x-flux.button.group.option property="filterType" value="all" label="Semua" />
+                <x-flux.button.group.option property="filterType" value="invoice" label="Invoice" />
+                <x-flux.button.group.option property="filterType" value="pos" label="POS" />
             </x-flux.button.group>
         </div>
-        
     </div>
 
-    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg dark:border-gray-700">
-        <div class="overflow-x-auto"> <!-- Added for responsiveness -->
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Tanggal Penjualan</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">No. Nota</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Customer</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Total Pembelian</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    @foreach($transactions as $transaction)
-                    <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onclick="window.location='{{ route('transactions.show', $transaction->id) }}'">
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->created_at->format('Y-m-d') }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->invoice_number ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->customer->name ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($transaction->total_price, 2) }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    <!-- Desktop Table View -->
+    <div class="hidden md:block bg-white dark:bg-gray-700 shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Invoice</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tanggal</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pelanggan</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                @forelse($transactions as $transaction)
+                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('transactions.show', $transaction->id) }}'">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ $transaction->invoice_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $transaction->created_at->format('d M Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $transaction->customer->name ?? 'Walk-in' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {{ $transaction->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
+                            {{ ucfirst($transaction->payment_status) }}
+                        </span>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center py-10 text-gray-500 dark:text-gray-400">Tidak ada transaksi ditemukan.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="block md:hidden space-y-4">
+        @forelse($transactions as $transaction)
+        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('transactions.show', $transaction->id) }}'">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">#{{ $transaction->invoice_number }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $transaction->customer->name ?? 'Walk-in' }}</p>
+                </div>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {{ $transaction->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
+                    {{ ucfirst($transaction->payment_status) }}
+                </span>
+            </div>
+            <div class="mt-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Total Transaksi</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <span class="text-gray-600 dark:text-gray-400">Tanggal</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $transaction->created_at->format('d M Y') }}</span>
+                </div>
+            </div>
         </div>
+        @empty
+        <div class="text-center py-10 px-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <p class="text-gray-500 dark:text-gray-400">Tidak ada transaksi ditemukan.</p>
+        </div>
+        @endforelse
+    </div>
+
+    <div class="mt-4">
+        {{ $transactions->links() }}
     </div>
 </div>

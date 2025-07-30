@@ -4,7 +4,11 @@
     <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6 mb-6">
         <div class="max-w-sm">
             <label for="stock_threshold" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tampilkan produk dengan stok di bawah:</label>
-            <input type="number" id="stock_threshold" wire:model.live="stock_threshold" min="0" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
+            <x-flux.dropdown wire:model.live="stock_threshold" id="stock_threshold" wire:key="stock-threshold-dropdown">
+                <x-flux.dropdown.option value="5" label="5" />
+                <x-flux.dropdown.option value="10" label="10" />
+                <x-flux.dropdown.option value="20" label="20" />
+            </x-flux.dropdown>
         </div>
     </div>
 
@@ -15,12 +19,12 @@
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Produk</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">SKU</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stok Saat Ini</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Saat Ini</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
                 @forelse($products as $product)
-                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
+                <tr wire:key="product-{{ $product->id }}" class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $product->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $product->sku }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ $product->total_stock <= 5 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
@@ -39,7 +43,7 @@
     <!-- Mobile Card View -->
     <div class="block md:hidden space-y-4">
         @forelse($products as $product)
-        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
+        <div wire:key="product-mobile-{{ $product->id }}" class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
             <div class="flex justify-between items-start">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $product->name }}</h3>

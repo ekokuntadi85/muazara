@@ -15,6 +15,8 @@ class CategoryManager extends Component
     public $description;
     public $categoryId;
     public $isUpdateMode = false;
+    public $showModal = false; // New property for modal visibility
+    public $search = ''; // Added for search functionality
 
     protected function rules()
     {
@@ -36,7 +38,13 @@ class CategoryManager extends Component
 
     public function render()
     {
-        $categories = Category::latest()->paginate(5);
+        $categories = Category::query()
+                            ->when($this->search, function ($query) {
+                                $query->where('name', 'like', '%' . $this->search . '%')
+                                      ->orWhere('description', 'like', '%' . $this->search . '%');
+                            })
+                            ->latest()
+                            ->paginate(10);
         return view('livewire.category-manager', compact('categories'));
     }
 
@@ -59,7 +67,13 @@ class CategoryManager extends Component
             session()->flash('message', 'Kategori berhasil ditambahkan.');
         }
 
-        $this->resetInput();
+        $this->closeModal(); // Close modal and reset form
+    }
+
+    public function createCategory() // Method to open modal for new category
+    {
+        $this->resetInput(); // Clear form fields
+        $this->showModal = true; // Open the modal
     }
 
     public function edit($id)
@@ -69,12 +83,22 @@ class CategoryManager extends Component
         $this->name = $category->name;
         $this->description = $category->description;
         $this->isUpdateMode = true;
+        $this->showModal = true; // Open modal for edit
     }
 
     public function delete($id)
     {
-        Category::find($id)->delete();
-        session()->flash('message', 'Kategori berhasil dihapus.');
+        // Log::info('CategoryManager: Delete method called for category ID: ' . $id);
+        // Add logic to check for related products before deleting
+        $category = Category::find($id);
+        if ($category->products()->count() > 0) {
+            session()->flash('error', 'Kategori tidak dapat dihapus karena memiliki produk terkait.');
+            return;
+        }
+
+        if ($category->delete()) {
+            session()->flash('message', 'Kategori berhasil dihapus.');
+        }
     }
 
     public function resetInput()
@@ -83,5 +107,17 @@ class CategoryManager extends Component
         $this->description = '';
         $this->categoryId = null;
         $this->isUpdateMode = false;
+        $this->resetErrorBag(); // Clear validation errors
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetInput(); // Reset form when closing modal
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 }

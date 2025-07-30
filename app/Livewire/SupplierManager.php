@@ -16,6 +16,8 @@ class SupplierManager extends Component
     public $address;
     public $supplierId;
     public $isUpdateMode = false;
+    public $showModal = false; // New property for modal visibility
+    public $search = ''; // Added for search functionality
 
     protected function rules()
     {
@@ -38,7 +40,14 @@ class SupplierManager extends Component
 
     public function render()
     {
-        $suppliers = Supplier::latest()->paginate(5);
+        $suppliers = Supplier::query()
+                            ->when($this->search, function ($query) {
+                                $query->where('name', 'like', '%' . $this->search . '%')
+                                      ->orWhere('phone', 'like', '%' . $this->search . '%')
+                                      ->orWhere('address', 'like', '%' . $this->search . '%');
+                            })
+                            ->latest()
+                            ->paginate(10);
         return view('livewire.supplier-manager', compact('suppliers'));
     }
 
@@ -63,7 +72,13 @@ class SupplierManager extends Component
             session()->flash('message', 'Supplier berhasil ditambahkan.');
         }
 
-        $this->resetInput();
+        $this->closeModal(); // Close modal and reset form
+    }
+
+    public function createSupplier() // Method to open modal for new supplier
+    {
+        $this->resetInput(); // Clear form fields
+        $this->showModal = true; // Open the modal
     }
 
     public function edit($id)
@@ -74,12 +89,21 @@ class SupplierManager extends Component
         $this->phone = $supplier->phone;
         $this->address = $supplier->address;
         $this->isUpdateMode = true;
+        $this->showModal = true; // Open modal for edit
     }
 
     public function delete($id)
     {
-        Supplier::find($id)->delete();
-        session()->flash('message', 'Supplier berhasil dihapus.');
+        // Add logic to check for related purchases before deleting
+        $supplier = Supplier::find($id);
+        if ($supplier->purchases()->count() > 0) {
+            session()->flash('error', 'Supplier tidak dapat dihapus karena memiliki riwayat pembelian terkait.');
+            return;
+        }
+
+        if ($supplier->delete()) {
+            session()->flash('message', 'Supplier berhasil dihapus.');
+        }
     }
 
     public function resetInput()
@@ -89,5 +113,17 @@ class SupplierManager extends Component
         $this->address = '';
         $this->supplierId = null;
         $this->isUpdateMode = false;
+        $this->resetErrorBag(); // Clear validation errors
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetInput(); // Reset form when closing modal
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 }
