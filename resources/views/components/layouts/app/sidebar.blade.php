@@ -15,7 +15,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
 
-                <flux:navlist.group :heading="__('Master Data')" expandable>
+                <flux:navlist.group :heading="__('Master Data')" expandable :expanded="false">
                     <flux:navlist.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>Daftar Produk</flux:navlist.item>
                     <flux:navlist.item icon="clipboard-document-list" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>Kategori</flux:navlist.item>
                     <flux:navlist.item icon="clipboard-document" :href="route('units.index')" :current="request()->routeIs('units.index')" wire:navigate>Satuan</flux:navlist.item>
@@ -23,14 +23,14 @@
                     <flux:navlist.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>Customer</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Transaksi')" expandable>
+                <flux:navlist.group :heading="__('Transaksi')" expandable :expanded="false">
                     <flux:navlist.item icon="credit-card" :href="route('purchases.index')" :current="request()->routeIs('purchases.*')" wire:navigate>Daftar Pembelian</flux:navlist.item>
                     <flux:navlist.item icon="currency-dollar" :href="route('transactions.index')" :current="request()->routeIs('transactions.*')" wire:navigate>Daftar Penjualan</flux:navlist.item>
                     <flux:navlist.item icon="computer-desktop" :href="route('pos.index')" :current="request()->routeIs('pos.index')" wire:navigate>POS</flux:navlist.item>
                     <flux:navlist.item icon="banknotes" :href="route('accounts-receivable.index')" :current="request()->routeIs('accounts-receivable.index')" wire:navigate>Daftar Invoice Kredit</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Laporan')" expandable>
+                <flux:navlist.group :heading="__('Laporan')" expandable :expanded="false">
                     <flux:navlist.item icon="chart-bar" :href="route('reports.sales')" :current="request()->routeIs('reports.sales')" wire:navigate>Laporan Penjualan</flux:navlist.item>
                     <flux:navlist.item icon="calendar-days" :href="route('reports.expiring-stock')" :current="request()->routeIs('reports.expiring-stock')" wire:navigate>Laporan Stok Kedaluwarsa</flux:navlist.item>
                     <flux:navlist.item icon="arrow-down-circle" :href="route('reports.low-stock')" :current="request()->routeIs('reports.low-stock')" wire:navigate>Laporan Stok Menipis</flux:navlist.item>

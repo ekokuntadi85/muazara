@@ -5,15 +5,25 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class SalesReport extends Component
 {
+    use WithPagination;
+
     public $startDate;
     public $endDate;
     public $totalRevenue = 0;
     public $profitLossCode = '';
     public $totalProfitLoss = 0;
     public $showProfitLossValue = false;
+
+    // View properties
+    public $viewMode = 'summary'; // 'summary' or 'detail'
+    public $selectedDate;
+    public $dailyTotalRevenue = 0;
+
 
     public function mount()
     {
@@ -23,21 +33,58 @@ class SalesReport extends Component
 
     public function render()
     {
-        $transactions = Transaction::with(['customer', 'user', 'transactionDetails.product.productBatches'])
-                                ->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59'])
-                                ->latest()
-                                ->get();
+        $baseQuery = Transaction::whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
 
-        $this->totalRevenue = $transactions->sum('total_price');
+        if ($this->viewMode === 'summary') {
+            $this->totalRevenue = (clone $baseQuery)->sum('total_price');
 
-        return view('livewire.sales-report', compact('transactions'));
+            $dailySummaries = (clone $baseQuery)
+                ->select(
+                    DB::raw('DATE(created_at) as date'),
+                    DB::raw('SUM(total_price) as daily_total')
+                )
+                ->groupBy('date')
+                ->orderBy('date', 'desc')
+                ->paginate(5);
+
+            return view('livewire.sales-report', [
+                'dailySummaries' => $dailySummaries
+            ]);
+        } else {
+            $transactions = Transaction::with(['customer', 'user'])
+                ->whereDate('created_at', $this->selectedDate)
+                ->latest()
+                ->paginate(5);
+
+            $this->dailyTotalRevenue = Transaction::whereDate('created_at', $this->selectedDate)->sum('total_price');
+
+            return view('livewire.sales-report', [
+                'transactions' => $transactions
+            ]);
+        }
     }
+
+    public function viewDailyReport($date)
+    {
+        $this->selectedDate = $date;
+        $this->viewMode = 'detail';
+        $this->resetPage();
+    }
+
+    public function showSummary()
+    {
+        $this->viewMode = 'summary';
+        $this->selectedDate = null;
+        $this->dailyTotalRevenue = 0;
+        $this->resetProfitLoss(); // Reset profit/loss when going back
+        $this->resetPage();
+    }
+
 
     public function filter()
     {
         $this->resetProfitLoss();
-        // This method is empty, but Livewire will re-render the component
-        // and thus re-run the render() method with updated start/end dates.
+        $this->showSummary(); // Go back to summary view on new filter
     }
 
     public function calculateProfitLoss()
@@ -49,22 +96,32 @@ class SalesReport extends Component
             'profitLossCode.in' => 'Kode proteksi salah.',
         ]);
 
-        $transactions = Transaction::with(['transactionDetails.product.productBatches'])
-                                ->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59'])
-                                ->get();
+        $query = Transaction::with(['transactionDetails.product.productBatches']);
+
+        if ($this->viewMode === 'summary') {
+            $query->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
+            $transactions = $query->get();
+            $revenue = $this->totalRevenue;
+        } else {
+            $query->whereDate('created_at', $this->selectedDate);
+            $transactions = $query->get();
+            $revenue = $this->dailyTotalRevenue;
+        }
+
 
         $totalCOGS = 0;
         foreach ($transactions as $transaction) {
             foreach ($transaction->transactionDetails as $detail) {
                 $product = $detail->product;
                 if ($product && $product->productBatches->isNotEmpty()) {
+                    // This logic might need refinement if you have multiple batches per product
                     $costPerUnit = $product->productBatches->first()->purchase_price;
                     $totalCOGS += $detail->quantity * $costPerUnit;
                 }
             }
         }
 
-        $this->totalProfitLoss = $this->totalRevenue - $totalCOGS;
+        $this->totalProfitLoss = $revenue - $totalCOGS;
         $this->showProfitLossValue = true;
     }
 
