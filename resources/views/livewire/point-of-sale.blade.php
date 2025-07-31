@@ -3,7 +3,7 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-y-auto">
         <!-- Header -->
-        <header class="bg-white dark:bg-gray-800 shadow-md p-4 z-10">
+        <header class="bg-white dark:bg-gray-800 shadow-md p-4 sticky top-0 z-30">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Point of Sale</h1>
                 <div class="text-sm text-right">
@@ -21,7 +21,7 @@
         </header>
 
         <!-- Tabs for Mobile -->
-        <div class="block md:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="block md:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-[120px] z-20"> {{-- Adjusted top for sticky header --}}
             <nav class="flex justify-around text-center text-sm font-medium">
                 <button @click="activeTab = 'products'" :class="activeTab === 'products' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'" class="flex-1 py-3 border-b-2 focus:outline-none">
                     Produk
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Product Grid (Mobile & Desktop) -->
-        <main class="p-4 flex-1 overflow-y-auto pb-32 md:pb-4" x-show="activeTab === 'products' || window.innerWidth >= 768">
+        <main class="p-4 flex-1 overflow-y-auto pb-32 md:pb-4 pt-4 md:pt-0"> {{-- Removed pt-24, adjusted for sticky header --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                 @forelse ($products as $product)
                     <div wire:click="addProduct({{ $product->id }})" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer hover:scale-105 transform transition-transform duration-200">
@@ -55,7 +55,7 @@
         </main>
 
         <!-- Cart (Mobile - below product grid) -->
-        <div class="block md:hidden p-4 space-y-3 flex-1 overflow-y-auto mb-32" x-show="activeTab === 'cart'">
+        <div class="block md:hidden p-4 space-y-3 flex-1 overflow-y-auto mb-32 pt-4"> {{-- Adjusted for sticky header --}}
             @if(count($cart_items) > 0)
                 @foreach($cart_items as $index => $item)
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -119,7 +119,7 @@
                 <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
                 <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
             </div>
-            <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" >
+            <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
                 Bayar ({{ count($cart_items) }} item)
             </button>
         </div>

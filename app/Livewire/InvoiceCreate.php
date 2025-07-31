@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -154,7 +155,7 @@ class InvoiceCreate extends Component
                 'due_date' => $this->due_date,
                 'customer_id' => $this->customer_id,
                 'user_id' => Auth::id(),
-                'invoice_number' => $this->invoiceNumber, // Use $this->invoiceNumber
+                'invoice_number' => $this->invoiceNumber,
             ]);
 
             foreach ($this->invoice_items as $item) {
@@ -175,6 +176,15 @@ class InvoiceCreate extends Component
                     $deductible = min($remainingQuantity, $batch->stock);
                     $batch->stock -= $deductible;
                     $batch->save();
+
+                    // Record stock movement for sale
+                    StockMovement::create([
+                        'product_batch_id' => $batch->id,
+                        'type' => 'PJ',
+                        'quantity' => -$deductible, // Negative for stock out
+                        'remarks' => 'Penjualan',
+                    ]);
+
                     $remainingQuantity -= $deductible;
                 }
             }

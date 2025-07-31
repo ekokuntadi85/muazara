@@ -4,11 +4,11 @@
     <title>Struk #{{ $transaction->invoice_number }}</title>
     <style>
         body {
-            font-family: monospace; /* Use monospace for thermal printer feel */
-            font-size: 8px; /* Adjusted for 57mm printer */
-            width: 48mm; /* Adjusted for 57mm printer (printable area) */
-            margin: 0; /* Remove default margins */
-            padding: 2mm; /* Small padding */
+            font-family: "Arial Narrow", sans-serif; /* Changed font-family to a narrow sans-serif */
+            font-size: 10px; 
+            width: 48mm; /* Adjusted to 48mm */
+            margin: 0; 
+            padding: 2mm; 
         }
         .container {
             width: 100%;
@@ -27,8 +27,8 @@
         .items th,
         .items td,
         .total td {
-            padding: 1px 0; /* Minimal padding */
-            border: none; /* No borders for thermal look */
+            padding: 1px 0; 
+            border: none; 
         }
         .text-right {
             text-align: right;
@@ -72,11 +72,11 @@
             <tbody>
                 @foreach($transaction->transactionDetails as $detail)
                 <tr>
-                    <td>{{ $detail->product->name }}</td>
-                    <td class="text-right">{{ $detail->quantity }} x Rp {{ number_format($detail->price, 0) }}</td>
+                    <td colspan="2">{{ $detail->product->name }}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="text-right">Rp {{ number_format($detail->quantity * $detail->price, 0) }}</td>
+                    <td>{{ $detail->quantity }} x Rp {{ number_format($detail->price, 0) }}</td>
+                    <td class="text-right">Rp {{ number_format($detail->quantity * $detail->price, 0) }}</td>
                 </tr>
                 @endforeach
             </tbody>

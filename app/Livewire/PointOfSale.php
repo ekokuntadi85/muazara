@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -22,8 +23,6 @@ class PointOfSale extends Component
     public $total_price = 0;
 
     public $search = '';
-    // public $searchResults = []; // Removed
-    // public $highlightedIndex = 0; // Removed
 
     public $amount_paid;
     public $change = 0;
@@ -64,50 +63,10 @@ class PointOfSale extends Component
         $this->loggedInUser = Auth::check() ? Auth::user()->name : 'Guest';
     }
 
-    // public function updatedSearch($value) // Removed
-    // {
-    //     // This method is for the search dropdown, not the main product grid
-    //     if (empty($value)) {
-    //         $this->searchResults = [];
-    //         $this->highlightedIndex = 0;
-    //         $this->resetPage(); // Reset pagination for main grid when search is cleared
-    //         return;
-    //     }
-
-    //     $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
-    //                                 ->orWhere('sku', 'like', '%' . $value . '%')
-    //                                 ->limit(10)
-    //                                 ->get();
-    //     $this->highlightedIndex = 0;
-    //     $this->resetPage(); // Reset pagination for main grid when search changes
-    // } // Removed
-
     public function updatingSearch()
     {
-        $this->resetPage(); // Reset pagination for main grid when search changes
+        $this->resetPage();
     }
-
-    // public function incrementHighlight() // Removed
-    // {
-    //     if (!empty($this->searchResults) && $this->highlightedIndex < count($this->searchResults) - 1) {
-    //         $this->highlightedIndex++;
-    //     }
-    // } // Removed
-
-    // public function decrementHighlight() // Removed
-    // {
-    //     if ($this->highlightedIndex > 0) {
-    //         $this->highlightedIndex--;
-    //     }
-    // } // Removed
-
-    // public function selectHighlightedProduct() // Removed
-    // {
-    //     if (!empty($this->searchResults) && isset($this->searchResults[$this->highlightedIndex])) {
-    //         $productId = $this->searchResults[$this->highlightedIndex]->id;
-    //         $this->addProduct($productId);
-    //     }
-    // } // Removed
 
     public function addProduct($productId)
     {
@@ -151,8 +110,6 @@ class PointOfSale extends Component
 
         $this->calculateTotalPrice();
         $this->search = '';
-        // $this->searchResults = []; // Removed
-        // $this->highlightedIndex = 0; // Removed
     }
 
     public function removeItem($index)
@@ -243,6 +200,15 @@ class PointOfSale extends Component
                     $deductible = min($remainingQuantity, $batch->stock);
                     $batch->stock -= $deductible;
                     $batch->save();
+
+                    // Record stock movement for sale
+                    StockMovement::create([
+                        'product_batch_id' => $batch->id,
+                        'type' => 'PJ',
+                        'quantity' => -$deductible, // Negative for stock out
+                        'remarks' => 'Penjualan',
+                    ]);
+
                     $remainingQuantity -= $deductible;
                 }
             }
@@ -253,7 +219,6 @@ class PointOfSale extends Component
             'transactionId' => $transaction->id,
         ]);
         $this->resetAll();
-        // $this->dispatch('focusSearchInput'); // Removed
     }
 
     private function resetAll()
@@ -261,10 +226,8 @@ class PointOfSale extends Component
         $this->cart_items = [];
         $this->total_price = 0;
         $this->search = '';
-        // $this->searchResults = []; // Removed
         $this->amount_paid = null;
         $this->change = 0;
-        // $this->highlightedIndex = 0; // Removed
         $this->invoiceNumber = null; // Reset invoice number
         $this->updateDateTimeAndUser(); // Update date/time and user
         // Reset customer to UMUM

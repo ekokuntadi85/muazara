@@ -28,12 +28,14 @@
                     <flux:navlist.item icon="currency-dollar" :href="route('transactions.index')" :current="request()->routeIs('transactions.*')" wire:navigate>Daftar Penjualan</flux:navlist.item>
                     <flux:navlist.item icon="computer-desktop" :href="route('pos.index')" :current="request()->routeIs('pos.index')" wire:navigate>POS</flux:navlist.item>
                     <flux:navlist.item icon="banknotes" :href="route('accounts-receivable.index')" :current="request()->routeIs('accounts-receivable.index')" wire:navigate>Daftar Invoice Kredit</flux:navlist.item>
+                    <flux:navlist.item icon="adjustments-horizontal" :href="route('stock-opname.index')" :current="request()->routeIs('stock-opname.index')" wire:navigate>Stok Opname</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Laporan')" expandable :expanded="false">
                     <flux:navlist.item icon="chart-bar" :href="route('reports.sales')" :current="request()->routeIs('reports.sales')" wire:navigate>Laporan Penjualan</flux:navlist.item>
                     <flux:navlist.item icon="calendar-days" :href="route('reports.expiring-stock')" :current="request()->routeIs('reports.expiring-stock')" wire:navigate>Laporan Stok Kedaluwarsa</flux:navlist.item>
                     <flux:navlist.item icon="arrow-down-circle" :href="route('reports.low-stock')" :current="request()->routeIs('reports.low-stock')" wire:navigate>Laporan Stok Menipis</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('stock-card.index')" :current="request()->routeIs('stock-card.index')" wire:navigate>Kartu Stok</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -133,7 +135,7 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                            <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.menu.item>
                         </flux:menu.radio.group>
 
                         <flux:menu.separator />

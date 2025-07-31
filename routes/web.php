@@ -28,6 +28,8 @@ use App\Livewire\SalesReport;
 use App\Livewire\UserManager;
 use App\Livewire\ExpiringStockReport;
 use App\Livewire\LowStockReport;
+use App\Livewire\StockOpname;
+use App\Livewire\StockCard;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
@@ -97,11 +99,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
         Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');
+        Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print'); // Added
     });
 
     // User Management Module
     Route::middleware(['can:manage-users'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
+    });
+
+    // Stock Opname Module
+    Route::middleware(['can:manage-products'])->group(function () { // Assuming manage-products permission
+        Route::get('/stock-opname', StockOpname::class)->name('stock-opname.index');
+    });
+
+    // Stock Card Module
+    Route::middleware(['can:view-reports'])->group(function () { // Assuming view-reports permission
+        Route::get('/stock-card', StockCard::class)->name('stock-card.index');
     });
 
     // cetak

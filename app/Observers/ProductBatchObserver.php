@@ -4,6 +4,8 @@ namespace App\Observers;
 
 use App\Models\ProductBatch;
 use App\Models\Purchase;
+use App\Models\StockMovement;
+use Illuminate\Support\Facades\DB;
 
 class ProductBatchObserver
 {
@@ -12,6 +14,14 @@ class ProductBatchObserver
      */
     public function created(ProductBatch $productBatch): void
     {
+        // Record initial stock movement for purchase
+        StockMovement::create([
+            'product_batch_id' => $productBatch->id,
+            'type' => 'PB',
+            'quantity' => $productBatch->stock,
+            'remarks' => 'Pembelian awal',
+        ]);
+
         $this->updatePurchaseTotalPrice($productBatch->purchase);
     }
 
@@ -20,6 +30,8 @@ class ProductBatchObserver
      */
     public function updated(ProductBatch $productBatch): void
     {
+        // Removed the ADJ stock movement creation here.
+        // Stock movements for sales (PJ) and opname (OP) will be handled explicitly in their respective modules.
         $this->updatePurchaseTotalPrice($productBatch->purchase);
     }
 
@@ -28,6 +40,14 @@ class ProductBatchObserver
      */
     public function deleted(ProductBatch $productBatch): void
     {
+        // Record stock movement for deletion (negative quantity)
+        StockMovement::create([
+            'product_batch_id' => $productBatch->id,
+            'type' => 'DEL', // Deletion
+            'quantity' => -$productBatch->stock, // Record current stock as negative
+            'remarks' => 'Batch dihapus',
+        ]);
+
         $this->updatePurchaseTotalPrice($productBatch->purchase);
     }
 
@@ -36,14 +56,24 @@ class ProductBatchObserver
      */
     public function restored(ProductBatch $productBatch): void
     {
+        // Record stock movement for restoration
+        StockMovement::create([
+            'product_batch_id' => $productBatch->id,
+            'type' => 'RES', // Restoration
+            'quantity' => $productBatch->stock,
+            'remarks' => 'Batch dikembalikan',
+        ]);
+
         $this->updatePurchaseTotalPrice($productBatch->purchase);
     }
 
     /**
-     * Handle the ProductBatch "force deleted" event.
+     * Handle the ProductBatch "force deleted" event.\n     * This event is not typically used for stock tracking as it bypasses soft deletes.
      */
     public function forceDeleted(ProductBatch $productBatch): void
     {
+        // No specific stock movement for force delete, as it's usually a permanent removal
+        // and 'deleted' event should cover the stock reduction.
         $this->updatePurchaseTotalPrice($productBatch->purchase);
     }
 
@@ -52,7 +82,7 @@ class ProductBatchObserver
      */
     protected function updatePurchaseTotalPrice(Purchase $purchase)
     {
-        $totalPrice = $purchase->productBatches()->sum(\DB::raw('purchase_price * stock'));
+        $totalPrice = $purchase->productBatches()->sum(DB::raw('purchase_price * stock'));
         $purchase->total_price = $totalPrice;
         $purchase->saveQuietly(); // Use saveQuietly to prevent triggering other events
     }
