@@ -9,7 +9,7 @@
                 <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($salesToday, 2) }}</p>
             </div>
             <div class="text-green-500 text-4xl">
-                <i class="fas fa-dollar-sign"></i> <!-- Contoh ikon, ganti dengan ikon Tailwind/Heroicons jika ada -->
+                <x-heroicon-o-currency-dollar class="w-10 h-10" />
             </div>
         </div>
 
@@ -20,7 +20,7 @@
                 <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $visitsToday }}</p>
             </div>
             <div class="text-blue-500 text-4xl">
-                <i class="fas fa-users"></i> <!-- Contoh ikon -->
+                <x-heroicon-o-users class="w-10 h-10" />
             </div>
         </div>
 
@@ -31,7 +31,7 @@
                 <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $expiringProductsCount }}</p>
             </div>
             <div class="text-yellow-500 text-4xl">
-                <i class="fas fa-exclamation-triangle"></i> <!-- Contoh ikon -->
+                <x-heroicon-o-exclamation-triangle class="w-10 h-10" />
             </div>
         </div>
     </div>

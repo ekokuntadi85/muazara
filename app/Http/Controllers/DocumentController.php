@@ -92,7 +92,8 @@ class DocumentController extends Controller
             return [
                 'created_at' => $group->first()->created_at, // Keep original timestamp for sorting
                 'type' => 'PJ',
-                'quantity' => $group->sum('quantity'),
+                'masuk' => 0,
+                'keluar' => abs($group->sum('quantity')),
                 'remarks' => 'Rekap Penjualan Harian',
                 'batch_number' => null, // No specific batch for recap
             ];
@@ -122,7 +123,8 @@ class DocumentController extends Controller
             $processedMovements->push([
                 'created_at' => $movement->created_at,
                 'type' => $movement->type,
-                'quantity' => $movement->quantity,
+                'masuk' => $movement->quantity > 0 ? $movement->quantity : 0,
+                'keluar' => $movement->quantity < 0 ? abs($movement->quantity) : 0,
                 'remarks' => $remarks,
                 'batch_number' => $batchNumber,
             ]);

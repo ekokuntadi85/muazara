@@ -1,9 +1,9 @@
 <div class="w-full h-screen flex flex-col md:flex-row bg-gray-100 dark:bg-gray-900" x-data="{ paymentModal: false, activeTab: 'products' }">
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-y-auto">
+    <div class="flex-1 flex flex-col">
         <!-- Header -->
-        <header class="bg-white dark:bg-gray-800 shadow-md p-4 sticky top-0 z-30">
+        <header class="bg-white dark:bg-gray-800 shadow-md p-4 ">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Point of Sale</h1>
                 <div class="text-sm text-right">
@@ -20,108 +20,146 @@
             </div>
         </header>
 
-        <!-- Tabs for Mobile -->
-        <div class="block md:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-[120px] z-20"> {{-- Adjusted top for sticky header --}}
-            <nav class="flex justify-around text-center text-sm font-medium">
-                <button @click="activeTab = 'products'" :class="activeTab === 'products' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'" class="flex-1 py-3 border-b-2 focus:outline-none">
-                    Produk
-                </button>
-                <button @click="activeTab = 'cart'" :class="activeTab === 'cart' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'" class="flex-1 py-3 border-b-2 focus:outline-none">
-                    Keranjang ({{ count($cart_items) }})
-                </button>
-            </nav>
-        </div>
-
-        <!-- Product Grid (Mobile & Desktop) -->
-        <main class="p-4 flex-1 overflow-y-auto pb-32 md:pb-4 pt-4 md:pt-0"> {{-- Removed pt-24, adjusted for sticky header --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-                @forelse ($products as $product)
-                    <div wire:click="addProduct({{ $product->id }})" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer hover:scale-105 transform transition-transform duration-200">
-                        <div>
-                            <h3 class="font-bold text-gray-800 dark:text-white truncate">{{ $product->name }}</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Stok: {{ $product->total_stock ?? 0 }}</p>
-                        </div>
-                        <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</p>
-                    </div>
-                @empty
-                    <div class="col-span-full text-center py-10">
-                        <p class="text-gray-500 dark:text-gray-400">Produk tidak ditemukan.</p>
-                    </div>
-                @endforelse
+        <!-- Mobile View with Tabs -->
+        <div class="block md:hidden flex-1 flex flex-col">
+            <!-- Tabs -->
+            <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                <nav class="flex justify-around text-center text-sm font-medium">
+                    <button @click="activeTab = 'products'" :class="activeTab === 'products' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'" class="flex-1 py-3 border-b-2 focus:outline-none">
+                        Produk
+                    </button>
+                    <button @click="activeTab = 'cart'" :class="activeTab === 'cart' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'" class="flex-1 py-3 border-b-2 focus:outline-none">
+                        Keranjang ({{ count($cart_items) }})
+                    </button>
+                </nav>
             </div>
-            <div class="mt-4">
-                {{ $products->links() }}
-            </div>
-        </main>
 
-        <!-- Cart (Mobile - below product grid) -->
-        <div class="block md:hidden p-4 space-y-3 flex-1 overflow-y-auto mb-32 pt-4"> {{-- Adjusted for sticky header --}}
-            @if(count($cart_items) > 0)
-                @foreach($cart_items as $index => $item)
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                        <div>
-                            <p class="font-semibold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">Harga: Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
-                        </div>
-                        <div class="flex items-center justify-between mt-3">
-                            <div class="flex items-center space-x-2">
-                                <button wire:click="updateQuantity({{ $index }}, {{ $item['quantity'] - 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">-</button>
-                                <input type="text" value="{{ $item['quantity'] }}" readonly class="w-12 text-center bg-transparent font-semibold text-gray-900 dark:text-white">
-                                <button wire:click="updateQuantity({{ $index }}, {{ $item['quantity'] + 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">+</button>
-                                <button wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 ml-2">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
+            <!-- Product Grid (Mobile) -->
+            <main class="p-4 flex-1 overflow-y-auto pb-32" x-show="activeTab === 'products'">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    @forelse ($products as $product)
+                        <div wire:click="addProduct({{ $product->id }})" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer hover:scale-105 transform transition-transform duration-200">
+                            <div>
+                                <h3 class="font-bold text-gray-800 dark:text-white truncate">{{ $product->name }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Stok: {{ $product->total_stock ?? 0 }}</p>
                             </div>
+                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</p>
                         </div>
-                        <div class="text-right mt-2">
-                            <p class="font-bold text-gray-900 dark:text-white">Subtotal: Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
+                    @empty
+                        <div class="col-span-full text-center py-10">
+                            <p class="text-gray-500 dark:text-gray-400">Produk tidak ditemukan.</p>
                         </div>
-                    </div>
-                @endforeach
-            @else
-                <div class="text-center py-10">
-                    <p class="text-gray-500 dark:text-gray-400">Keranjang belanja kosong.</p>
+                    @endforelse
                 </div>
-            @endif
-        </div>
-    </div>
+                <div class="mt-4">
+                    {{ $products->links() }}
+                </div>
+            </main>
 
-    <!-- Cart & Payment (Desktop) / Payment (Mobile - Sticky) -->
-    <div class="w-full md:w-1/3 lg:w-1/4 bg-white dark:bg-gray-800 shadow-lg flex flex-col md:static fixed bottom-0 left-0 right-0 z-20">
-        <!-- Cart (Desktop Only) -->
-        <div class="hidden md:block p-4 flex-1 overflow-y-auto">
-            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Keranjang</h2>
-            <div class="space-y-3">
+            <!-- Cart (Mobile) -->
+            <div class="p-4 space-y-3 flex-1 overflow-y-auto mb-32" x-show="activeTab === 'cart'">
                 @if(count($cart_items) > 0)
                     @foreach($cart_items as $index => $item)
-                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 flex items-center">
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $item['product_name'] }}</p>
-                                <p class="text-xs text-gray-600 dark:text-gray-300">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                            <div>
+                                <p class="font-semibold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Harga: Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
                             </div>
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
-                            <button wire:click="removeItem({{ $index }})" class="ml-3 text-red-500 hover:text-red-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-2">
+                                    <button wire:click="updateQuantity({{ $index }}, {{ $item['quantity'] - 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">-</button>
+                                    <input type="text" value="{{ $item['quantity'] }}" readonly class="w-12 text-center bg-transparent font-semibold text-gray-900 dark:text-white">
+                                    <button wire:click="updateQuantity({{ $index }}, {{ $item['quantity'] + 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">+</button>
+                                    <button wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 ml-2">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-right mt-2">
+                                <p class="font-bold text-gray-900 dark:text-white">Subtotal: Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
+                            </div>
                         </div>
                     @endforeach
                 @else
                     <div class="text-center py-10">
-                        <p class="text-gray-500 dark:text-gray-400">Keranjang kosong.</p>
+                        <p class="text-gray-500 dark:text-gray-400">Keranjang belanja kosong.</p>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- Payment Section (Always visible, sticky on mobile) -->
-        <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:shadow-none md:static">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
-                <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
+        <!-- Desktop View -->
+        <div class="flex flex-col md:flex-row flex-1">
+            <!-- Product Grid (Desktop) -->
+            <main class="hidden md:block p-4 flex-1 overflow-y-auto pb-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                    @forelse ($products as $product)
+                        <div wire:click="addProduct({{ $product->id }})" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer hover:scale-105 transform transition-transform duration-200">
+                            <div>
+                                <h3 class="font-bold text-gray-800 dark:text-white truncate">{{ $product->name }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Stok: {{ $product->total_stock ?? 0 }}</p>
+                            </div>
+                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</p>
+                        </div>
+                    @empty
+                        <div class="col-span-full text-center py-10">
+                            <p class="text-gray-500 dark:text-gray-400">Produk tidak ditemukan.</p>
+                        </div>
+                    @endforelse
+                </div>
+                <div class="mt-4">
+                    {{ $products->links() }}
+                </div>
+            </main>
+
+            <!-- Cart & Payment (Desktop) -->
+            <div class="w-full md:w-1/3 lg:w-1/4 bg-white dark:bg-gray-800 shadow-lg flex flex-col">
+                <!-- Cart (Desktop Only) -->
+                <div class="hidden md:block p-4 flex-1 overflow-y-auto">
+                    <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Keranjang</h2>
+                    <div class="space-y-3">
+                        @if(count($cart_items) > 0)
+                            @foreach($cart_items as $index => $item)
+                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $item['product_name'] }}</p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-300">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                                    </div>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
+                                    <button wire:click="removeItem({{ $index }})" class="ml-3 text-red-500 hover:text-red-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-10">
+                                <p class="text-gray-500 dark:text-gray-400">Keranjang kosong.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Payment Section (Always visible, sticky on mobile) -->
+                <div class="hidden md:block p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:shadow-none">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
+                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
+                    </div>
+                    <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
+                        Bayar ({{ count($cart_items) }} item)
+                    </button>
+                </div>
+
+                <div class="fixed bottom-0 left-0 right-0 block md:hidden p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:shadow-none">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
+                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
+                    </div>
+                    <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
+                        Bayar ({{ count($cart_items) }} item)
+                    </button>
+                </div>
             </div>
-            <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
-                Bayar ({{ count($cart_items) }} item)
-            </button>
         </div>
     </div>
 

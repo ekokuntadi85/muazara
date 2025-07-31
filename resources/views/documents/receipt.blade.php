@@ -11,7 +11,7 @@
             padding: 2mm; 
         }
         .container {
-            width: 100%;
+            width: 125%;
         }
         .header {
             text-align: center;

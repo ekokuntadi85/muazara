@@ -42,11 +42,11 @@
         <thead>
             <tr>
                 <th>Tanggal</th>
-                <th>Tipe</th>
-                <th>Kuantitas</th>
-                <th>Catatan</th>
-                <th>Batch</th>
-                <th>Saldo Akhir</th>
+                <th>Kode</th>
+                <th>Keterangan</th>
+                <th>Masuk</th>
+                <th>Keluar</th>
+                <th>Saldo</th>
             </tr>
         </thead>
         <tbody>
@@ -55,14 +55,14 @@
             @endphp
             @forelse($finalMovements as $movement)
                 @php
-                    $currentBalance += $movement['quantity'];
+                    $currentBalance += $movement['masuk'] - $movement['keluar'];
                 @endphp
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($movement['created_at'])->format('d M Y H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($movement['created_at'])->format('d/m/y') }}</td>
                     <td>{{ $movement['type'] }}</td>
-                    <td>{{ $movement['quantity'] }}</td>
                     <td>{{ $movement['remarks'] }}</td>
-                    <td>{{ $movement['batch_number'] ?? '-' }}</td>
+                    <td>{{ $movement['masuk'] > 0 ? $movement['masuk'] : '-' }}</td>
+                    <td>{{ $movement['keluar'] > 0 ? $movement['keluar'] : '-' }}</td>
                     <td>{{ $currentBalance }}</td>
                 </tr>
             @empty
@@ -72,5 +72,7 @@
             @endforelse
         </tbody>
     </table>
+
+    <p><strong>Saldo Akhir:</strong> {{ $currentBalance }}</p>
 </body>
 </html>

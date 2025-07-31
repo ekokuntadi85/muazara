@@ -13,9 +13,9 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="">
     <div class="container mx-auto p-4">
-        <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="p-4">
             @include('documents.receipt')
         </div>
         <div class="text-center mt-4 no-print">
