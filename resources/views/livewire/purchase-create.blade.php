@@ -1,124 +1,133 @@
-<div class="container mx-auto p-4">
+<div class="container mx-auto p-4 dark:bg-gray-800 dark:text-gray-200">
     @if (session()->has('message'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 dark:bg-green-800 dark:border-green-700 dark:text-green-200" role="alert">
             <span class="block sm:inline">{{ session('message') }}</span>
         </div>
     @endif
 
-    <h2 class="text-2xl font-bold mb-4">Catat Pembelian Baru</h2>
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Catat Pembelian Baru</h2>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div class="mb-4">
-            <label for="supplier_id" class="block text-gray-700 text-sm font-bold mb-2">Supplier:</label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="supplier_id" wire:model="supplier_id">
-                <option value="">Pilih Supplier</option>
-                @foreach($suppliers as $supplier)
-                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                @endforeach
-            </select>
-            @error('supplier_id') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-        </div>
-        <div class="mb-4">
-            <label for="invoice_number" class="block text-gray-700 text-sm font-bold mb-2">Nomor Invoice:</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="invoice_number" wire:model="invoice_number">
-            @error('invoice_number') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-        </div>
-        <div class="mb-4">
-            <label for="purchase_date" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Pembelian:</label>
-            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="purchase_date" wire:model.live="purchase_date">
-            @error('purchase_date') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-        </div>
-        <div class="mb-4">
-            <label for="due_date" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Jatuh Tempo (Opsional):</label>
-            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="due_date" wire:model="due_date">
-            @error('due_date') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-        </div>
-
-        <hr class="my-6">
-
-        <h3 class="text-xl font-semibold mb-4">Tambah Item Pembelian</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="mb-4 relative">
-                <label for="searchProduct" class="block text-gray-700 text-sm font-bold mb-2">Produk:</label>
-                <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="searchProduct" placeholder="Cari Produk..." wire:model.live="searchProduct">
-                <input type="hidden" wire:model="product_id">
-                @if(!empty($selectedProductName))
-                    <p class="text-gray-600 text-sm mt-1">Produk Terpilih: {{ $selectedProductName }}</p>
-                @endif
-                @error('product_id') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-
-                @if(!empty($searchResults))
-                    <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
-                        @foreach($searchResults as $product)
-                            <li wire:click="selectProduct({{ $product->id }})" class="px-4 py-2 cursor-pointer hover:bg-gray-100">
-                                {{ $product->name }} ({{ $product->sku }})
-                            </li>
+        <!-- Purchase Details -->
+        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b pb-2">Informasi Utama</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="supplier_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+                    <select id="supplier_id" wire:model="supplier_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                        <option value="">Pilih Supplier</option>
+                        @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                         @endforeach
-                    </ul>
-                @endif
-            </div>
-            <div class="mb-4">
-                <label for="batch_number" class="block text-gray-700 text-sm font-bold mb-2">Nomor Batch (Opsional):</label>
-                <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="batch_number" wire:model="batch_number">
-                @error('batch_number') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-            </div>
-            <div class="mb-4">
-                <label for="purchase_price" class="block text-gray-700 text-sm font-bold mb-2">Harga Beli:</label>
-                <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="purchase_price" wire:model="purchase_price">
-                @error('purchase_price') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-            </div>
-            <div class="mb-4">
-                <label for="stock" class="block text-gray-700 text-sm font-bold mb-2">Stok:</label>
-                <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stock" wire:model="stock">
-                @error('stock') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
-            </div>
-            <div class="mb-4">
-                <label for="expiration_date" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Kadaluarsa (Opsional):</label>
-                <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="expiration_date" wire:model="expiration_date">
-                @error('expiration_date') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror
+                    </select>
+                    @error('supplier_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="invoice_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Invoice</label>
+                    <input type="text" id="invoice_number" wire:model="invoice_number" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('invoice_number') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="purchase_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Pembelian</label>
+                    <input type="date" id="purchase_date" wire:model.live="purchase_date" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('purchase_date') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jatuh Tempo (Opsional)</label>
+                    <input type="date" id="due_date" wire:model="due_date" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('due_date') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
             </div>
         </div>
-        <button type="button" wire:click="addItem()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Tambah Item</button>
+
+        <!-- Add Purchase Item -->
+        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b pb-2">Tambah Item</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="relative">
+                    <label for="searchProduct" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Produk</label>
+                    <input type="text" id="searchProduct" wire:model.live="searchProduct" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @if(!empty($searchResults))
+                        <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto dark:bg-gray-800 dark:border-gray-600">
+                            @foreach($searchResults as $product)
+                                <li wire:click="selectProduct({{ $product->id }})" class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600">
+                                    {{ $product->name }} ({{ $product->sku }})
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @if(!empty($selectedProductName))
+                        <p class="text-green-600 text-sm mt-2 dark:text-green-400">Terpilih: {{ $selectedProductName }}</p>
+                    @endif
+                    @error('product_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="batch_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Batch</label>
+                    <input type="text" id="batch_number" wire:model="batch_number" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('batch_number') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="purchase_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga Beli</label>
+                    <input type="number" step="0.01" id="purchase_price" wire:model="purchase_price" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('purchase_price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Stok</label>
+                    <input type="number" id="stock" wire:model="stock" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('stock') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div class="md:col-span-2">
+                    <label for="expiration_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Kadaluarsa (Opsional)</label>
+                    <input type="date" id="expiration_date" wire:model="expiration_date" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('expiration_date') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+            </div>
+            <div class="text-right mt-6">
+                <button type="button" wire:click="addItem()" class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-green-500 dark:hover:bg-green-600">Tambah Item ke Daftar</button>
+            </div>
+        </div>
+
+        <!-- Purchase Items List -->
+        <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Daftar Item</h3>
+            <div class="space-y-4">
+                @forelse($purchase_items as $index => $item)
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $item['stock'] }} x Rp {{ number_format($item['purchase_price'], 2) }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item['subtotal'], 2) }}</p>
+                            <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center text-gray-500 dark:text-gray-400 py-4">Belum ada item yang ditambahkan.</p>
+                @endforelse
+            </div>
+            <div class="mt-6 pt-4 border-t-2 border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                <span class="text-xl font-bold text-gray-900 dark:text-white">Total</span>
+                <span class="text-xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_purchase_price, 2) }}</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <a href="{{ route('purchases.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 mt-4 sm:mt-0">Batal</a>
+            <button type="button" wire:click="savePurchase()" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600">
+                Simpan Pembelian
+            </button>
+        </div>
     </div>
 
-    <hr class="my-6">
-
-    <h3 class="text-xl font-semibold mb-4">Item Pembelian</h3>
-    @if(count($purchase_items) > 0)
-        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg mb-4">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor Batch</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Beli</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kadaluarsa</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($purchase_items as $index => $item)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $item['product_name'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $item['batch_number'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['purchase_price'], 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $item['stock'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $item['expiration_date'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($item['subtotal'], 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button type="button" wire:click="removeItem({{ $index }})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Hapus</button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="text-right text-2xl font-bold mb-4">Total Pembelian: Rp {{ number_format($total_purchase_price, 2) }}</div>
-        <button type="button" wire:click="savePurchase()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Simpan Pembelian</button>
-    @else
-        <p class="text-gray-600">Belum ada item pembelian.</p>
-    @endif
+    @script
+    <script>
+        Livewire.on('confirm-lower-price', (message) => {
+            if (confirm(message)) {
+                Livewire.dispatch('confirmedAddItem');
+            }
+        });
+    </script>
+    @endscript
 </div>

@@ -1,4 +1,4 @@
-<section class="mt-10 space-y-6">
+<section class="mt-10 space-y-6 dark:bg-gray-800 dark:text-gray-200">
     <div class="relative mb-5">
         <flux:heading>{{ __('Delete account') }}</flux:heading>
         <flux:subheading>{{ __('Delete your account and all of its resources') }}</flux:subheading>
@@ -10,7 +10,7 @@
         </flux:button>
     </flux:modal.trigger>
 
-    <flux:modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable class="max-w-lg">
+    <flux:modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable class="max-w-lg dark:bg-gray-700">
         <form wire:submit="deleteUser" class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>

@@ -7,20 +7,22 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 
 class PointOfSale extends Component
 {
+    use WithPagination;
+
     public $cart_items = [];
     public $customer_id;
     public $total_price = 0;
 
     public $search = '';
-    public $searchResults = [];
-    public $highlightedIndex = 0;
 
     public $amount_paid;
     public $change = 0;
@@ -61,45 +63,9 @@ class PointOfSale extends Component
         $this->loggedInUser = Auth::check() ? Auth::user()->name : 'Guest';
     }
 
-    public function updatedSearch($value)
+    public function updatingSearch()
     {
-        if (empty($value)) {
-            $this->searchResults = [];
-            $this->highlightedIndex = 0;
-            return;
-        }
-
-        $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
-                                    ->orWhere('sku', 'like', '%' . $value . '%')
-                                    ->limit(10)
-                                    ->get();
-        $this->highlightedIndex = 0;
-    }
-
-    public function incrementHighlight()
-    {
-        if ($this->highlightedIndex === count($this->searchResults) - 1) {
-            $this->highlightedIndex = 0;
-            return;
-        }
-        $this->highlightedIndex++;
-    }
-
-    public function decrementHighlight()
-    {
-        if ($this->highlightedIndex === 0) {
-            $this->highlightedIndex = count($this->searchResults) - 1;
-            return;
-        }
-        $this->highlightedIndex--;
-    }
-
-    public function selectHighlightedProduct()
-    {
-        if (!empty($this->searchResults) && isset($this->searchResults[$this->highlightedIndex])) {
-            $productId = $this->searchResults[$this->highlightedIndex]->id;
-            $this->addProduct($productId);
-        }
+        $this->resetPage();
     }
 
     public function addProduct($productId)
@@ -144,8 +110,6 @@ class PointOfSale extends Component
 
         $this->calculateTotalPrice();
         $this->search = '';
-        $this->searchResults = [];
-        $this->highlightedIndex = 0;
     }
 
     public function removeItem($index)
@@ -203,13 +167,15 @@ class PointOfSale extends Component
             ]);
         }
 
-        DB::transaction(function () {
+        DB::transaction(function () use (&$transaction) {
             $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
 
             $transaction = Transaction::create([
-                'type' => 'pos',
+                'type' => 'POS',
                 'payment_status' => 'paid',
                 'total_price' => $this->total_price,
+                'amount_paid' => $this->amount_paid,
+                'change' => $this->change,
                 'due_date' => null, // POS transactions usually don't have due date
                 'customer_id' => $this->customer_id,
                 'user_id' => Auth::id(),
@@ -234,14 +200,25 @@ class PointOfSale extends Component
                     $deductible = min($remainingQuantity, $batch->stock);
                     $batch->stock -= $deductible;
                     $batch->save();
+
+                    // Record stock movement for sale
+                    StockMovement::create([
+                        'product_batch_id' => $batch->id,
+                        'type' => 'PJ',
+                        'quantity' => -$deductible, // Negative for stock out
+                        'remarks' => 'Penjualan',
+                    ]);
+
                     $remainingQuantity -= $deductible;
                 }
             }
         });
 
         session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
+        $this->dispatch('transaction-completed', [
+            'transactionId' => $transaction->id,
+        ]);
         $this->resetAll();
-        $this->dispatch('focusSearchInput'); // Dispatch event to focus search input
     }
 
     private function resetAll()
@@ -249,10 +226,8 @@ class PointOfSale extends Component
         $this->cart_items = [];
         $this->total_price = 0;
         $this->search = '';
-        $this->searchResults = [];
         $this->amount_paid = null;
         $this->change = 0;
-        $this->highlightedIndex = 0;
         $this->invoiceNumber = null; // Reset invoice number
         $this->updateDateTimeAndUser(); // Update date/time and user
         // Reset customer to UMUM
@@ -267,6 +242,18 @@ class PointOfSale extends Component
     public function render()
     {
         $customers = Customer::all();
-        return view('livewire.point-of-sale', compact('customers'));
+
+        $products = Product::query();
+
+        if (!empty($this->search)) {
+            $products->where('name', 'like', '%' . $this->search . '%')
+                     ->orWhere('sku', 'like', '%' . $this->search . '%');
+        }
+
+        $products->withSum('productBatches as total_stock', 'stock');
+
+        $products = $products->paginate(10);
+
+        return view('livewire.point-of-sale', compact('customers', 'products'));
     }
 }

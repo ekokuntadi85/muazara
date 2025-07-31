@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductBatch;
 use App\Models\Purchase;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +30,7 @@ class PurchaseCreate extends Component
     public $purchase_price;
     public $stock;
     public $expiration_date;
+    public $lastKnownPurchasePrice; // Properti baru untuk menyimpan harga beli terakhir
     public $purchase_items = [];
 
     protected $rules = [
@@ -113,6 +115,19 @@ class PurchaseCreate extends Component
             $this->selectedProductName = $product->name;
             $this->searchProduct = ''; // Clear search input
             $this->searchResults = []; // Clear search results
+
+            // Ambil harga beli terakhir dari batch produk terbaru
+            $latestBatch = ProductBatch::where('product_id', $productId)
+                                        ->latest('created_at')
+                                        ->first();
+
+            if ($latestBatch) {
+                $this->purchase_price = $latestBatch->purchase_price;
+                $this->lastKnownPurchasePrice = $latestBatch->purchase_price;
+            } else {
+                $this->purchase_price = ''; // Reset jika tidak ada batch sebelumnya
+                $this->lastKnownPurchasePrice = null;
+            }
         }
     }
 
@@ -120,7 +135,24 @@ class PurchaseCreate extends Component
     {
         $this->validate($this->itemRules);
 
+        // Logika konfirmasi harga lebih rendah
+        if ($this->lastKnownPurchasePrice !== null && $this->purchase_price < $this->lastKnownPurchasePrice) {
+            $this->dispatch('confirm-lower-price', 'Harga yang diinputkan (' . number_format($this->purchase_price, 2) . ') lebih rendah dari harga beli terakhir (' . number_format($this->lastKnownPurchasePrice, 2) . '). Lanjutkan?');
+            return; // Hentikan eksekusi sampai ada konfirmasi dari frontend
+        }
+
+        $this->confirmedAddItem();
+    }
+
+    #[On('confirmedAddItem')]
+    public function confirmedAddItem()
+    {
         $product = Product::find($this->product_id);
+
+        // Set expiration_date to 1 year from today if it's empty
+        if (empty($this->expiration_date)) {
+            $this->expiration_date = \Carbon\Carbon::now()->addYear()->format('Y-m-d');
+        }
 
         $this->purchase_items[] = [
             'product_id' => $this->product_id,
@@ -163,10 +195,11 @@ class PurchaseCreate extends Component
             ]);
 
             foreach ($this->purchase_items as $item) {
+                $batchNumber = empty($item['batch_number']) ? '-' : $item['batch_number'];
                 ProductBatch::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $item['product_id'],
-                    'batch_number' => $item['batch_number'],
+                    'batch_number' => $batchNumber,
                     'purchase_price' => $item['purchase_price'],
                     'stock' => $item['stock'],
                     'expiration_date' => $item['expiration_date'],

@@ -17,14 +17,9 @@ class ProductShow extends Component
 
     public function deleteProduct()
     {
-        DB::transaction(function () {
-            // Delete related product batches first
-            $this->product->productBatches()->delete();
-            // Then delete the product
-            $this->product->delete();
-        });
-
-        session()->flash('message', 'Produk berhasil dihapus.');
+        if ($this->product->delete()) {
+            session()->flash('message', 'Produk berhasil dihapus.');
+        }
         return redirect()->route('products.index');
     }
 
