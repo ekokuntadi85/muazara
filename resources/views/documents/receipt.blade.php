@@ -15,14 +15,13 @@
         }
         .header {
             text-align: center;
-            margin-bottom: 5px;
         }
         .details,
         .items,
         .total {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
         .items th,
         .items td,
@@ -101,7 +100,7 @@
 
         <div class="line"></div>
 
-        <div class="text-center" style="margin-top: 10px;">
+        <div class="text-center" style="margin-top: 5px;">
             <p>Terima Kasih!</p>
             <p>Semoga Allah berikan Kesembuhan</p>
         </div>
