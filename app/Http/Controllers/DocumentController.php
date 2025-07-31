@@ -7,12 +7,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Models\ProductBatch;
 use Carbon\Carbon;
+use Jenssegers\Agent\Agent; // Import Agent
 
 class DocumentController extends Controller
 {
     public function printReceipt($transactionId)
     {
         $transaction = Transaction::with(['transactionDetails.product', 'customer', 'user'])->findOrFail($transactionId);
+        $agent = new Agent();
+
+        if ($agent->isMobile()) {
+            return view('documents.receipt-preview', compact('transaction'));
+        }
 
         $pdf = Pdf::loadView('documents.receipt', compact('transaction'));
 
@@ -22,6 +28,11 @@ class DocumentController extends Controller
     public function printInvoice($transactionId)
     {
         $transaction = Transaction::with(['transactionDetails.product', 'customer', 'user'])->findOrFail($transactionId);
+        $agent = new Agent();
+
+        if ($agent->isMobile()) {
+            return view('documents.invoice-preview', compact('transaction'));
+        }
 
         $pdf = Pdf::loadView('documents.invoice', compact('transaction'));
 

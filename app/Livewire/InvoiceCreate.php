@@ -3,114 +3,102 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 
 class InvoiceCreate extends Component
 {
+    use WithPagination;
+
     public $customer_id;
     public $due_date;
     public $total_price = 0;
+    public $invoice_items = [];
 
-    // For product search
     public $searchProduct = '';
     public $searchResults = [];
     public $selectedProductName = '';
 
     public $product_id;
     public $quantity;
-    public $price; // Price will be product's selling_price
-    public $invoice_items = [];
+    public $price;
 
-    public $currentDateTime;
-    public $loggedInUser;
+    // Default values for invoice
+    public $type = 'invoice';
+    public $payment_status = 'unpaid';
+    public $invoiceNumber; // Make sure this is public
 
     protected $rules = [
         'customer_id' => 'required|exists:customers,id',
-        'due_date' => 'required|date|after_or_equal:today',
+        'due_date' => 'required|date',
         'invoice_items' => 'required|array|min:1',
         'invoice_items.*.product_id' => 'required|exists:products,id',
         'invoice_items.*.quantity' => 'required|integer|min:1',
         'invoice_items.*.price' => 'required|numeric|min:0',
     ];
 
-    protected $itemRules = [
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-    ];
-
     protected $messages = [
-        'customer_id.required' => 'Customer wajib dipilih.',
-        'customer_id.exists' => 'Customer tidak valid.',
+        'customer_id.required' => 'Pelanggan wajib dipilih.',
         'due_date.required' => 'Tanggal jatuh tempo wajib diisi.',
         'due_date.date' => 'Tanggal jatuh tempo tidak valid.',
-        'due_date.after_or_equal' => 'Tanggal jatuh tempo tidak boleh kurang dari hari ini.',
         'invoice_items.required' => 'Setidaknya ada satu item invoice.',
         'invoice_items.min' => 'Setidaknya ada satu item invoice.',
-        'product_id.required' => 'Produk wajib dipilih.',
-        'product_id.exists' => 'Produk tidak valid.',
-        'quantity.required' => 'Kuantitas wajib diisi.',
-        'quantity.integer' => 'Kuantitas harus berupa angka bulat.',
-        'quantity.min' => 'Kuantitas minimal 1.',
+        'invoice_items.*.product_id.required' => 'Produk wajib dipilih.',
+        'invoice_items.*.product_id.exists' => 'Produk tidak valid.',
+        'invoice_items.*.quantity.required' => 'Kuantitas wajib diisi.',
+        'invoice_items.*.quantity.integer' => 'Kuantitas harus berupa angka bulat.',
+        'invoice_items.*.quantity.min' => 'Kuantitas minimal 1.',
+        'invoice_items.*.price.required' => 'Harga satuan wajib diisi.',
+        'invoice_items.*.price.numeric' => 'Harga satuan harus berupa angka.',
+        'invoice_items.*.price.min' => 'Harga satuan tidak boleh negatif.',
     ];
 
     public function mount()
     {
-        // Set default due date to 30 days from now
-        $this->due_date = Carbon::now()->addDays(30)->format('Y-m-d');
-        $this->updateDateTimeAndUser();
-    }
-
-    private function updateDateTimeAndUser()
-    {
-        $this->currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
-        $this->loggedInUser = Auth::check() ? Auth::user()->name : 'Guest';
-    }
-
-    public function render()
-    {
-        $customers = Customer::all();
-        return view('livewire.invoice-create', compact('customers'));
+        // Default values are already set as public properties
+        // $this->type = 'invoice';
+        // $this->payment_status = 'unpaid';
     }
 
     public function updatedSearchProduct($value)
     {
-        if (empty($value)) {
-            $this->searchResults = [];
-            return;
-        }
-
-        $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
+        if (strlen($this->searchProduct) >= 1) {
+            $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
                                     ->orWhere('sku', 'like', '%' . $value . '%')
                                     ->limit(10)
                                     ->get();
+        } else {
+            $this->searchResults = [];
+        }
     }
 
     public function selectProduct($productId)
     {
         $product = Product::find($productId);
-        if ($product) {
-            $this->product_id = $product->id;
-            $this->selectedProductName = $product->name;
-            $this->price = $product->selling_price; // Auto-fill price
-            $this->searchProduct = ''; // Clear search input
-            $this->searchResults = []; // Clear search results
-        }
+        $this->product_id = $product->id;
+        $this->selectedProductName = $product->name;
+        $this->price = $product->selling_price; // Set price to selling price
+        $this->searchProduct = '';
+        $this->searchResults = [];
     }
 
     public function addItem()
     {
-        $this->validate($this->itemRules);
+        $this->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
 
         $product = Product::find($this->product_id);
 
-        // Check stock before adding item
         if ($product->total_stock < $this->quantity) {
             throw ValidationException::withMessages([
                 'quantity' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $product->total_stock,
@@ -121,8 +109,8 @@ class InvoiceCreate extends Component
             'product_id' => $this->product_id,
             'product_name' => $product->name,
             'quantity' => $this->quantity,
-            'price' => $product->selling_price, // Use selling price for invoice
-            'subtotal' => $this->quantity * $product->selling_price,
+            'price' => $this->price,
+            'subtotal' => $this->quantity * $this->price,
         ];
 
         $this->calculateTotalPrice();
@@ -141,19 +129,32 @@ class InvoiceCreate extends Component
         $this->total_price = array_sum(array_column($this->invoice_items, 'subtotal'));
     }
 
+    private function resetItemForm()
+    {
+        $this->product_id = '';
+        $this->quantity = '';
+        $this->price = '';
+        $this->selectedProductName = '';
+        $this->resetErrorBag(['product_id', 'quantity', 'price']);
+    }
+
     public function saveInvoice()
     {
         $this->validate();
 
-        DB::transaction(function () {
+        DB::transaction(function () use (&$transaction) {
+            $this->invoiceNumber = 'INV-' . Carbon::now()->format('YmdHis');
+
             $transaction = Transaction::create([
-                'type' => 'INV',
-                'payment_status' => 'unpaid',
+                'type' => $this->type,
+                'payment_status' => $this->payment_status,
                 'total_price' => $this->total_price,
+                'amount_paid' => 0, // For invoice, amount paid is 0 initially
+                'change' => 0,
                 'due_date' => $this->due_date,
                 'customer_id' => $this->customer_id,
-                'user_id' => Auth::id(), // Assign current logged in user
-                'invoice_number' => 'INV-' . Carbon::now()->format('YmdHis') . '-' . uniqid(), // Auto-generate invoice number
+                'user_id' => Auth::id(),
+                'invoice_number' => $this->invoiceNumber, // Use $this->invoiceNumber
             ]);
 
             foreach ($this->invoice_items as $item) {
@@ -179,30 +180,13 @@ class InvoiceCreate extends Component
             }
         });
 
-        session()->flash('message', 'Invoice berhasil dibuat.');
-        $this->resetAll();
+        session()->flash('message', 'Invoice berhasil dicatat dengan No. Invoice: ' . $this->invoiceNumber);
         return redirect()->route('transactions.index');
     }
 
-    private function resetItemForm()
+    public function render()
     {
-        $this->product_id = '';
-        $this->quantity = '';
-        $this->price = '';
-        $this->searchProduct = '';
-        $this->searchResults = [];
-        $this->selectedProductName = '';
-        $this->resetErrorBag(['product_id', 'quantity']);
-    }
-
-    private function resetAll()
-    {
-        $this->customer_id = '';
-        $this->due_date = Carbon::now()->addDays(30)->format('Y-m-d');
-        $this->total_price = 0;
-        $this->invoice_items = [];
-        $this->resetItemForm();
-        $this->resetErrorBag();
-        $this->updateDateTimeAndUser(); // Update date/time and user
+        $customers = Customer::all();
+        return view('livewire.invoice-create', compact('customers'));
     }
 }

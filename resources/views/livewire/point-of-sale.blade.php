@@ -87,7 +87,7 @@
     </div>
 
     <!-- Cart & Payment (Desktop) / Payment (Mobile - Sticky) -->
-    <div class="w-full md:w-1/3 lg:w-1/4 bg-white dark:bg-gray-800 shadow-lg flex flex-col md:static fixed bottom-0 left-0 right-0">
+    <div class="w-full md:w-1/3 lg:w-1/4 bg-white dark:bg-gray-800 shadow-lg flex flex-col md:static fixed bottom-0 left-0 right-0 z-20">
         <!-- Cart (Desktop Only) -->
         <div class="hidden md:block p-4 flex-1 overflow-y-auto">
             <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Keranjang</h2>
@@ -119,8 +119,8 @@
                 <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
                 <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
             </div>
-            <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700 disabled:bg-gray-400" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
-                Bayar
+            <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" >
+                Bayar ({{ count($cart_items) }} item)
             </button>
         </div>
     </div>
@@ -167,9 +167,9 @@
             if (printReceipt) {
                 const url = `/transactions/${transactionId}/receipt`;
                 window.open(url, '_blank');
-            } else {
-                window.location.href = '{{ route('pos.index') }}';
             }
+            // Always redirect the current window to a new POS session
+            window.location.href = '{{ route('pos.index') }}';
         });
     </script>
     @endscript

@@ -7,6 +7,7 @@ use App\Models\ProductBatch;
 use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseSeeder extends Seeder
 {
@@ -27,6 +28,10 @@ class PurchaseSeeder extends Seeder
                     'expiration_date' => now()->addDays(rand(30, 365)),
                 ]);
             }
+
+            // Recalculate and update the total_price for the purchase
+            $totalPrice = $purchase->productBatches()->sum(DB::raw('purchase_price * stock'));
+            $purchase->update(['total_price' => $totalPrice]);
         });
     }
 }

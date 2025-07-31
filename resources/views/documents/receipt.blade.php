@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Receipt #{{ $transaction->invoice_number }}</title>
+    <title>Struk #{{ $transaction->invoice_number }}</title>
     <style>
         body {
             font-family: monospace; /* Use monospace for thermal printer feel */
-            font-size: 10px;
-            width: 80mm; /* Typical thermal printer width */
+            font-size: 8px; /* Adjusted for 57mm printer */
+            width: 48mm; /* Adjusted for 57mm printer (printable area) */
             margin: 0; /* Remove default margins */
-            padding: 5mm; /* Small padding */
+            padding: 2mm; /* Small padding */
         }
         .container {
             width: 100%;
@@ -27,7 +27,7 @@
         .items th,
         .items td,
         .total td {
-            padding: 2px 0; /* Minimal padding */
+            padding: 1px 0; /* Minimal padding */
             border: none; /* No borders for thermal look */
         }
         .text-right {
@@ -59,6 +59,10 @@
             <tr>
                 <td>Tanggal:</td>
                 <td class="text-right">{{ \Carbon\Carbon::parse($transaction->created_at)->format('d-m-Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td>Kasir:</td>
+                <td class="text-right">{{ $transaction->user->name }}</td>
             </tr>
         </table>
 
@@ -98,7 +102,8 @@
         <div class="line"></div>
 
         <div class="text-center" style="margin-top: 10px;">
-            <p>Terima kasih!</p>
+            <p>Terima Kasih!</p>
+            <p>Semoga Allah berikan Kesembuhan</p>
         </div>
     </div>
 </body>
