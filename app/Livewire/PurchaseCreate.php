@@ -32,6 +32,9 @@ class PurchaseCreate extends Component
     public $expiration_date;
     public $lastKnownPurchasePrice; // Properti baru untuk menyimpan harga beli terakhir
     public $purchase_items = [];
+    public $showPriceWarningModal = false;
+    public $newSellingPrice;
+    public $itemToAddCache = null;
 
     protected $rules = [
         'supplier_id' => 'required|exists:suppliers,id',
@@ -77,6 +80,9 @@ class PurchaseCreate extends Component
         'stock.integer' => 'Stok harus berupa angka bulat.',
         'stock.min' => 'Stok minimal 1.',
         'expiration_date.date' => 'Tanggal kadaluarsa tidak valid.',
+        'newSellingPrice.required' => 'Harga jual baru wajib diisi.',
+        'newSellingPrice.numeric' => 'Harga jual baru harus berupa angka.',
+        'newSellingPrice.min' => 'Harga jual baru tidak boleh lebih rendah dari harga beli.',
     ];
 
     public function mount()
@@ -135,6 +141,26 @@ class PurchaseCreate extends Component
     {
         $this->validate($this->itemRules);
 
+        $product = Product::find($this->product_id);
+
+        if ($this->purchase_price > $product->selling_price) {
+            $expirationDate = $this->expiration_date ?: \Carbon\Carbon::now()->addMonths(6)->format('Y-m-d');
+
+            $this->itemToAddCache = [
+                'product_id' => $this->product_id,
+                'product_name' => $product->name,
+                'batch_number' => $this->batch_number,
+                'purchase_price' => $this->purchase_price,
+                'stock' => $this->stock,
+                'expiration_date' => $expirationDate,
+                'subtotal' => $this->purchase_price * $this->stock,
+            ];
+
+            $this->newSellingPrice = $product->selling_price;
+            $this->showPriceWarningModal = true;
+            return;
+        }
+
         // Logika konfirmasi harga lebih rendah
         if ($this->lastKnownPurchasePrice !== null && $this->purchase_price < $this->lastKnownPurchasePrice) {
             $this->dispatch('confirm-lower-price', 'Harga yang diinputkan (' . number_format($this->purchase_price, 2) . ') lebih rendah dari harga beli terakhir (' . number_format($this->lastKnownPurchasePrice, 2) . '). Lanjutkan?');
@@ -166,6 +192,32 @@ class PurchaseCreate extends Component
 
         $this->calculateTotalPurchasePrice();
         $this->resetItemForm();
+    }
+
+    public function updatePriceAndAddItem()
+    {
+        $this->validate([
+            'newSellingPrice' => 'required|numeric|min:' . $this->itemToAddCache['purchase_price']
+        ]);
+
+        $product = Product::find($this->itemToAddCache['product_id']);
+        if ($product) {
+            $product->selling_price = $this->newSellingPrice;
+            $product->save();
+        }
+
+        $this->purchase_items[] = $this->itemToAddCache;
+        $this->calculateTotalPurchasePrice();
+
+        $this->closePriceWarningModal();
+        $this->resetItemForm();
+    }
+
+    public function closePriceWarningModal()
+    {
+        $this->showPriceWarningModal = false;
+        $this->itemToAddCache = null;
+        $this->newSellingPrice = null;
     }
 
     public function removeItem($index)

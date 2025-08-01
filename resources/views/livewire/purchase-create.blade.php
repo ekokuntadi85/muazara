@@ -92,13 +92,20 @@
             <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Daftar Item</h3>
             <div class="space-y-4">
                 @forelse($purchase_items as $index => $item)
-                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center">
-                        <div>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-1">
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $item['stock'] }} x Rp {{ number_format($item['purchase_price'], 2) }}</p>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Batch: {{ $item['batch_number'] ?: '-' }}</span>
                         </div>
-                        <div class="text-right">
-                            <p class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item['subtotal'], 2) }}</p>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item['expiration_date'])->format('Y-m-d') }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah: {{ $item['stock'] }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item['purchase_price'], 2) }}</span>
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">Subtotal: Rp {{ number_format($item['subtotal'], 2) }}</p>
+                        </div>
+                        <div class="text-right mt-2">
                             <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
                         </div>
                     </div>
@@ -120,6 +127,34 @@
             </button>
         </div>
     </div>
+
+    <!-- Price Warning Modal -->
+    @if($showPriceWarningModal && $itemToAddCache)
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold text-yellow-600 dark:text-yellow-400">Peringatan Harga</h3>
+            <div class="mt-4 text-gray-700 dark:text-gray-300">
+                <p>Harga beli untuk produk <strong>{{ $itemToAddCache['product_name'] }}</strong> (Rp {{ number_format($itemToAddCache['purchase_price'], 2) }}) lebih tinggi dari harga jual saat ini (Rp {{ number_format(App\Models\Product::find($itemToAddCache['product_id'])->selling_price, 2) }}).</p>
+                <p class="mt-2">Anda akan menjual produk ini dengan rugi. Silakan perbarui harga jual.</p>
+            </div>
+
+            <div class="mt-6">
+                <label for="newSellingPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga Jual Baru</label>
+                <input type="number" id="newSellingPrice" wire:model="newSellingPrice" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-900 dark:text-gray-200 dark:border-gray-600">
+                @error('newSellingPrice') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-4">
+                <button type="button" wire:click="closePriceWarningModal" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+                    Batal
+                </button>
+                <button type="button" wire:click="updatePriceAndAddItem" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                    Update Harga & Tambah Item
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 
     @script
     <script>

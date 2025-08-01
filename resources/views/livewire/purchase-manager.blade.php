@@ -33,9 +33,9 @@
                     <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onclick="window.location='{{ route('purchases.show', $purchase->id) }}'">
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ $purchase->invoice_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->supplier->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->purchase_date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($purchase->total_price, 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->due_date ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->due_date ? \Carbon\Carbon::parse($purchase->due_date)->format('d-m-Y') : '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
@@ -74,12 +74,12 @@
                 </div>
                 <div class="flex items-center justify-between text-sm mt-2">
                     <span class="text-gray-600 dark:text-gray-400">Tanggal</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ $purchase->purchase_date }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</span>
                 </div>
                 @if($purchase->due_date)
                 <div class="flex items-center justify-between text-sm mt-2">
                     <span class="text-gray-600 dark:text-gray-400">Jatuh Tempo</span>
-                    <span class="font-semibold text-red-500 dark:text-red-400">{{ $purchase->due_date }}</span>
+                    <span class="font-semibold text-red-500 dark:text-red-400">{{ \Carbon\Carbon::parse($purchase->due_date)->format('d-m-Y') }}</span>
                 </div>
                 @endif
             </div>

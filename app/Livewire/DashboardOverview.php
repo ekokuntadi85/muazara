@@ -16,6 +16,7 @@ class DashboardOverview extends Component
     public $expiringProductsCount = 0;
     public $latestTransactions = [];
     public $upcomingUnpaidPurchases = [];
+    public $salesChartData = ['series' => [], 'labels' => []];
 
     public function mount()
     {
@@ -46,6 +47,33 @@ class DashboardOverview extends Component
                                                 ->orderBy('due_date', 'asc')
                                                 ->limit(5)
                                                 ->get();
+
+        $this->loadSalesChartData();
+    }
+
+    private function loadSalesChartData()
+    {
+        $endDate = Carbon::today();
+        $startDate = Carbon::today()->subDays(29);
+
+        $sales = Transaction::selectRaw('DATE(created_at) as date, SUM(total_price) as total')
+                            ->whereBetween('created_at', [$startDate, $endDate->endOfDay()])
+                            ->groupBy('date')
+                            ->orderBy('date', 'asc')
+                            ->get()
+                            ->pluck('total', 'date');
+
+        $dates = collect();
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $dates->put($date->format('Y-m-d'), 0);
+        }
+
+        $mergedData = $dates->merge($sales);
+
+        $this->salesChartData = [
+            'series' => $mergedData->values()->toArray(),
+            'labels' => $mergedData->keys()->toArray(),
+        ];
     }
 
     public function render()

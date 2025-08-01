@@ -6,7 +6,7 @@
     @endif
 
     <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6">
-        <div class="flex flex-col md:flex-row justify-between md:items-start mb-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-start mb-4">
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Pembelian #{{ $purchase->invoice_number }}</h2>
                 <p class="text-md text-gray-500 dark:text-gray-400">Dari: {{ $purchase->supplier->name }}</p>
@@ -20,10 +20,10 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-b py-6 border-gray-200 dark:border-gray-600">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 border-t border-b py-2 border-gray-200 dark:border-gray-600">
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Tanggal Pembelian</h4>
-                <p class="text-gray-900 dark:text-white">{{ $purchase->purchase_date }}</p>
+                <p class="text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</p>
             </div>
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Nomor Invoice</h4>
@@ -31,23 +31,26 @@
             </div>
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Jatuh Tempo</h4>
-                <p class="text-gray-900 dark:text-white">{{ $purchase->due_date ?? '-' }}</p>
+                <p class="text-gray-900 dark:text-white">{{ $purchase->due_date ? \Carbon\Carbon::parse($purchase->due_date)->format('d-m-Y') : '-' }}</p>
             </div>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-4">
             <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Item Pembelian</h3>
             <div class="space-y-4">
                 @forelse($purchase->productBatches as $item)
-                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex flex-col md:flex-row justify-between">
-                        <div class="mb-4 md:mb-0">
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-1">
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item->product->name }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Batch: {{ $item->batch_number }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Kadaluarsa: {{ $item->expiration_date }}</p>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">( {{ $item->batch_number ?: '-' }} )</span>
                         </div>
-                        <div class="flex md:flex-col justify-between items-end">
-                            <p class="text-md font-semibold text-gray-800 dark:text-gray-100">{{ $item->stock }} {{ $item->product->unit->short_name ?? $item->product->unit->name }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">@ Rp {{ number_format($item->purchase_price, 2) }}</p>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">ED({{ \Carbon\Carbon::parse($item->expiration_date)->format('m/Y') }})</span>
+                            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $item->stock }} {{ $item->product->unit->short_name ?? $item->product->unit->name }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">HPP:Rp.{{ number_format($item->purchase_price, 2) }}</span>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Rp.{{ number_format($item->purchase_price * $item->stock) }}</p>
                         </div>
                     </div>
                 @empty
