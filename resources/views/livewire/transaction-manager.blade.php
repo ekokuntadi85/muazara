@@ -34,9 +34,9 @@
                 @forelse($transactions as $transaction)
                 <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('transactions.show', $transaction->id) }}'">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ $transaction->invoice_number }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $transaction->created_at->format('d M Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $transaction->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $transaction->customer->name ?? 'Walk-in' }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                             {{ $transaction->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
@@ -70,11 +70,11 @@
             <div class="mt-4">
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-gray-600 dark:text-gray-400">Total Transaksi</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0) }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-2">
                     <span class="text-gray-600 dark:text-gray-400">Tanggal</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ $transaction->created_at->format('d M Y') }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $transaction->created_at->format('d/m/Y') }}</span>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@
                 <div class="mt-4 space-y-4">
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-600 dark:text-gray-300">Harga Jual</span>
-                        <span class="text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 2) }}</span>
+                        <span class="text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-600 dark:text-gray-300">Kategori</span>
@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-gray-800 dark:text-gray-100">{{ $batch->stock }} <span class="text-sm font-normal">{{ $product->unit->name }}</span></p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">@ Rp {{ number_format($batch->purchase_price, 2) }}</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">@ Rp {{ number_format($batch->purchase_price, 0) }}</p>
                                 </div>
                             </div>
                         </div>

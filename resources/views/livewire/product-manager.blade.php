@@ -41,7 +41,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap currency-cell text-gray-900 dark:text-gray-200">
                             <span class="currency-symbol">Rp</span>
-                            <span class="currency-value">{{ number_format($product->selling_price, 2) }}</span>
+                            <span class="currency-value">{{ number_format($product->selling_price, 0) }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->unit->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->total_stock }}</td>
@@ -58,7 +58,7 @@
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
             <div class="flex justify-between items-center text-sm mb-1">
-                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0) }}</span>
                 <span class="font-semibold text-gray-900 dark:text-white">Stok: {{ $product->total_stock }}</span>
             </div>
             <div class="flex justify-between items-center text-sm">

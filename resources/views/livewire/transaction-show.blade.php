@@ -13,7 +13,7 @@
                 <p class="text-gray-500 dark:text-gray-400">#{{ $transaction->invoice_number }}</p>
             </div>
             <div class="text-right">
-                <p class="text-gray-500 dark:text-gray-400">{{ $transaction->created_at->format('d M Y, H:i') }}</p>
+                <p class="text-gray-500 dark:text-gray-400">{{ $transaction->created_at->format('d/m/Y, H:i') }}</p>
                 <span class="mt-1 px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
                     {{ $transaction->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
                     {{ ucfirst($transaction->payment_status) }}
@@ -48,10 +48,10 @@
                 <div class="grid grid-cols-3 md:grid-cols-4 gap-4 items-center">
                     <div class="col-span-2">
                         <p class="font-semibold text-gray-900 dark:text-white">{{ $item->product->name }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->quantity }} x Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->quantity }} x Rp {{ number_format($item->price, 0) }}</p>
                     </div>
-                    <div class="hidden md:block text-right text-gray-700 dark:text-gray-200">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
-                    <div class="text-right font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item->quantity * $item->price, 0, ',', '.') }}</div>
+                    <div class="hidden md:block text-right text-gray-700 dark:text-gray-200">Rp {{ number_format($item->price, 0) }}</div>
+                    <div class="text-right font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item->quantity * $item->price, 0) }}</div>
                 </div>
                 @endforeach
             </div>
@@ -61,7 +61,7 @@
         <div class="space-y-2 mb-8">
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-300">Subtotal</span>
-                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-300">Pajak</span>
@@ -73,11 +73,11 @@
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-300">Bayar</span>
-                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->amount_paid, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->amount_paid, 0) }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-300">Kembali</span>
-                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->change, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->change, 0) }}</span>
             </div>
         </div>
 

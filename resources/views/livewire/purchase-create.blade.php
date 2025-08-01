@@ -98,12 +98,12 @@
                             <span class="text-sm text-gray-600 dark:text-gray-400">Batch: {{ $item['batch_number'] ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item['expiration_date'])->format('Y-m-d') }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item['expiration_date'])->format('m/Y') }}</span>
                             <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah: {{ $item['stock'] }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item['purchase_price'], 2) }}</span>
-                            <p class="font-semibold text-gray-800 dark:text-gray-100">Subtotal: Rp {{ number_format($item['subtotal'], 2) }}</p>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item['purchase_price'], 0) }}</span>
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">Subtotal: Rp {{ number_format($item['subtotal'], 0) }}</p>
                         </div>
                         <div class="text-right mt-2">
                             <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
@@ -115,7 +115,7 @@
             </div>
             <div class="mt-6 pt-4 border-t-2 border-gray-200 dark:border-gray-600 flex justify-between items-center">
                 <span class="text-xl font-bold text-gray-900 dark:text-white">Total</span>
-                <span class="text-xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_purchase_price, 2) }}</span>
+                <span class="text-xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_purchase_price, 0) }}</span>
             </div>
         </div>
 
@@ -134,7 +134,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
             <h3 class="text-xl font-bold text-yellow-600 dark:text-yellow-400">Peringatan Harga</h3>
             <div class="mt-4 text-gray-700 dark:text-gray-300">
-                <p>Harga beli untuk produk <strong>{{ $itemToAddCache['product_name'] }}</strong> (Rp {{ number_format($itemToAddCache['purchase_price'], 2) }}) lebih tinggi dari harga jual saat ini (Rp {{ number_format(App\Models\Product::find($itemToAddCache['product_id'])->selling_price, 2) }}).</p>
+                <p>Harga beli untuk produk <strong>{{ $itemToAddCache['product_name'] }}</strong> (Rp {{ number_format($itemToAddCache['purchase_price'], 0) }}) lebih tinggi dari harga jual saat ini (Rp {{ number_format(App\Models\Product::find($itemToAddCache['product_id'])->selling_price, 0) }}).</p>
                 <p class="mt-2">Anda akan menjual produk ini dengan rugi. Silakan perbarui harga jual.</p>
             </div>
 

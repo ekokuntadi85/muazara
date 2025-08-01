@@ -94,10 +94,10 @@
                     <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center">
                         <div>
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $item['stock'] }} x Rp {{ number_format($item['purchase_price'], 2) }}</p>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item['purchase_price'], 0) }}</span>
                         </div>
                         <div class="text-right">
-                            <p class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item['subtotal'], 2) }}</p>
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item['subtotal'], 0) }}</p>
                             <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
             </div>
             <div class="mt-6 pt-4 border-t-2 border-gray-200 dark:border-gray-600 flex justify-between items-center">
                 <span class="text-xl font-bold text-gray-900 dark:text-white">Total</span>
-                <span class="text-xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_purchase_price, 2) }}</span>
+                <span class="text-xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_purchase_price, 0) }}</span>
             </div>
         </div>
 

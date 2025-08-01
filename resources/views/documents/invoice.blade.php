@@ -59,7 +59,7 @@
             </tr>
             <tr>
                 <td>Date:</td>
-                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y H:i') }}</td>
+                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('d/m/Y H:i') }}</td>
             </tr>
             <tr>
                 <td>Customer:</td>
@@ -76,7 +76,7 @@
             @if($transaction->due_date)
             <tr>
                 <td>Due Date:</td>
-                <td>{{ \Carbon\Carbon::parse($transaction->due_date)->format('d M Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($transaction->due_date)->format('d/m/Y') }}</td>
             </tr>
             @endif
         </table>
@@ -95,8 +95,8 @@
                 <tr>
                     <td>{{ $detail->product->name }}</td>
                     <td class="text-center">{{ $detail->quantity }}</td>
-                    <td class="text-right">Rp {{ number_format($detail->price, 2) }}</td>
-                    <td class="text-right">Rp {{ number_format($detail->quantity * $detail->price, 2) }}</td>
+                    <td class="text-right">Rp {{ number_format($detail->price, 0) }}</td>
+                    <td class="text-right">Rp {{ number_format($detail->quantity * $detail->price, 0) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -105,7 +105,7 @@
         <table class="total">
             <tr>
                 <td class="text-right">Total:</td>
-                <td class="text-right">Rp {{ number_format($transaction->total_price, 2) }}</td>
+                <td class="text-right">Rp {{ number_format($transaction->total_price, 0) }}</td>
             </tr>
         </table>
 

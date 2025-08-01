@@ -12,7 +12,7 @@
                 <p class="text-md text-gray-500 dark:text-gray-400">Dari: {{ $purchase->supplier->name }}</p>
             </div>
             <div class="mt-4 md:mt-0 text-right">
-                <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">Total: Rp {{ number_format($purchase->total_price, 2) }}</p>
+                <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">Total: Rp {{ number_format($purchase->total_price, 0) }}</p>
                 <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
                     {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
                     {{ ucfirst($purchase->payment_status) }}
@@ -23,7 +23,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 border-t border-b py-2 border-gray-200 dark:border-gray-600">
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Tanggal Pembelian</h4>
-                <p class="text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</p>
+                <p class="text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d/m/Y') }}</p>
             </div>
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Nomor Invoice</h4>
@@ -31,7 +31,7 @@
             </div>
             <div>
                 <h4 class="font-semibold text-gray-600 dark:text-gray-300">Jatuh Tempo</h4>
-                <p class="text-gray-900 dark:text-white">{{ $purchase->due_date ? \Carbon\Carbon::parse($purchase->due_date)->format('d-m-Y') : '-' }}</p>
+                <p class="text-gray-900 dark:text-white">{{ $purchase->due_date ? \Carbon\Carbon::parse($purchase->due_date)->format('d/m/Y') : '-' }}</p>
             </div>
         </div>
 
@@ -45,12 +45,12 @@
                             <span class="text-sm text-gray-600 dark:text-gray-400">( {{ $item->batch_number ?: '-' }} )</span>
                         </div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">ED({{ \Carbon\Carbon::parse($item->expiration_date)->format('m/Y') }})</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item->expiration_date)->format('m/Y') }}</span>
                             <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $item->stock }} {{ $item->product->unit->short_name ?? $item->product->unit->name }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">HPP:Rp.{{ number_format($item->purchase_price, 2) }}</span>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Rp.{{ number_format($item->purchase_price * $item->stock) }}</p>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item->purchase_price, 0) }}</span>
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">Subtotal: Rp {{ number_format($item->purchase_price * $item->stock, 0) }}</p>
                         </div>
                     </div>
                 @empty

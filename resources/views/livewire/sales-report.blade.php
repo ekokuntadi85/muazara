@@ -72,14 +72,14 @@
         {{-- Totals and Profit/Loss --}}
         <div class="text-left text-xl font-bold mb-4 dark:text-gray-100">
             @if ($viewMode === 'summary')
-                Total Omset ({{ $startDate }} - {{ $endDate }}): Rp {{ number_format($totalRevenue, 2) }}
+                Total Omset ({{ $startDate }} - {{ $endDate }}): Rp {{ number_format($totalRevenue, 0) }}
             @else
-                Total Omset ({{ $selectedDate }}): Rp {{ number_format($dailyTotalRevenue, 2) }}
+                Total Omset ({{ $selectedDate }}): Rp {{ number_format($dailyTotalRevenue, 0) }}
             @endif
 
             @if ($showProfitLossValue)
                 <div class="text-left text-xl font-bold mt-3 dark:text-gray-100">
-                    Laba/Rugi: Rp {{ number_format($totalProfitLoss, 2) }}
+                    Laba/Rugi: Rp {{ number_format($totalProfitLoss, 0) }}
                 </div>
             @endif
         </div>
@@ -108,8 +108,8 @@
                     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                         @forelse($dailySummaries as $summary)
                         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" wire:click="viewDailyReport('{{ $summary->date }}')">
-                            <td data-label="Tanggal" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($summary->date)->format('d F Y') }}</td>
-                            <td data-label="Total Omset" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($summary->daily_total, 2) }}</td>
+                            <td data-label="Tanggal" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($summary->date)->format('d/m/Y') }}</td>
+                            <td data-label="Total Omset" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($summary->daily_total, 0) }}</td>
                         </tr>
                         @empty
                         <tr>
@@ -142,7 +142,7 @@
                             <td data-label="Waktu" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->created_at->format('H:i') }}</td>
                             <td data-label="Nomor Invoice" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->invoice_number ?? '-' }}</td>
                             <td data-label="Customer" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->customer->name ?? 'Umum' }}</td>
-                            <td data-label="Total Harga" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($transaction->total_price, 2) }}</td>
+                            <td data-label="Total Harga" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($transaction->total_price, 0) }}</td>
                             <td data-label="Status Pembayaran" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->payment_status }}</td>
                             <td data-label="Kasir" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->user->name ?? '-' }}</td>
                         </tr>

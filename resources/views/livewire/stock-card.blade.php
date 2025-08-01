@@ -83,7 +83,7 @@
                             $currentBalance += $movement->quantity;
                         @endphp
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($movement->created_at)->format('d M Y H:i') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($movement->created_at)->format('d/m/Y H:i') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $movement->type }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $movement->quantity }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $movement->remarks }}</td>
@@ -113,7 +113,7 @@
                 <div class="flex justify-between items-start mb-2">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $movement->type }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($movement->created_at)->format('d M Y H:i') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($movement->created_at)->format('d/m/Y H:i') }}</p>
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-600 dark:text-gray-300">Kuantitas</p>

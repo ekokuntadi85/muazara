@@ -32,8 +32,8 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ $transaction->invoice_number ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->customer->name ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($transaction->total_price, 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->due_date ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">Rp {{ number_format($transaction->total_price, 0) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $transaction->due_date ? \Carbon\Carbon::parse($transaction->due_date)->format('d/m/Y') : '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 {{ $transaction->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
@@ -74,11 +74,11 @@
             <div class="mt-2">
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-gray-600 dark:text-gray-400">Total Tagihan</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 2) }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($transaction->total_price, 0) }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-gray-600 dark:text-gray-400">Jatuh Tempo</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ $transaction->due_date ?? '-' }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $transaction->due_date ? \Carbon\Carbon::parse($transaction->due_date)->format('d/m/Y') : '-' }}</span>
                 </div>
             </div>
             <div class="flex justify-end mt-4 space-x-2">

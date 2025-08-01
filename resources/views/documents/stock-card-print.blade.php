@@ -33,10 +33,10 @@
     <div class="header">
         <h2>Kartu Stok Produk</h2>
         <h3>{{ $product->name }} (SKU: {{ $product->sku }})</h3>
-        <p>Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
+        <p>Periode: {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}</p>
     </div>
 
-    <p><strong>Saldo Awal (s/d {{ \Carbon\Carbon::parse($startDate)->subDay()->format('d M Y') }}):</strong> {{ $initialBalance }}</p>
+    <p><strong>Saldo Awal (s/d {{ \Carbon\Carbon::parse($startDate)->subDay()->format('d/m/Y') }}):</strong> {{ $initialBalance }}</p>
 
     <table>
         <thead>
@@ -58,7 +58,7 @@
                     $currentBalance += $movement['masuk'] - $movement['keluar'];
                 @endphp
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($movement['created_at'])->format('d/m/y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($movement['created_at'])->format('d/m/Y') }}</td>
                     <td>{{ $movement['type'] }}</td>
                     <td>{{ $movement['remarks'] }}</td>
                     <td>{{ $movement['masuk'] > 0 ? $movement['masuk'] : '-' }}</td>

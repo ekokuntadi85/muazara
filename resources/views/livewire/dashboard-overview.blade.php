@@ -7,7 +7,7 @@
             <div class="bg-white shadow-md rounded-lg p-6 flex items-center justify-between dark:bg-gray-700 dark:shadow-lg">
                 <div>
                     <p class="text-gray-500 text-sm dark:text-gray-300">Penjualan Hari Ini</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($salesToday, 2) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($salesToday, 0) }}</p>
                 </div>
                 <div class="text-green-500 text-4xl">
                     <x-heroicon-o-currency-dollar class="w-10 h-10" />
@@ -62,7 +62,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $purchase->supplier->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap currency-cell text-gray-900 dark:text-gray-200">
                                     <span class="currency-symbol">Rp</span>
-                                    <span class="currency-value">{{ number_format($purchase->total_price, 2) }}</span>
+                                    <span class="currency-value">{{ number_format($purchase->total_price, 0) }}</span>
                                 </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($purchase->due_date)->format('Y-m-d') }}</td>
                     </tr>
@@ -87,7 +87,7 @@
                     <span class="font-medium">Supplier:</span> {{ $purchase->supplier->name }}
                 </div>
                 <div class="text-gray-700 dark:text-gray-200">
-                    <span class="font-medium">Total:</span> Rp {{ number_format($purchase->total_price, 2) }}
+                    <span class="font-medium">Total:</span> Rp {{ number_format($purchase->total_price, 0) }}
                 </div>
             </div>
             @empty

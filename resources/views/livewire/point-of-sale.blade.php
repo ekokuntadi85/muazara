@@ -43,7 +43,7 @@
                                 <h3 class="font-bold text-gray-800 dark:text-white truncate">{{ $product->name }}</h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Stok: {{ $product->total_stock ?? 0 }}</p>
                             </div>
-                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</p>
+                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0) }}</p>
                         </div>
                     @empty
                         <div class="col-span-full text-center py-10">
@@ -63,7 +63,7 @@
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                             <div>
                                 <p class="font-semibold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-300">Harga: Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Harga: Rp {{ number_format($item['price'], 0) }}</p>
                             </div>
                             <div class="flex items-center justify-between mt-3">
                                 <div class="flex items-center space-x-2">
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="text-right mt-2">
-                                <p class="font-bold text-gray-900 dark:text-white">Subtotal: Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
+                                <p class="font-bold text-gray-900 dark:text-white">Subtotal: Rp {{ number_format($item['subtotal'], 0) }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -99,7 +99,7 @@
                                 <h3 class="font-bold text-gray-800 dark:text-white truncate">{{ $product->name }}</h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Stok: {{ $product->total_stock ?? 0 }}</p>
                             </div>
-                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</p>
+                            <p class="text-right font-semibold text-blue-600 dark:text-blue-400 mt-2">Rp {{ number_format($product->selling_price, 0) }}</p>
                         </div>
                     @empty
                         <div class="col-span-full text-center py-10">
@@ -123,9 +123,9 @@
                                 <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 flex items-center">
                                     <div class="flex-1">
                                         <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $item['product_name'] }}</p>
-                                        <p class="text-xs text-gray-600 dark:text-gray-300">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-300">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0) }}</p>
                                     </div>
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</p>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp {{ number_format($item['subtotal'], 0) }}</p>
                                     <button wire:click="removeItem({{ $index }})" class="ml-3 text-red-500 hover:text-red-700">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
@@ -143,7 +143,7 @@
                 <div class="hidden md:block p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:shadow-none">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
-                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
+                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0) }}</span>
                     </div>
                     <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
                         Bayar ({{ count($cart_items) }} item)
@@ -153,7 +153,7 @@
                 <div class="fixed bottom-0 left-0 right-0 block md:hidden p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:shadow-none">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">Total</span>
-                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</span>
+                        <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0) }}</span>
                     </div>
                     <button @click="paymentModal = true" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-lg hover:bg-blue-700" :disabled="{{ count($cart_items) === 0 ? 'true' : 'false' }}">
                         Bayar ({{ count($cart_items) }} item)
@@ -178,7 +178,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Total Tagihan</label>
-                <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0, ',', '.') }}</p>
+                <p class="text-3xl font-bold mt-1 text-gray-900 dark:text-white">Rp {{ number_format($total_price, 0) }}</p>
             </div>
             <div class="mb-6">
                 <label for="amount_paid" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Bayar</label>
@@ -187,7 +187,7 @@
             </div>
             <div class="flex justify-between items-center mb-6">
                 <span class="text-gray-700 dark:text-gray-300">Kembalian</span>
-                <span class="text-xl font-bold text-green-600 dark:text-green-400">Rp {{ number_format($change, 0, ',', '.') }}</span>
+                <span class="text-xl font-bold text-green-600 dark:text-green-400">Rp {{ number_format($change, 0) }}</span>
             </div>
             <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                 <button @click="paymentModal = false" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 mt-2 sm:mt-0">Batal</button>

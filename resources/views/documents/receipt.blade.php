@@ -57,7 +57,7 @@
             </tr>
             <tr>
                 <td>Tanggal:</td>
-                <td class="text-right">{{ \Carbon\Carbon::parse($transaction->created_at)->format('d-m-Y H:i') }}</td>
+                <td class="text-right">{{ \Carbon\Carbon::parse($transaction->created_at)->format('d/m/Y H:i') }}</td>
             </tr>
             <tr>
                 <td>Kasir:</td>

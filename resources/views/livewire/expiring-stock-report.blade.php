@@ -34,7 +34,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $batch->batch_number }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $batch->stock }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Rp {{ number_format($batch->purchase_price, 0, ',', '.') }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm {{ \Carbon\Carbon::parse($batch->expiration_date)->diffInDays(\Carbon\Carbon::now()) <= 30 ? 'text-red-500 font-semibold' : 'text-gray-900 dark:text-white' }}">{{ $batch->expiration_date }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm {{ \Carbon\Carbon::parse($batch->expiration_date)->diffInDays(\Carbon\Carbon::now()) <= 30 ? 'text-red-500 font-semibold' : 'text-gray-900 dark:text-white' }}">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('m/Y') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $batch->purchase->supplier->name ?? 'N/A' }}</td>
                 </tr>
                 @empty
@@ -67,7 +67,7 @@
                 </div>
                 <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-gray-600 dark:text-gray-400">Tgl Kedaluwarsa</span>
-                    <span class="font-semibold {{ \Carbon\Carbon::parse($batch->expiration_date)->diffInDays(\Carbon\Carbon::now()) <= 30 ? 'text-red-500' : 'text-gray-900 dark:text-white' }}">{{ $batch->expiration_date }}</span>
+                    <span class="font-semibold {{ \Carbon\Carbon::parse($batch->expiration_date)->diffInDays(\Carbon\Carbon::now()) <= 30 ? 'text-red-500' : 'text-gray-900 dark:text-white' }}">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('m/Y') }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-gray-600 dark:text-gray-400">Supplier</span>
