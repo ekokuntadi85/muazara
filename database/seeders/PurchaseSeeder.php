@@ -20,10 +20,26 @@ class PurchaseSeeder extends Seeder
             // Attach 1 to 5 product batches to each purchase
             $products = Product::inRandomOrder()->limit(rand(1, 5))->get();
             foreach ($products as $product) {
+                // Ensure the product has a base unit
+                $baseUnit = $product->baseUnit;
+                if (!$baseUnit) {
+                    // Fallback if for some reason base unit is not found (should not happen with ProductUnitSeeder)
+                    $generatedPurchasePrice = fake()->randomFloat(2, 5000, 50000);
+                    $baseUnit = \App\Models\ProductUnit::factory()->create([
+                        'product_id' => $product->id,
+                        'name' => 'Pcs',
+                        'is_base_unit' => true,
+                        'conversion_factor' => 1,
+                        'selling_price' => $generatedPurchasePrice * 1.20,
+                        'purchase_price' => $generatedPurchasePrice,
+                    ]);
+                }
+
                 ProductBatch::factory()->create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $product->id,
-                    'purchase_price' => $product->selling_price * (rand(70, 90) / 100), // 70-90% of selling price
+                    'product_unit_id' => $baseUnit->id, // Assign the base unit
+                    'purchase_price' => fake()->randomFloat(2, 5000, 50000), // Random purchase price
                     'stock' => rand(10, 100),
                     'expiration_date' => now()->addDays(rand(30, 365)),
                 ]);

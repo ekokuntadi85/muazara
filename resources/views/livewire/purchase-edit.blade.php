@@ -61,17 +61,27 @@
                     @error('product_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
+                    <label for="selectedProductUnitId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Satuan Pembelian</label>
+                    <select id="selectedProductUnitId" wire:model.live="selectedProductUnitId" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                        <option value="">Pilih Satuan</option>
+                        @foreach($selectedProductUnits as $unit)
+                            <option value="{{ $unit['id'] }}">{{ $unit['name'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('selectedProductUnitId') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
                     <label for="batch_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Batch</label>
                     <input type="text" id="batch_number" wire:model="batch_number" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
                     @error('batch_number') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="purchase_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga Beli</label>
+                    <label for="purchase_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga Beli per Satuan</label>
                     <input type="number" step="0.01" id="purchase_price" wire:model="purchase_price" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
                     @error('purchase_price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Stok</label>
+                    <label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kuantitas (dalam Satuan Terpilih)</label>
                     <input type="number" id="stock" wire:model="stock" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
                     @error('stock') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
@@ -94,9 +104,10 @@
                     <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center">
                         <div>
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item['purchase_price'], 0) }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Batch: {{ $item['batch_number'] ?: '-' }}</span>
                         </div>
                         <div class="text-right">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah: {{ $item['original_stock_input'] }} {{ $item['unit_name'] }}</span>
                             <p class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item['subtotal'], 0) }}</p>
                             <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
                         </div>

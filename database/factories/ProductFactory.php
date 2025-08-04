@@ -51,9 +51,7 @@ class ProductFactory extends Factory
         return [
             'name' => $this->faker->randomElement($productNames) . ' ' . $this->faker->randomElement(['500mg', '100ml', '250mg', 'Forte', 'Sirup']),
             'sku' => $this->faker->unique()->ean8(),
-            'selling_price' => $this->faker->randomFloat(2, 10000, 100000),
             'category_id' => $this->faker->randomElement($categoryIds),
-            'unit_id' => $this->faker->randomElement($unitIds),
         ];
     }
 }

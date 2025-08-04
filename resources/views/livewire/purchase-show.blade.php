@@ -46,7 +46,7 @@
                         </div>
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item->expiration_date)->format('m/Y') }}</span>
-                            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $item->stock }} {{ $item->product->unit->short_name ?? $item->product->unit->name }}</span>
+                            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $item->stock }} {{ $item->productUnit->name ?? $item->product->baseUnit->name }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item->purchase_price, 0) }}</span>

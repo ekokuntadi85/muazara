@@ -22,16 +22,16 @@
                 <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 border-b pb-2">Detail Produk</h3>
                 <div class="mt-4 space-y-4">
                     <div class="flex justify-between">
-                        <span class="font-medium text-gray-600 dark:text-gray-300">Harga Jual</span>
-                        <span class="text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0) }}</span>
+                        <span class="font-medium text-gray-600 dark:text-gray-300">Harga Jual Dasar</span>
+                        <span class="text-gray-900 dark:text-white">Rp {{ number_format($product->baseUnit->selling_price, 0) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-600 dark:text-gray-300">Kategori</span>
                         <span class="text-gray-900 dark:text-white">{{ $product->category->name }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="font-medium text-gray-600 dark:text-gray-300">Satuan</span>
-                        <span class="text-gray-900 dark:text-white">{{ $product->unit->name }}</span>
+                        <span class="font-medium text-gray-600 dark:text-gray-300">Satuan Dasar</span>
+                        <span class="text-gray-900 dark:text-white">{{ $product->baseUnit->name }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-600 dark:text-gray-300">Total Stok</span>
@@ -40,6 +40,22 @@
                 </div>
             </div>
             
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 border-b pb-2">Detail Satuan</h3>
+                <div class="mt-4 space-y-4">
+                    @forelse($product->productUnits as $unit)
+                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $unit->name }} @if($unit->is_base_unit) (Dasar) @endif</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Faktor Konversi: {{ $unit->conversion_factor }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Harga Jual: Rp {{ number_format($unit->selling_price, 0) }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Harga Beli: Rp {{ number_format($unit->purchase_price, 0) }}</p>
+                        </div>
+                    @empty
+                        <p class="text-gray-500 dark:text-gray-400">Tidak ada satuan lain yang ditentukan.</p>
+                    @endforelse
+                </div>
+            </div>
+
             <div>
                 <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 border-b pb-2">Sejarah Stok</h3>
                 <div class="mt-4 space-y-4">
@@ -51,7 +67,7 @@
                                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $batch->purchase->purchase_date }}</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-bold text-gray-800 dark:text-gray-100">{{ $batch->stock }} <span class="text-sm font-normal">{{ $product->unit->name }}</span></p>
+                                    <p class="font-bold text-lg text-gray-800 dark:text-gray-100">{{ $batch->stock }} <span class="text-sm font-normal">{{ $product->baseUnit->name }}</span></p>
                                     <p class="text-sm text-gray-600 dark:text-gray-300">@ Rp {{ number_format($batch->purchase_price, 0) }}</p>
                                 </div>
                             </div>

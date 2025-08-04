@@ -12,7 +12,7 @@ class PurchaseShow extends Component
 
     public function mount(Purchase $purchase)
     {
-        $this->purchase = $purchase->load(['supplier', 'productBatches.product']);
+        $this->purchase = $purchase->load(['supplier', 'productBatches.product.baseUnit', 'productBatches.productUnit']);
     }
 
     public function markAsPaid()

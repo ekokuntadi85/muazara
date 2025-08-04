@@ -12,7 +12,7 @@ class ProductShow extends Component
 
     public function mount(Product $product)
     {
-        $this->product = $product->load(['category', 'unit', 'productBatches.purchase.supplier']);
+        $this->product = $product->load(['category', 'baseUnit', 'productUnits', 'productBatches.purchase.supplier']);
     }
 
     public function deleteProduct()

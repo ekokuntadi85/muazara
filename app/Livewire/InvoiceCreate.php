@@ -27,6 +27,9 @@ class InvoiceCreate extends Component
     public $searchResults = [];
     public $selectedProductName = '';
 
+    public $units = [];
+    public $selected_unit_id;
+
     public $product_id;
     public $quantity;
     public $price;
@@ -82,36 +85,58 @@ class InvoiceCreate extends Component
 
     public function selectProduct($productId)
     {
-        $product = Product::find($productId);
+        $product = Product::with('productUnits')->find($productId);
         $this->product_id = $product->id;
         $this->selectedProductName = $product->name;
-        $this->price = $product->selling_price; // Set price to selling price
+        $this->units = $product->productUnits;
+        $this->selected_unit_id = $product->productUnits->where('is_base_unit', true)->first()->id ?? $product->productUnits->first()->id;
+        $this->updatePrice();
         $this->searchProduct = '';
         $this->searchResults = [];
+    }
+
+    public function updatedSelectedUnitId()
+    {
+        $this->updatePrice();
+    }
+
+    private function updatePrice()
+    {
+        $selectedUnit = collect($this->units)->firstWhere('id', $this->selected_unit_id);
+        if ($selectedUnit) {
+            $this->price = $selectedUnit['selling_price'];
+        }
     }
 
     public function addItem()
     {
         $this->validate([
             'product_id' => 'required|exists:products,id',
+            'selected_unit_id' => 'required|exists:product_units,id',
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
         ]);
 
         $product = Product::find($this->product_id);
+        $selectedUnit = collect($this->units)->firstWhere('id', $this->selected_unit_id);
 
-        if ($product->total_stock < $this->quantity) {
+        // Convert quantity to base unit for stock checking
+        $quantityInBaseUnit = $this->quantity * $selectedUnit['conversion_factor'];
+
+        if ($product->total_stock < $quantityInBaseUnit) {
             throw ValidationException::withMessages([
-                'quantity' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $product->total_stock,
+                'quantity' => 'Stok produk tidak mencukupi. Stok tersedia: ' . floor($product->total_stock / $selectedUnit['conversion_factor']) . ' ' . $selectedUnit['name'] . ' (' . $product->total_stock . ' Pcs)',
             ]);
         }
 
         $this->invoice_items[] = [
             'product_id' => $this->product_id,
-            'product_name' => $product->name,
+            'product_unit_id' => $this->selected_unit_id,
+            'product_name' => $product->name . ' (' . $selectedUnit['name'] . ')',
             'quantity' => $this->quantity,
             'price' => $this->price,
             'subtotal' => $this->quantity * $this->price,
+            'conversion_factor' => $selectedUnit['conversion_factor'], // Store for stock deduction
         ];
 
         $this->calculateTotalPrice();
@@ -162,13 +187,15 @@ class InvoiceCreate extends Component
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
+                    'product_unit_id' => $item['product_unit_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ]);
 
                 // Reduce stock from product batches (FEFO)
                 $product = Product::find($item['product_id']);
-                $remainingQuantity = $item['quantity'];
+                // Convert quantity to base unit for stock deduction
+                $remainingQuantity = $item['quantity'] * $item['conversion_factor'];
 
                 foreach ($product->productBatches()->orderBy('expiration_date', 'asc')->get() as $batch) {
                     if ($remainingQuantity <= 0) break;

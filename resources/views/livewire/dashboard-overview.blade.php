@@ -40,6 +40,71 @@
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-6 mb-8">
             <h2 class="text-2xl font-bold mb-4 dark:text-gray-100">Tren Penjualan (30 Hari Terakhir)</h2>
             <div id="salesChart"></div>
+
+        @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            document.addEventListener('livewire:load', function () {
+                const salesData = @json($salesChartData);
+
+                const options = {
+                    chart: {
+                        type: 'area',
+                        height: 350,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    series: [{
+                        name: 'Penjualan',
+                        data: salesData.series
+                    }],
+                    xaxis: {
+                        categories: salesData.labels,
+                        type: 'datetime',
+                        labels: {
+                            style: {
+                                colors: '#9CA3AF'
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: '#9CA3AF'
+                            },
+                            formatter: function (value) {
+                                return "Rp " + new Intl.NumberFormat('id-ID').format(value);
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'smooth'
+                    },
+                    tooltip: {
+                        x: {
+                            format: 'dd MMMM yyyy'
+                        },
+                        y: {
+                            formatter: function (value) {
+                                return "Rp " + new Intl.NumberFormat('id-ID').format(value);
+                            }
+                        },
+                        theme: 'dark'
+                    },
+                    noData: {
+                        text: 'Tidak ada data penjualan untuk ditampilkan.'
+                    }
+                };
+
+                const chart = new ApexCharts(document.querySelector("#salesChart"), options);
+                chart.render();
+            });
+        </script>
+        @endpush
         </div>
 
         <h2 class="text-2xl font-bold mb-4 mt-10 dark:text-gray-100">Pembelian Mendekati Jatuh Tempo</h2>

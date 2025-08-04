@@ -25,4 +25,9 @@ class TransactionDetail extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function productUnit()
+    {
+        return $this->belongsTo(ProductUnit::class);
+    }
 }

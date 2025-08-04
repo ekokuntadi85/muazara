@@ -29,8 +29,9 @@
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">ID</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nama Produk</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Jual</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Satuan</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Jual Satuan Dasar</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Satuan Dasar</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Harga Jual Satuan Lain</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok</th>
                     </tr>
                 </thead>
@@ -41,9 +42,16 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap currency-cell text-gray-900 dark:text-gray-200">
                             <span class="currency-symbol">Rp</span>
-                            <span class="currency-value">{{ number_format($product->selling_price, 0) }}</span>
+                            <span class="currency-value">{{ number_format($product->baseUnit->selling_price, 0) }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->unit->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->baseUnit->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">
+                            @foreach($product->productUnits as $unit)
+                                @if(!$unit->is_base_unit)
+                                    <p>{{ $unit->name }}: Rp {{ number_format($unit->selling_price, 0) }}</p>
+                                @endif
+                            @endforeach
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->total_stock }}</td>
                     </tr>
                     @endforeach
@@ -58,12 +66,18 @@
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('products.show', $product->id) }}'">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ $product->name }}</h3>
             <div class="flex justify-between items-center text-sm mb-1">
-                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->selling_price, 0) }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($product->baseUnit->selling_price, 0) }} ({{ $product->baseUnit->name }})</span>
                 <span class="font-semibold text-gray-900 dark:text-white">Stok: {{ $product->total_stock }}</span>
             </div>
+            @foreach($product->productUnits as $unit)
+                @if(!$unit->is_base_unit)
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">{{ $unit->name }}: Rp {{ number_format($unit->selling_price, 0) }}</span>
+                    </div>
+                @endif
+            @endforeach
             <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-600 dark:text-gray-400">SKU: {{ $product->sku }}</span>
-                <span class="text-gray-600 dark:text-gray-400">{{ $product->unit->name }}</span>
             </div>
         </div>
         @empty

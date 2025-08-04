@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             SupplierSeeder::class,
             ProductSeeder::class,
+            ProductUnitSeeder::class,
             PurchaseSeeder::class,
         ]);
 

@@ -52,6 +52,16 @@
                     @error('product_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
+                    <label for="selected_unit_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Satuan</label>
+                    <select id="selected_unit_id" wire:model.live="selected_unit_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" @if(empty($units)) disabled @endif>
+                        @forelse($units as $unit)
+                            <option value="{{ $unit['id'] }}">{{ $unit['name'] }}</option>
+                        @empty
+                            <option>Pilih produk dulu</option>
+                        @endforelse
+                    </select>
+                </div>
+                <div>
                     <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
                     <input type="number" id="quantity" wire:model="quantity" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
                     @error('quantity') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror

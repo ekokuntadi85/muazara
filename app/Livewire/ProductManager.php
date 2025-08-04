@@ -14,7 +14,7 @@ class ProductManager extends Component
 
     public function render()
     {
-        $products = Product::with(['category', 'unit'])
+        $products = Product::with(['category', 'baseUnit', 'productUnits'])
                             ->where(function ($query) {
                                 $query->where('name', 'like', '%' . $this->search . '%')
                                       ->orWhere('sku', 'like', '%' . $this->search . '%');

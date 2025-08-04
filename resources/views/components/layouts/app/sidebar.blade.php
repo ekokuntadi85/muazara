@@ -153,6 +153,8 @@
 
         {{ $slot }}
 
+        @vite('resources/js/app.js')
         @fluxScripts
+        @stack('scripts')
     </body>
 </html>

@@ -27,4 +27,9 @@ class ProductBatch extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
+
+    public function productUnit()
+    {
+        return $this->belongsTo(ProductUnit::class);
+    }
 }

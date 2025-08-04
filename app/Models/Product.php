@@ -12,9 +12,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'sku',
-        'selling_price',
         'category_id',
-        'unit_id',
     ];
 
     public function category()
@@ -22,9 +20,14 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function unit()
+    public function productUnits()
     {
-        return $this->belongsTo(Unit::class);
+        return $this->hasMany(ProductUnit::class);
+    }
+
+    public function baseUnit()
+    {
+        return $this->hasOne(ProductUnit::class)->where('is_base_unit', true);
     }
 
     public function productBatches()
