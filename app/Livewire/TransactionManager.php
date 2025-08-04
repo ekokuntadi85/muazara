@@ -29,7 +29,7 @@ class TransactionManager extends Component
                                         $query->whereRaw('UPPER(type) = ?', [strtoupper($this->filterType)]);
                                     })
                                     ->latest()
-                                    ->paginate(10);
+                                    ->paginate(5);
 
         return view('livewire.transaction-manager', compact('transactions'));
     }

@@ -26,7 +26,7 @@ class PurchaseManager extends Component
                                     $query->where('payment_status', $this->filterStatus);
                                 })
                                 ->latest()
-                                ->paginate(10);
+                                ->paginate(5);
 
         return view('livewire.purchase-manager', compact('purchases'));
     }

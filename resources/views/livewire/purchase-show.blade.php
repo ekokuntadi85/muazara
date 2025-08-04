@@ -40,17 +40,27 @@
             <div class="space-y-4">
                 @forelse($purchase->productBatches as $item)
                     <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                        <div class="flex justify-between items-center mb-1">
+                        <div class="flex justify-between items-center mb-2">
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item->product->name }}</p>
                             <span class="text-sm text-gray-600 dark:text-gray-400">( {{ $item->batch_number ?: '-' }} )</span>
                         </div>
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Expire: {{ \Carbon\Carbon::parse($item->expiration_date)->format('m/Y') }}</span>
-                            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $item->stock }} {{ $item->productUnit->name ?? $item->product->baseUnit->name }}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Harga Beli: Rp {{ number_format($item->purchase_price, 0) }}</span>
-                            <p class="font-semibold text-gray-800 dark:text-gray-100">Subtotal: Rp {{ number_format($item->purchase_price * $item->stock, 0) }}</p>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Tanggal Expire:</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">{{ \Carbon\Carbon::parse($item->expiration_date)->format('d/m/Y') }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Harga Beli:</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item->purchase_price, 0) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Stok:</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">{{ $item->stock }} {{ $item->productUnit->name ?? $item->product->baseUnit->name }}</span>
+                            </div>
+                            <div class="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">Subtotal:</span>
+                                <span class="font-bold text-gray-900 dark:text-white">Rp {{ number_format($item->purchase_price * $item->stock, 0) }}</span>
+                            </div>
                         </div>
                     </div>
                 @empty

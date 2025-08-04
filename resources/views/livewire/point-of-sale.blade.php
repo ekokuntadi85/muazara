@@ -5,21 +5,21 @@
         <!-- Header with Search -->
         <header class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Point of Sale</h1>
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
                 <input type="text"
-                       wire:model.live.debounce.300ms="search"
-                       wire:keydown.enter.prevent="searchProducts"
-                       placeholder="Cari produk berdasarkan nama atau SKU..."
-                       class="w-full pl-10 pr-4 py-3 text-lg border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600">
+                        wire:model.live.debounce.300ms="search"
+                        wire:keydown.enter.prevent="searchProducts"
+                        placeholder="Cari produk berdasarkan nama atau SKU..."
+                        class="shadow appearance-none border rounded py-2 pl-10 pr-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
             </div>
         </header>
 
         <!-- Search Results -->
         <main class="flex-1 overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-inner p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 @if (!empty($search))
                     @forelse ($products as $product)
                         <div wire:click="selectProduct({{ $product->id }})" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex flex-col justify-between cursor-pointer hover:shadow-lg hover:scale-105 transform transition-transform duration-200">

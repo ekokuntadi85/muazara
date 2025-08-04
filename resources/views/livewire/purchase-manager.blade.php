@@ -67,17 +67,17 @@
                     {{ ucfirst($purchase->payment_status) }}
                 </span>
             </div>
-            <div class="mt-4">
+            <div class="mt-2">
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-gray-600 dark:text-gray-400">Total Pembelian</span>
                     <span class="font-semibold text-gray-900 dark:text-white">Rp {{ number_format($purchase->total_price, 2) }}</span>
                 </div>
-                <div class="flex items-center justify-between text-sm mt-2">
+                <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-gray-600 dark:text-gray-400">Tanggal</span>
                     <span class="font-semibold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</span>
                 </div>
                 @if($purchase->due_date)
-                <div class="flex items-center justify-between text-sm mt-2">
+                <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-gray-600 dark:text-gray-400">Jatuh Tempo</span>
                     <span class="font-semibold text-red-500 dark:text-red-400">{{ \Carbon\Carbon::parse($purchase->due_date)->format('d-m-Y') }}</span>
                 </div>
