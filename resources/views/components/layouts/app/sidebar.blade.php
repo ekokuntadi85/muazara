@@ -13,7 +13,7 @@
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')">{{ __('Dashboard') }}</flux:navlist.item>
 
                 <flux:navlist.group :heading="__('Master Data')" expandable :expanded="false">
                     <flux:navlist.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.index')" wire:navigate>Daftar Produk</flux:navlist.item>

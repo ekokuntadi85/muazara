@@ -8,7 +8,7 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\StockMovement;
-use App\Models\ProductUnit; // Import ProductUnit
+use App\Models\ProductUnit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -22,17 +22,14 @@ class PointOfSale extends Component
     public $cart_items = [];
     public $customer_id;
     public $total_price = 0;
-
     public $search = '';
-
     public $amount_paid;
     public $change = 0;
-
     public $currentDateTime;
     public $loggedInUser;
     public $invoiceNumber;
 
-    // New state for the unit selection modal
+    // Modal state
     public $isUnitModalVisible = false;
     public $productForModal = null;
     public $unitsForModal = [];
@@ -46,21 +43,13 @@ class PointOfSale extends Component
 
     protected $messages = [
         'cart_items.required' => 'Keranjang belanja tidak boleh kosong.',
-        'cart_items.min' => 'Keranjang belanja tidak boleh kosong.',
         'amount_paid.required' => 'Jumlah bayar wajib diisi.',
-        'amount_paid.numeric' => 'Jumlah bayar harus berupa angka.',
-        'amount_paid.min' => 'Jumlah bayar tidak boleh negatif.',
     ];
 
     public function mount()
     {
-        // Set default customer to 'UMUM'
-        $umumCustomer = Customer::firstOrCreate(
-            ['name' => 'UMUM'],
-            ['phone' => null, 'address' => null]
-        );
+        $umumCustomer = Customer::firstOrCreate(['name' => 'UMUM'], ['phone' => null, 'address' => null]);
         $this->customer_id = $umumCustomer->id;
-
         $this->updateDateTimeAndUser();
     }
 
@@ -77,20 +66,14 @@ class PointOfSale extends Component
 
     public function searchProducts()
     {
-        if (empty($this->search)) {
-            $this->searchResults = [];
-            return;
-        }
-
-        $this->searchResults = Product::where('name', 'like', '%' . $this->search . '%')
-                                    ->orWhere('sku', 'like', '%' . $this->search . '%')
-                                    ->limit(10)
-                                    ->get();
+        // This is handled by render() method with wire:model.live
     }
 
     public function selectProduct($productId)
     {
         $this->productForModal = Product::with('productUnits', 'productBatches')->find($productId);
+        if (!$this->productForModal) return;
+
         $this->unitsForModal = $this->productForModal->productUnits->map(function ($unit) {
             $totalStockInBase = $this->productForModal->productBatches->sum('stock');
             $unit->stock_in_unit = ($unit->conversion_factor > 0) ? floor($totalStockInBase / $unit->conversion_factor) : 0;
@@ -98,6 +81,7 @@ class PointOfSale extends Component
         });
         $this->quantityToAdd = 1;
         $this->isUnitModalVisible = true;
+        $this->resetErrorBag();
     }
 
     public function addItemToCart($unitId)
@@ -108,7 +92,6 @@ class PointOfSale extends Component
         $selectedUnit = collect($this->unitsForModal)->firstWhere('id', $unitId);
 
         if (!$product || !$selectedUnit) {
-            session()->flash('error', 'Produk atau satuan tidak valid.');
             $this->closeUnitModal();
             return;
         }
@@ -117,7 +100,7 @@ class PointOfSale extends Component
         $totalStockInBaseUnits = $product->productBatches->sum('stock');
 
         if ($totalStockInBaseUnits < $quantityInBaseUnits) {
-            $this->addError('quantityToAdd', 'Stok tidak cukup. Tersedia: ' . $selectedUnit->stock_in_unit . ' ' . $selectedUnit->name);
+            $this->addError('quantityToAdd', 'Stok tidak mencukupi.');
             return;
         }
 
@@ -130,22 +113,10 @@ class PointOfSale extends Component
         }
 
         if ($foundIndex !== -1) {
-            // Update quantity if found
-            $newQuantity = $this->cart_items[$foundIndex]['original_quantity_input'] + $this->quantityToAdd;
-            $newQuantityInBase = $newQuantity * $this->cart_items[$foundIndex]['conversion_factor'];
-
-            // Re-validate stock for the new total quantity
-            $totalStockInBaseUnits = $product->productBatches->sum('stock');
-            if ($totalStockInBaseUnits < $newQuantityInBase) {
-                $this->addError('quantityToAdd', 'Stok tidak cukup untuk menambahkan. Tersedia: ' . $selectedUnit->stock_in_unit . ' ' . $selectedUnit->name);
-                return;
-            }
-
-            $this->cart_items[$foundIndex]['original_quantity_input'] = $newQuantity;
-            $this->cart_items[$foundIndex]['quantity'] = $newQuantityInBase;
-            $this->cart_items[$foundIndex]['subtotal'] = $newQuantity * $this->cart_items[$foundIndex]['price'];
+            $this->cart_items[$foundIndex]['original_quantity_input'] += $this->quantityToAdd;
+            $this->cart_items[$foundIndex]['quantity'] += $quantityInBaseUnits;
+            $this->cart_items[$foundIndex]['subtotal'] = $this->cart_items[$foundIndex]['original_quantity_input'] * $this->cart_items[$foundIndex]['price'];
         } else {
-            // Add as a new item if not found
             $this->cart_items[] = [
                 'product_id' => $product->id,
                 'product_name' => $product->name,
@@ -153,7 +124,7 @@ class PointOfSale extends Component
                 'unit_name' => $selectedUnit->name,
                 'conversion_factor' => $selectedUnit->conversion_factor,
                 'original_quantity_input' => $this->quantityToAdd,
-                'quantity' => $quantityInBaseUnits, // Store quantity in base units for checkout
+                'quantity' => $quantityInBaseUnits,
                 'price' => $selectedUnit->selling_price,
                 'subtotal' => $this->quantityToAdd * $selectedUnit->selling_price,
             ];
@@ -175,7 +146,7 @@ class PointOfSale extends Component
     public function removeItem($index)
     {
         unset($this->cart_items[$index]);
-        $this->cart_items = array_values($this->cart_items); // Re-index the array
+        $this->cart_items = array_values($this->cart_items);
         $this->calculateTotalPrice();
     }
 
@@ -191,22 +162,18 @@ class PointOfSale extends Component
         $product = Product::find($item['product_id']);
         $selectedUnit = ProductUnit::find($item['product_unit_id']);
 
-        if (!$product || !$selectedUnit) {
-            session()->flash('error', 'Produk atau satuan tidak valid.');
-            return;
-        }
+        if (!$product || !$selectedUnit) return;
 
-        $newQuantityBase = $quantity * $selectedUnit['conversion_factor'];
+        $newQuantityBase = $quantity * $selectedUnit->conversion_factor;
         $totalStockInBaseUnits = $product->productBatches->sum('stock');
 
         if ($totalStockInBaseUnits < $newQuantityBase) {
-            throw ValidationException::withMessages([
-                'cart_items.' . $index . '.original_quantity_input' => 'Stok produk tidak mencukupi. Stok tersedia: ' . ($totalStockInBaseUnits / $selectedUnit['conversion_factor']) . ' ' . $selectedUnit['name'],
-            ]);
+            session()->flash('error', 'Stok tidak cukup untuk ' . $product->name);
+            return;
         }
 
         $this->cart_items[$index]['original_quantity_input'] = $quantity;
-        $this->cart_items[$index]['quantity'] = $newQuantityBase; // Store in base units
+        $this->cart_items[$index]['quantity'] = $newQuantityBase;
         $this->cart_items[$index]['subtotal'] = $quantity * $item['price'];
         $this->calculateTotalPrice();
     }
@@ -232,12 +199,26 @@ class PointOfSale extends Component
         $this->validate();
 
         if ($this->amount_paid < $this->total_price) {
-            throw ValidationException::withMessages([
-                'amount_paid' => 'Jumlah bayar tidak mencukupi.',
-            ]);
+            $this->addError('amount_paid', 'Jumlah bayar tidak mencukupi.');
+            return;
         }
 
-        DB::transaction(function () use (&$transaction) {
+        $stockIsSufficient = true;
+        $insufficientItemName = '';
+        $transaction = null;
+
+        DB::transaction(function () use (&$transaction, &$stockIsSufficient, &$insufficientItemName) {
+            foreach ($this->cart_items as $item) {
+                $product = Product::where('id', $item['product_id'])->lockForUpdate()->first();
+                $totalStockInBaseUnits = $product->productBatches()->sum('stock');
+
+                if ($totalStockInBaseUnits < $item['quantity']) {
+                    $stockIsSufficient = false;
+                    $insufficientItemName = $item['product_name'];
+                    return; // Rollback transaction
+                }
+            }
+
             $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
 
             $transaction = Transaction::create([
@@ -246,62 +227,47 @@ class PointOfSale extends Component
                 'total_price' => $this->total_price,
                 'amount_paid' => $this->amount_paid,
                 'change' => $this->change,
-                'due_date' => null, // POS transactions usually don't have due date
                 'customer_id' => $this->customer_id,
                 'user_id' => Auth::id(),
-                'invoice_number' => $this->invoiceNumber, // Add invoice number
+                'invoice_number' => $this->invoiceNumber,
             ]);
 
             foreach ($this->cart_items as $item) {
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
-                    'product_unit_id' => $item['product_unit_id'], // Store selected unit ID
-                    'quantity' => $item['quantity'], // Quantity in base units
-                    'price' => $item['price'], // Price per selected unit
+                    'product_unit_id' => $item['product_unit_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
                 ]);
 
-                // Reduce stock from product batches (FEFO)
-                $product = Product::find($item['product_id']);
-                $remainingQuantity = $item['quantity']; // This is already in base units
-
+                $remainingQuantity = $item['quantity'];
                 foreach ($product->productBatches()->orderBy('expiration_date', 'asc')->get() as $batch) {
                     if ($remainingQuantity <= 0) break;
-
                     $deductible = min($remainingQuantity, $batch->stock);
                     $batch->stock -= $deductible;
                     $batch->save();
-
-                    // Record stock movement for sale
                     StockMovement::create([
                         'product_batch_id' => $batch->id,
                         'type' => 'PJ',
-                        'quantity' => -$deductible, // Negative for stock out
+                        'quantity' => -$deductible,
                         'remarks' => 'Penjualan',
                     ]);
-
                     $remainingQuantity -= $deductible;
                 }
             }
         });
 
-        session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
-        $this->dispatch('transaction-completed', [
-            'transactionId' => $transaction->id,
-        ]);
-        $this->resetAll();
-    }
+        if (!$stockIsSufficient) {
+            $this->addError('cart_items', 'Stok untuk ' . $insufficientItemName . ' tidak lagi mencukupi.');
+            return;
+        }
 
-    private function resetAddProductForm()
-    {
-        $this->selectedProductId = null;
-        $this->selectedProductName = '';
-        $this->selectedProductUnits = [];
-        $this->selectedProductUnitId = null;
-        $this->selectedProductUnitSellingPrice = 0;
-        $this->selectedProductStock = 0;
-        $this->quantityToAdd = 1;
-        $this->resetErrorBag(['selectedProductId', 'selectedProductUnitId', 'quantityToAdd']);
+        if ($transaction) {
+            session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
+            $this->dispatch('transaction-completed', ['transactionId' => $transaction->id]);
+            $this->resetAll();
+        }
     }
 
     private function resetAll()
@@ -311,22 +277,16 @@ class PointOfSale extends Component
         $this->search = '';
         $this->amount_paid = null;
         $this->change = 0;
-        $this->invoiceNumber = null; // Reset invoice number
-        $this->updateDateTimeAndUser(); // Update date/time and user
-        // Reset customer to UMUM
-        $umumCustomer = Customer::firstOrCreate(
-            ['name' => 'UMUM'],
-            ['phone' => null, 'address' => null]
-        );
+        $this->invoiceNumber = null;
+        $this->updateDateTimeAndUser();
+        $umumCustomer = Customer::firstOrCreate(['name' => 'UMUM']);
         $this->customer_id = $umumCustomer->id;
-        $this->resetAddProductForm();
         $this->resetErrorBag();
     }
 
     public function render()
     {
         $customers = Customer::all();
-
         $products = Product::query();
 
         if (!empty($this->search)) {
@@ -334,9 +294,7 @@ class PointOfSale extends Component
                      ->orWhere('sku', 'like', '%' . $this->search . '%');
         }
 
-        $products->withSum('productBatches as total_stock', 'stock');
-
-        $products = $products->paginate(10);
+        $products = $products->with(['productUnits', 'productBatches'])->paginate(10);
 
         return view('livewire.point-of-sale', compact('customers', 'products'));
     }
