@@ -151,7 +151,10 @@
             @endauth
         </flux:header>
 
+
         {{ $slot }}
+
+        
 
         @vite('resources/js/app.js')
         @fluxScripts
