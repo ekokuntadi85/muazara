@@ -110,6 +110,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stock-opname', StockOpname::class)->name('stock-opname.index');
     });
 
+    // Product Import Module
+    Route::get('/imports', App\Livewire\ProductImportManager::class)->name('products.import');
+
     // cetak
     Route::get('/print/receipt/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('print.receipt');
     Route::get('/print/invoice/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printInvoice'])->name('print.invoice');

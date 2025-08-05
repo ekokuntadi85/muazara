@@ -15,12 +15,12 @@ class DatabaseSeeder extends Seeder
         // Call other seeders
         $this->call([
             RolesAndPermissionsSeeder::class,
-            CategorySeeder::class,
-            UnitSeeder::class,
-            SupplierSeeder::class,
-            ProductSeeder::class,
-            ProductUnitSeeder::class,
-            PurchaseSeeder::class,
+            //CategorySeeder::class,
+            //UnitSeeder::class,
+            //SupplierSeeder::class,
+            //ProductSeeder::class,
+            //ProductUnitSeeder::class,
+            //PurchaseSeeder::class,
         ]);
 
         // Create users with different roles

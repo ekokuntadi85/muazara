@@ -18,7 +18,7 @@ class ProductSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(UnitSeeder::class);
 
-        Product::factory()->count(20)->create()->each(function ($product) {
+        Product::factory()->count(2)->create()->each(function ($product) {
             // 1. Create the base unit for every product
             $purchasePrice = fake()->randomFloat(2, 5000, 50000);
             $sellingPrice = $purchasePrice * fake()->randomFloat(2, 1.15, 1.30); // 15-30% markup
