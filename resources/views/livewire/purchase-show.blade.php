@@ -71,12 +71,18 @@
 
         <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex flex-col-reverse md:flex-row md:justify-between md:items-center">
             <div class="flex space-x-2 mt-4 md:mt-0">
+                @can('delete-purchase')
                 <a href="{{ route('purchases.edit', $purchase->id) }}" class="w-full md:w-auto text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">Edit</a>
+                @can('manage-users')
                 <button wire:click="deletePurchase()" wire:confirm="Yakin hapus pembelian ini?" class="w-full md:w-auto text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">Hapus</button>
+                @endcan
+                @endcan
             </div>
+            @can('delete-purchase')
             @if ($purchase->payment_status === 'unpaid')
                 <button wire:click="markAsPaid()" wire:confirm="Tandai lunas?" class="w-full md:w-auto px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">Tandai Lunas</button>
             @endif
+            @endcan
         </div>
     </div>
 </div>

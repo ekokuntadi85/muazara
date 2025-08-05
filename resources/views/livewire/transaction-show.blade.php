@@ -84,7 +84,7 @@
         <!-- Actions -->
         <div class="flex flex-col space-y-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 md:flex-row md:justify-end md:space-x-3 md:space-y-0">
             {{-- Print Buttons --}}
-            @can('manage-sales')
+            @can('access-sales')
             <a href="{{ route('transactions.print-receipt', $transaction->id) }}" target="_blank" class="w-full text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 md:w-auto">Cetak Struk</a>
             <a href="{{ route('transactions.print-invoice', $transaction->id) }}" target="_blank" class="w-full text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 md:w-auto">Cetak Invoice</a>
             @endcan
@@ -93,9 +93,11 @@
             <hr class="border-gray-300 dark:border-gray-600 my-2 w-full md:w-px md:h-auto md:my-0 md:mx-3">
 
             {{-- Edit/Delete Buttons --}}
-            @can('delete-sales')
+            @can('delete-purchase')
             <a href="{{ route('transactions.edit', $transaction->id) }}" class="w-full text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 md:w-auto">Edit</a>
-            <button wire:click="deleteTransaction" wire:confirm="Yakin ingin menghapus transaksi ini?" class="w-full text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 md:w-auto">Hapus</button>
+                @can('manage-users')
+                <button wire:click="deleteTransaction" wire:confirm="Yakin ingin menghapus transaksi ini?" class="w-full text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 md:w-auto">Hapus</button>
+                @endcan
             @endcan
         </div>
     </div>

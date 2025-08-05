@@ -13,7 +13,10 @@
             </div>
             <div class="flex space-x-2 mt-4 md:mt-0">
                 <a href="{{ route('products.edit', $product->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700">Edit</a>
+                @can('access-dashboard')
+                    
                 <button wire:click="deleteProduct()" wire:confirm="Apakah Anda yakin ingin menghapus produk ini?" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg dark:bg-red-600 dark:hover:bg-red-700">Hapus</button>
+                @endcan
             </div>
         </div>
 

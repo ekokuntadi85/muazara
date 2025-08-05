@@ -26,7 +26,17 @@ class RolesAndPermissionsSeeder extends Seeder
             'access-sales',
             'access-purchases',
             'manage-settings',
+            'manage-users',
+            'delete-purchase',
         ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+
+        // Create roles and assign existing permissions
+        $roleSuperAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $roleSuperAdmin->givePermissionTo(Permission::all());
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -44,6 +54,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'access-sales',
             'access-purchases',
             'manage-settings',
+            'delete-purchase',
         ]);
 
         $roleKasir = Role::firstOrCreate(['name' => 'kasir']);

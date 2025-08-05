@@ -17,6 +17,15 @@ class UserManager extends Component
     public $password;
     public $userId;
     public $isUpdateMode = false;
+    public $roles = [];
+    public $selectedRoles = [];
+    public $showModal = false;
+    public $search = ''; // Added for search functionality // New property for modal visibility
+
+    public function mount()
+    {
+        $this->roles = \Spatie\Permission\Models\Role::pluck('name', 'name')->toArray();
+    }
 
     protected function rules()
     {
@@ -30,6 +39,8 @@ class UserManager extends Component
                 Rule::unique('users', 'email')->ignore($this->userId),
             ],
             'password' => $this->isUpdateMode ? 'nullable|string|min:8' : 'required|string|min:8',
+            'selectedRoles' => 'required|array|min:1', // Ensure at least one role is selected
+            'selectedRoles.*' => 'exists:roles,name', // Ensure selected roles exist
         ];
     }
 
@@ -40,11 +51,19 @@ class UserManager extends Component
         'email.unique' => 'Email sudah terdaftar.',
         'password.required' => 'Password wajib diisi.',
         'password.min' => 'Password minimal 8 karakter.',
+        'selectedRoles.required' => 'Setidaknya satu peran harus dipilih.',
+        'selectedRoles.min' => 'Setidaknya satu peran harus dipilih.',
     ];
 
     public function render()
     {
-        $users = User::latest()->paginate(5);
+        $users = User::query()
+                            ->when($this->search, function ($query) {
+                                $query->where('name', 'like', '%' . $this->search . '%')
+                                      ->orWhere('email', 'like', '%' . $this->search . '%');
+                            })
+                            ->latest()
+                            ->paginate(5);
         return view('livewire.user-manager', compact('users'));
     }
 
@@ -62,17 +81,25 @@ class UserManager extends Component
                 $data['password'] = Hash::make($this->password);
             }
             $user->update($data);
+            $user->syncRoles($this->selectedRoles);
             session()->flash('message', 'Pengguna berhasil diperbarui.');
         } else {
-            User::create([
+            $user = User::create([
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
             ]);
+            $user->assignRole($this->selectedRoles);
             session()->flash('message', 'Pengguna berhasil ditambahkan.');
         }
 
-        $this->resetInput();
+        $this->closeModal(); // Close modal and reset form
+    }
+
+    public function createUser() // Method to open modal for new user
+    {
+        $this->resetInput(); // Clear form fields
+        $this->showModal = true; // Open the modal
     }
 
     public function edit($id)
@@ -82,6 +109,8 @@ class UserManager extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->isUpdateMode = true;
+        $this->selectedRoles = $user->getRoleNames()->toArray();
+        $this->showModal = true; // Open modal for edit
     }
 
     public function delete($id)
@@ -97,5 +126,18 @@ class UserManager extends Component
         $this->password = '';
         $this->userId = null;
         $this->isUpdateMode = false;
+        $this->selectedRoles = [];
+        $this->resetErrorBag(); // Clear validation errors
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetInput(); // Reset form when closing modal
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 }
