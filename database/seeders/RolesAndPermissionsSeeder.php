@@ -20,14 +20,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create permissions
         $permissions = [
-            'view-dashboard',
-            'manage-products',
-            'manage-purchases',
-            'delete-purchases',
-            'manage-sales',
-            'delete-sales',
-            'view-reports',
-            'manage-users',
+            'access-dashboard',
+            'access-reports',
+            'access-products',
+            'access-sales',
+            'access-purchases',
             'manage-settings',
         ];
 
@@ -36,21 +33,25 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // Create roles and assign existing permissions
-        $roleOwner = Role::firstOrCreate(['name' => 'owner']);
-        $roleOwner->givePermissionTo($permissions);
+        $roleSuperAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $roleSuperAdmin->givePermissionTo(Permission::all());
 
         $roleAdmin = Role::firstOrCreate(['name' => 'admin']);
         $roleAdmin->givePermissionTo([
-            'view-dashboard',
-            'manage-products',
-            'manage-purchases',
-            'manage-sales',
-            'view-reports',
-            'manage-users',
+            'access-dashboard',
+            'access-reports',
+            'access-products',
+            'access-sales',
+            'access-purchases',
             'manage-settings',
         ]);
 
         $roleKasir = Role::firstOrCreate(['name' => 'kasir']);
-        $roleKasir->givePermissionTo('manage-sales');
+        $roleKasir->givePermissionTo([
+            'access-products',
+            'access-sales',
+            'access-purchases',
+            'manage-settings',
+        ]);
     }
 }

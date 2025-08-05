@@ -24,11 +24,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create users with different roles
-        $owner = User::firstOrCreate(
-            ['email' => 'owner@example.com'],
-            ['name' => 'Owner User', 'password' => bcrypt('password')]
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            ['name' => 'Super Admin User', 'password' => bcrypt('password')]
         );
-        $owner->assignRole('owner');
+        $superAdmin->assignRole('super-admin');
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
