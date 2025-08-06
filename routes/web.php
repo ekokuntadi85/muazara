@@ -63,9 +63,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
         // Purchase Modules
-    Route::middleware(['can:manage-purchases'])->group(function () {
-        Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
+    Route::middleware(['can:access-purchases'])->group(function () {
         Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
+        Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
         Route::get('/purchases/{purchase}', PurchaseShow::class)->name('purchases.show');
         Route::get('/purchases/{purchase}/edit', PurchaseEdit::class)->name('purchases.edit');
     });
