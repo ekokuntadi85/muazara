@@ -29,17 +29,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Super Admin User', 'password' => bcrypt('password')]
         );
         $superAdmin->assignRole('super-admin');
-
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            ['name' => 'Admin User', 'password' => bcrypt('password')]
-        );
-        $admin->assignRole('admin');
-
-        $kasir = User::firstOrCreate(
-            ['email' => 'kasir@example.com'],
-            ['name' => 'Kasir User', 'password' => bcrypt('password')]
-        );
-        $kasir->assignRole('kasir');
+        
     }
 }
