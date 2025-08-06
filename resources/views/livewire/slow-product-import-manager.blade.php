@@ -41,7 +41,7 @@
                     @error('file') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                     @if ($file)
                         <div class="mt-4 text-sm text-gray-600">
-                           File terpilih: {{ $file->getClientOriginalName() }}
+                            File terpilih: {{ $file->getClientOriginalName() }}
                         </div>
                     @endif
                 </div>
@@ -51,7 +51,8 @@
                         <span>Mengunggah file...</span>
                     </div>
                     <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
-                        <span wire:loading.remove wire:target="import">Jadwalkan Impor</span>
+                        <span wire:loading.remove wire:target="file, import">Jadwalkan Impor</span>
+                        <span wire:loading wire:target="file">Mengunggah...</span>
                         <span wire:loading wire:target="import">Menjadwalkan...</span>
                     </button>
                 </div>

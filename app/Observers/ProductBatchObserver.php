@@ -22,7 +22,9 @@ class ProductBatchObserver
             'remarks' => 'Pembelian awal',
         ]);
 
-        $this->updatePurchaseTotalPrice($productBatch->purchase);
+        if ($productBatch->purchase) {
+            $this->updatePurchaseTotalPrice($productBatch->purchase);
+        }
     }
 
     /**
@@ -32,7 +34,9 @@ class ProductBatchObserver
     {
         // Removed the ADJ stock movement creation here.
         // Stock movements for sales (PJ) and opname (OP) will be handled explicitly in their respective modules.
-        $this->updatePurchaseTotalPrice($productBatch->purchase);
+        if ($productBatch->purchase) {
+            $this->updatePurchaseTotalPrice($productBatch->purchase);
+        }
     }
 
     /**
@@ -48,7 +52,9 @@ class ProductBatchObserver
             'remarks' => 'Batch dihapus',
         ]);
 
-        $this->updatePurchaseTotalPrice($productBatch->purchase);
+        if ($productBatch->purchase) {
+            $this->updatePurchaseTotalPrice($productBatch->purchase);
+        }
     }
 
     /**
@@ -64,24 +70,32 @@ class ProductBatchObserver
             'remarks' => 'Batch dikembalikan',
         ]);
 
-        $this->updatePurchaseTotalPrice($productBatch->purchase);
+        if ($productBatch->purchase) {
+            $this->updatePurchaseTotalPrice($productBatch->purchase);
+        }
     }
 
     /**
-     * Handle the ProductBatch "force deleted" event.\n     * This event is not typically used for stock tracking as it bypasses soft deletes.
+     * Handle the ProductBatch "force deleted" event.
+     * This event is not typically used for stock tracking as it bypasses soft deletes.
      */
     public function forceDeleted(ProductBatch $productBatch): void
     {
         // No specific stock movement for force delete, as it's usually a permanent removal
         // and 'deleted' event should cover the stock reduction.
-        $this->updatePurchaseTotalPrice($productBatch->purchase);
+        if ($productBatch->purchase) {
+            $this->updatePurchaseTotalPrice($productBatch->purchase);
+        }
     }
 
     /**
      * Update the total price of the purchase.
      */
-    protected function updatePurchaseTotalPrice(Purchase $purchase)
+    protected function updatePurchaseTotalPrice(?Purchase $purchase)
     {
+        if (!$purchase) {
+            return;
+        }
         $totalPrice = $purchase->productBatches()->sum(DB::raw('purchase_price * stock'));
         $purchase->total_price = $totalPrice;
         $purchase->saveQuietly(); // Use saveQuietly to prevent triggering other events

@@ -63,15 +63,38 @@
                 <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 border-b pb-2">Sejarah Stok</h3>
                 <div class="mt-4 space-y-4">
                     @forelse($product->productBatches as $batch)
-                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onclick="window.location='{{ route('purchases.show', $batch->purchase->id) }}'">
+                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm @if($batch->purchase) cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 @endif" @if($batch->purchase) onclick="window.location='{{ route('purchases.show', $batch->purchase->id) }}'" @endif>
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $batch->purchase->supplier->name }}</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $batch->purchase->purchase_date }}</p>
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $batch->purchase->supplier->name ?? 'Stok Awal' }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $batch->purchase->purchase_date ?? $batch->created_at->format('Y-m-d') }}</p>
+                                    @if ($batch->expiration_date)
+                                        @php
+                                            $expires = \Carbon\Carbon::parse($batch->expiration_date);
+                                            $isExpired = $expires->isPast();
+                                            $isExpiringSoon = !$isExpired && $expires->isBefore(now()->addDays(90));
+                                            
+                                            $statusClass = '';
+                                            if ($isExpired) {
+                                                $statusClass = 'text-red-500 dark:text-red-400 font-semibold';
+                                            } elseif ($isExpiringSoon) {
+                                                $statusClass = 'text-yellow-500 dark:text-yellow-400 font-semibold';
+                                            }
+                                        @endphp
+                                        <p class="text-sm {{ $statusClass }}">
+                                            ED: {{ $expires->format('d/m/Y') }}
+                                            @if($isExpired)
+                                                (Expired)
+                                            @elseif($isExpiringSoon)
+                                                (Expires Soon)
+                                            @endif
+                                        </p>
+                                    @endif
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-lg text-gray-800 dark:text-gray-100">{{ $batch->stock }} <span class="text-sm font-normal">{{ $product->baseUnit->name }}</span></p>
                                     <p class="text-sm text-gray-600 dark:text-gray-300">@ Rp {{ number_format($batch->purchase_price, 0) }}</p>
+                                    
                                 </div>
                             </div>
                         </div>

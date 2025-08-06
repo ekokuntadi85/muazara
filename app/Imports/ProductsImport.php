@@ -34,7 +34,7 @@ class ProductsImport implements ToModel, WithHeadingRow, ShouldQueue, WithChunkR
         $sku = Arr::get($row, 'sku');
         $sellingPrice = Arr::get($row, 'selling_price');
         $purchasePrice = Arr::get($row, 'purchase_price');
-        $stock = Arr::get($row, 'stock');
+        $stock = Arr::get($row, 'stock') ?? 0;
         $expirationDateRaw = Arr::get($row, 'expiration_date');
         $supplierName = Arr::get($row, 'supplier');
         $batchNumber = Arr::get($row, 'nomor_batch', '-');
