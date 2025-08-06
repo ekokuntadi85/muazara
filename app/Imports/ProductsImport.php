@@ -10,12 +10,14 @@ use App\Models\Supplier;
 use App\Models\ProductUnit;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
-class ProductsImport implements ToModel, WithHeadingRow
+class ProductsImport implements ToModel, WithHeadingRow, ShouldQueue, WithChunkReading
 {
     /**
      * @param array $row
@@ -126,5 +128,10 @@ class ProductsImport implements ToModel, WithHeadingRow
             Log::error('Error during import of row:', ['row' => $row, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return null;
         }
+    }
+
+    public function chunkSize(): int
+    {
+        return 200;
     }
 }

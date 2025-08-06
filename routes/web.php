@@ -62,14 +62,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
     });
 
-    // Purchase Modules
-    Route::middleware(['can:access-purchases'])->group(function () {
+        // Purchase Modules
+    Route::middleware(['can:manage-purchases'])->group(function () {
         Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
         Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
         Route::get('/purchases/{purchase}', PurchaseShow::class)->name('purchases.show');
         Route::get('/purchases/{purchase}/edit', PurchaseEdit::class)->name('purchases.edit');
     });
-
+    
     // Transaction Modules
     Route::middleware(['can:access-sales'])->group(function () {
         Route::get('/transactions', TransactionManager::class)->name('transactions.index');
@@ -84,12 +84,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/accounts-receivable', AccountsReceivable::class)->name('accounts-receivable.index');
         
         Route::get('/invoices/create', InvoiceCreate::class)->name('invoices.create');
-
+        
         // Document Printing Routes
         Route::get('/transactions/{transaction}/receipt', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('transactions.print-receipt');
         Route::get('/transactions/{transaction}/invoice', [App\Http\Controllers\DocumentController::class, 'printInvoice'])->name('transactions.print-invoice');
     });
-
+    
     // Reporting Modules
     Route::middleware(['can:access-reports'])->group(function () {
         Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
@@ -99,19 +99,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print'); // Added
         Route::get('/stock-card', StockCard::class)->name('stock-card.index');
     });
-
+    
     // User Management Module
     Route::middleware(['role:super-admin'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
     });
-
+    
     // Stock Opname Module
     Route::middleware(['can:access-products'])->group(function () { // Assuming manage-products permission
         Route::get('/stock-opname', StockOpname::class)->name('stock-opname.index');
     });
-
+    
     // Product Import Module
     Route::get('/imports', App\Livewire\ProductImportManager::class)->name('products.import');
+    Route::get('/slow-imports', \App\Livewire\SlowProductImportManager::class)->name('products.slow-import');
 
     // cetak
     Route::get('/print/receipt/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('print.receipt');
