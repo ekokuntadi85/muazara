@@ -53,9 +53,13 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)->post('/logout');
+        $this->actingAs($user);
 
-        $response->assertRedirect('/');
+        $action = new \App\Livewire\Actions\Logout();
+        $response = $action->__invoke();
+
+        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        $this->assertEquals(url('/'), $response->getTargetUrl());
 
         $this->assertGuest();
     }

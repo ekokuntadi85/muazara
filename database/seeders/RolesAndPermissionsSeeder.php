@@ -20,6 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create permissions
         $permissions = [
+            'view-dashboard',
             'access-dashboard',
             'access-reports',
             'access-products',

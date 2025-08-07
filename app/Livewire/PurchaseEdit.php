@@ -113,19 +113,29 @@ class PurchaseEdit extends Component
         $this->total_purchase_price = $purchase->total_price;
 
         foreach ($purchase->productBatches as $batch) {
+            $productUnit = $batch->productUnit;
+            // If product unit is missing, fall back to the product's base unit
+            if (!$productUnit && $batch->product) {
+                $productUnit = $batch->product->baseUnit;
+            }
+
+            $conversionFactor = $productUnit?->conversion_factor ?: 1;
+            $unitName = $productUnit?->name;
+            $productUnitId = $productUnit?->id;
+
             $this->purchase_items[] = [
                 'id' => $batch->id, // Keep batch ID for update/delete
                 'product_id' => $batch->product_id,
-                'product_name' => $batch->product->name,
-                'product_unit_id' => $batch->product_unit_id, // Load existing product unit ID
-                'unit_name' => $batch->productUnit->name, // Load existing unit name
-                'conversion_factor' => $batch->productUnit->conversion_factor, // Load conversion factor
+                'product_name' => $batch->product?->name,
+                'product_unit_id' => $productUnitId, // Load existing or fallback product unit ID
+                'unit_name' => $unitName, // Load existing or fallback unit name
+                'conversion_factor' => $conversionFactor, // Load conversion factor
                 'batch_number' => $batch->batch_number,
-                'purchase_price' => $batch->purchase_price, // This is already in base unit price
+                'purchase_price' => $batch->purchase_price * $conversionFactor, // Convert base price to unit price for display consistency
                 'stock' => $batch->stock, // This is already in base unit stock
-                'original_stock_input' => $batch->stock / $batch->productUnit->conversion_factor, // Recalculate original input stock
+                'original_stock_input' => $batch->stock / ($conversionFactor ?: 1), // Recalculate original input stock, prevent division by zero
                 'expiration_date' => $batch->expiration_date,
-                'subtotal' => $batch->purchase_price * $batch->stock, // Subtotal based on base unit price and base unit stock
+                'subtotal' => ($batch->purchase_price * $conversionFactor) * ($batch->stock / ($conversionFactor ?: 1)), // Subtotal based on displayed unit price and stock
             ];
         }
     }
@@ -225,8 +235,8 @@ class PurchaseEdit extends Component
             return;
         }
 
-        // Calculate stock in base units
-        $stockInBaseUnits = $this->stock * $selectedUnit['conversion_factor'];
+        // Calculate stock in base units and round it to the nearest integer
+        $stockInBaseUnits = round($this->stock * $selectedUnit['conversion_factor']);
 
         // Get the selling price of the base unit for comparison
         $baseSellingPrice = $product->baseUnit->selling_price ?? 0;
@@ -285,8 +295,8 @@ class PurchaseEdit extends Component
             $this->expiration_date = \Carbon\Carbon::now()->addYear()->format('Y-m-d');
         }
 
-        // Calculate stock in base units
-        $stockInBaseUnits = $this->stock * $selectedUnit['conversion_factor'];
+        // Calculate stock in base units and round it to the nearest integer
+        $stockInBaseUnits = round($this->stock * $selectedUnit['conversion_factor']);
 
         $this->purchase_items[] = [
             'product_id' => $this->product_id,
@@ -366,30 +376,30 @@ class PurchaseEdit extends Component
 
             foreach ($this->purchase_items as $item) {
                 $batchNumber = empty($item['batch_number']) ? '-' : $item['batch_number'];
-                // Determine if it's an existing batch or a new one
+
+                // Always convert to base unit values before saving
+                $selectedUnit = ProductUnit::find($item['product_unit_id']);
+                $stockInBaseUnits = $item['original_stock_input'] * $selectedUnit->conversion_factor;
+                $purchasePriceInBaseUnit = $item['purchase_price'] / $selectedUnit->conversion_factor;
+
+                $batchData = [
+                    'purchase_id' => $purchase->id,
+                    'product_id' => $item['product_id'],
+                    'product_unit_id' => $item['product_unit_id'],
+                    'batch_number' => $batchNumber,
+                    'purchase_price' => $purchasePriceInBaseUnit,
+                    'stock' => $stockInBaseUnits,
+                    'expiration_date' => $item['expiration_date'],
+                ];
+
                 if (isset($item['id'])) {
                     $batch = ProductBatch::find($item['id']);
                     if ($batch) {
-                        $batch->update([
-                            'product_id' => $item['product_id'],
-                            'product_unit_id' => $item['product_unit_id'], // Store selected unit ID
-                            'batch_number' => $batchNumber,
-                            'purchase_price' => $item['purchase_price'], // Price per selected unit
-                            'stock' => $item['stock'], // Stock in base units
-                            'expiration_date' => $item['expiration_date'],
-                        ]);
+                        $batch->update($batchData);
                         $updatedBatchIds[] = $batch->id;
                     }
                 } else {
-                    $batch = ProductBatch::create([
-                        'purchase_id' => $purchase->id,
-                        'product_id' => $item['product_id'],
-                        'product_unit_id' => $item['product_unit_id'], // Store selected unit ID
-                        'batch_number' => $batchNumber,
-                        'purchase_price' => $item['purchase_price'], // Price per selected unit
-                        'stock' => $item['stock'], // Stock in base units
-                        'expiration_date' => $item['expiration_date'],
-                    ]);
+                    $batch = ProductBatch::create($batchData);
                     $updatedBatchIds[] = $batch->id;
                 }
             }
