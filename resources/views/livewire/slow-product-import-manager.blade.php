@@ -50,7 +50,7 @@
                     <div wire:loading wire:target="file" class="text-sm text-gray-500 mr-4">
                         <span>Mengunggah file...</span>
                     </div>
-                    <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150 opacity-100">
                         <span wire:loading.remove wire:target="file, import">Jadwalkan Impor</span>
                         <span wire:loading wire:target="file">Mengunggah...</span>
                         <span wire:loading wire:target="import">Menjadwalkan...</span>

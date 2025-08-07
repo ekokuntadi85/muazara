@@ -5,8 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Purchase;
 use Livewire\WithPagination;
-
-use Livewire\Attributes\Title;
+use Livewire\Attributes\On;
 
 #[Title('Manajemen Pembelian')]
 class PurchaseManager extends Component
@@ -15,6 +14,12 @@ class PurchaseManager extends Component
 
     public $search = '';
     public $filterStatus = 'all';
+
+    #[On('purchaseUpdated')]
+    public function refreshPurchases()
+    {
+        $this->resetPage(); // Optional: Reset to first page after update
+    }
 
     public function render()
     {

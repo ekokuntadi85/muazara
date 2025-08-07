@@ -350,19 +350,24 @@ class PurchaseEdit extends Component
 
     public function removeItem($index)
     {
+        \Illuminate\Support\Facades\Log::info('removeItem called for index: ' . $index);
         unset($this->purchase_items[$index]);
         $this->purchase_items = array_values($this->purchase_items); // Re-index the array
         $this->calculateTotalPurchasePrice();
+        \Illuminate\Support\Facades\Log::info('After removeItem, purchase_items count: ' . count($this->purchase_items));
     }
 
     private function calculateTotalPurchasePrice()
     {
         $this->total_purchase_price = array_sum(array_column($this->purchase_items, 'subtotal'));
+        \Illuminate\Support\Facades\Log::info('calculateTotalPurchasePrice: New total_purchase_price: ' . $this->total_purchase_price);
     }
 
     public function savePurchase()
     {
         $this->validate();
+
+        \Illuminate\Support\Facades\Log::info('savePurchase: Attempting to save purchase with total_purchase_price: ' . $this->total_purchase_price);
 
         DB::transaction(function () {
             $purchase = Purchase::findOrFail($this->purchaseId);
@@ -414,6 +419,7 @@ class PurchaseEdit extends Component
         });
 
         session()->flash('message', 'Pembelian berhasil diperbarui.');
+        $this->dispatch('purchaseUpdated'); // Emit event to notify other components
         return redirect()->route('purchases.index');
     }
 

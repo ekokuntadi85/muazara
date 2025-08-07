@@ -21,10 +21,6 @@ class ProductBatchObserver
             'quantity' => $productBatch->stock,
             'remarks' => 'Pembelian awal',
         ]);
-
-        if ($productBatch->purchase) {
-            $this->updatePurchaseTotalPrice($productBatch->purchase);
-        }
     }
 
     /**
@@ -34,9 +30,6 @@ class ProductBatchObserver
     {
         // Removed the ADJ stock movement creation here.
         // Stock movements for sales (PJ) and opname (OP) will be handled explicitly in their respective modules.
-        if ($productBatch->purchase) {
-            $this->updatePurchaseTotalPrice($productBatch->purchase);
-        }
     }
 
     /**
@@ -51,10 +44,6 @@ class ProductBatchObserver
             'quantity' => -$productBatch->stock, // Record current stock as negative
             'remarks' => 'Batch dihapus',
         ]);
-
-        if ($productBatch->purchase) {
-            $this->updatePurchaseTotalPrice($productBatch->purchase);
-        }
     }
 
     /**
@@ -69,10 +58,6 @@ class ProductBatchObserver
             'quantity' => $productBatch->stock,
             'remarks' => 'Batch dikembalikan',
         ]);
-
-        if ($productBatch->purchase) {
-            $this->updatePurchaseTotalPrice($productBatch->purchase);
-        }
     }
 
     /**
@@ -83,21 +68,5 @@ class ProductBatchObserver
     {
         // No specific stock movement for force delete, as it's usually a permanent removal
         // and 'deleted' event should cover the stock reduction.
-        if ($productBatch->purchase) {
-            $this->updatePurchaseTotalPrice($productBatch->purchase);
-        }
-    }
-
-    /**
-     * Update the total price of the purchase.
-     */
-    protected function updatePurchaseTotalPrice(?Purchase $purchase)
-    {
-        if (!$purchase) {
-            return;
-        }
-        $totalPrice = $purchase->productBatches()->sum(DB::raw('purchase_price * stock'));
-        $purchase->total_price = $totalPrice;
-        $purchase->saveQuietly(); // Use saveQuietly to prevent triggering other events
     }
 }
