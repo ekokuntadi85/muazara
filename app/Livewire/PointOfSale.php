@@ -54,6 +54,7 @@ class PointOfSale extends Component
         $umumCustomer = Customer::firstOrCreate(['name' => 'UMUM'], ['phone' => null, 'address' => null]);
         $this->customer_id = $umumCustomer->id;
         $this->updateDateTimeAndUser();
+        $this->dispatch('focus-search-input');
     }
 
     private function updateDateTimeAndUser()
@@ -135,6 +136,8 @@ class PointOfSale extends Component
 
         $this->calculateTotalPrice();
         $this->closeUnitModal();
+        $this->search = '';
+        $this->dispatch('focus-search-input');
     }
 
     public function closeUnitModal()
