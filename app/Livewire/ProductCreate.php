@@ -30,7 +30,7 @@ class ProductCreate extends Component
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:products,sku',
             'category_id' => 'required|exists:categories,id',
-            'productUnits.*.name' => 'required|string|max:255',
+            'productUnits.*.name' => 'required|string|max:255|exists:units,name',
             'productUnits.*.conversion_factor' => 'required|numeric|min:0.01',
             'productUnits.*.selling_price' => 'required|numeric|min:0',
             'productUnits.*.purchase_price' => 'required|numeric|min:0',

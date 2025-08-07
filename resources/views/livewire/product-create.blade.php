@@ -24,16 +24,12 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="productUnits.{{ $index }}.name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Satuan</label>
-                                    @if($unit['is_base_unit'])
-                                        <input type="text" id="productUnits.{{ $index }}.name" wire:model="productUnits.{{ $index }}.name" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500" readonly>
-                                    @else
-                                        <select id="productUnits.{{ $index }}.name" wire:model="productUnits.{{ $index }}.name" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
-                                            <option value="">Pilih Satuan</option>
-                                            @foreach($units as $u)
-                                                <option value="{{ $u->name }}">{{ $u->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
+                                    <select id="productUnits.{{ $index }}.name" wire:model="productUnits.{{ $index }}.name" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                                        <option value="">Pilih Satuan</option>
+                                        @foreach($units as $u)
+                                            <option value="{{ $u->name }}">{{ $u->name }}</option>
+                                        @endforeach
+                                    </select>
                                     @error('productUnits.' . $index . '.name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                                 </div>
 
