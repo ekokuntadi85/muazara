@@ -321,6 +321,10 @@ class PurchaseCreate extends Component
 
     public function savePurchase()
     {
+        if (empty($this->due_date)) {
+            $this->due_date = now()->format('Y-m-d');
+        }
+
         $this->validate();
 
         DB::transaction(function () {
