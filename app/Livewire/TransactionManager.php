@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\Transaction;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Manajemen Transaksi')]
 class TransactionManager extends Component
 {
     use WithPagination;

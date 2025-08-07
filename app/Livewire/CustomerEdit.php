@@ -6,6 +6,9 @@ use App\Models\Customer;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 
+use Livewire\Attributes\Title;
+
+#[Title('Edit Pelanggan')]
 class CustomerEdit extends Component
 {
     public $customerId;

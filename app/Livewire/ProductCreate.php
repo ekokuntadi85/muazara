@@ -6,6 +6,9 @@ use App\Models\Product;
 use App\Models\Category;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Tambah Produk')]
 class ProductCreate extends Component
 {
     public $name;

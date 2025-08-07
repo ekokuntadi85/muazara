@@ -15,6 +15,9 @@ use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Point of Sale')]
 class PointOfSale extends Component
 {
     use WithPagination;

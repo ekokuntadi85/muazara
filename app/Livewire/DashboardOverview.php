@@ -9,6 +9,9 @@ use App\Models\Customer;
 use App\Models\Purchase;
 use Carbon\Carbon;
 
+use Livewire\Attributes\Title;
+
+#[Title('Dashboard')]
 class DashboardOverview extends Component
 {
     public $salesToday = 0;

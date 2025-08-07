@@ -7,6 +7,9 @@ use App\Models\ProductBatch;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Laporan Stok Kedaluwarsa')]
 class ExpiringStockReport extends Component
 {
     use WithPagination;

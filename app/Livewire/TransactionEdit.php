@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+use Livewire\Attributes\Title;
+
+#[Title('Edit Transaksi')]
 class TransactionEdit extends Component
 {
     public $transactionId;

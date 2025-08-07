@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Pengaturan Profil')]
 class Profile extends Component
 {
     public string $name = '';

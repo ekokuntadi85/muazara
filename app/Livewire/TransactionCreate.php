@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+use Livewire\Attributes\Title;
+
+#[Title('Buat Transaksi')]
 class TransactionCreate extends Component
 {
     public $type = 'pos'; // Default to POS

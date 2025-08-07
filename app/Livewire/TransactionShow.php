@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\Attributes\Title;
+
+#[Title('Lihat Transaksi')]
 class TransactionShow extends Component
 {
     public $transaction;

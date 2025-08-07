@@ -14,6 +14,9 @@ use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Buat Invoice')]
 class InvoiceCreate extends Component
 {
     use WithPagination;

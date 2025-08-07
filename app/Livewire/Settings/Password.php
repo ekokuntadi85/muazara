@@ -8,6 +8,9 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Pengaturan Kata Sandi')]
 class Password extends Component
 {
     public string $current_password = '';

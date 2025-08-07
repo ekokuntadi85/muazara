@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Laporan Penjualan')]
 class SalesReport extends Component
 {
     use WithPagination;

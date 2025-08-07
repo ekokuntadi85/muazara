@@ -8,6 +8,9 @@ use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
+use Livewire\Attributes\Title;
+
+#[Title('Manajemen Pengguna')]
 class UserManager extends Component
 {
     use WithPagination;

@@ -5,6 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Customer;
 
+use Livewire\Attributes\Title;
+
+#[Title('Lihat Pelanggan')]
 class CustomerShow extends Component
 {
     public $customer;

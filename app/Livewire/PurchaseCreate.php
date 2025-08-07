@@ -12,6 +12,9 @@ use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
+use Livewire\Attributes\Title;
+
+#[Title('Buat Pembelian')]
 class PurchaseCreate extends Component
 {
     public $supplier_id;

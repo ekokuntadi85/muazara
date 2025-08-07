@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\Attributes\Title;
+
+#[Title('Lihat Produk')]
 class ProductShow extends Component
 {
     public $product;

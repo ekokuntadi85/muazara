@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\Attributes\Title;
+
+#[Title('Laporan Stok Menipis')]
 class LowStockReport extends Component
 {
     use WithPagination;

@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\Attributes\Title;
+
+#[Title('Lihat Pembelian')]
 class PurchaseShow extends Component
 {
     public $purchase;

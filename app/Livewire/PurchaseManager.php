@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\Purchase;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Manajemen Pembelian')]
 class PurchaseManager extends Component
 {
     use WithPagination;

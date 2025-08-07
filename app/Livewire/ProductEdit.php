@@ -7,6 +7,9 @@ use App\Models\Category;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 
+use Livewire\Attributes\Title;
+
+#[Title('Edit Produk')]
 class ProductEdit extends Component
 {
     public $productId;

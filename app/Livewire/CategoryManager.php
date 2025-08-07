@@ -7,6 +7,9 @@ use Livewire\Component;
 use Illuminate\Validation\Rule;
 use Livewire\WithPagination;
 
+use Livewire\Attributes\Title;
+
+#[Title('Manajemen Kategori')]
 class CategoryManager extends Component
 {
     use WithPagination;
