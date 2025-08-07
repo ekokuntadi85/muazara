@@ -30,12 +30,15 @@ use App\Livewire\ExpiringStockReport;
 use App\Livewire\LowStockReport;
 use App\Livewire\StockOpname;
 use App\Livewire\StockCard;
+use App\Livewire\DatabaseBackupManager;
+use App\Livewire\ProductImportManager;
+use App\Livewire\SlowProductImportManager;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', ProductManager::class)->name('home');
     Route::view('dashboard', 'dashboard')
-        ->middleware(['verified', 'can:access-dashboard'])
+        ->middleware(['verified', 'can:view-dashboard'])
         ->name('dashboard');
 
     Route::middleware(['can:manage-settings'])->group(function () {
@@ -62,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/products/{product}/edit', ProductEdit::class)->name('products.edit');
     });
 
-        // Purchase Modules
+    // Purchase Modules
     Route::middleware(['can:access-purchases'])->group(function () {
         Route::get('/purchases', PurchaseManager::class)->name('purchases.index');
         Route::get('/purchases/create', PurchaseCreate::class)->name('purchases.create');
@@ -96,23 +99,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
         Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');
-        Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print'); // Added
+        Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print');
         Route::get('/stock-card', StockCard::class)->name('stock-card.index');
     });
     
     // User Management Module
     Route::middleware(['role:super-admin'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
+        Route::get('/database-backup', DatabaseBackupManager::class)->name('database.backup');
     });
     
     // Stock Opname Module
-    Route::middleware(['can:access-products'])->group(function () { // Assuming manage-products permission
+    Route::middleware(['can:access-products'])->group(function () {
         Route::get('/stock-opname', StockOpname::class)->name('stock-opname.index');
     });
     
     // Product Import Module
-    Route::get('/imports', App\Livewire\ProductImportManager::class)->name('products.import');
-    Route::get('/slow-imports', \App\Livewire\SlowProductImportManager::class)->name('products.slow-import');
+    Route::get('/imports', ProductImportManager::class)->name('products.import');
+    Route::get('/slow-imports', SlowProductImportManager::class)->name('products.slow-import');
 
     // cetak
     Route::get('/print/receipt/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('print.receipt');
