@@ -28,7 +28,7 @@ use App\Livewire\SalesReport;
 use App\Livewire\UserManager;
 use App\Livewire\ExpiringStockReport;
 use App\Livewire\LowStockReport;
-use App\Livewire\StockOpname;
+use App\Livewire\InventoryCount;
 use App\Livewire\StockCard;
 use App\Livewire\DatabaseBackupManager;
 use App\Livewire\ProductImportManager;
@@ -111,7 +111,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Stock Opname Module
     Route::middleware(['can:access-products'])->group(function () {
-        Route::get('/stock-opname', StockOpname::class)->name('stock-opname.index');
+        Route::get('/stock-opname', InventoryCount::class)->name('stock-opname.index');
     });
     
     // Product Import Module
