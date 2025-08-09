@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth'])->group(function () {
     Route::get('/', ProductManager::class)->name('home');
     Route::view('dashboard', 'dashboard')
-        ->middleware(['verified', 'can:view-dashboard'])
+        ->middleware(['verified', 'can:access-dashboard'])
         ->name('dashboard');
 
     Route::middleware(['can:manage-settings'])->group(function () {

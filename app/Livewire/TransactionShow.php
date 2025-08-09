@@ -21,8 +21,12 @@ class TransactionShow extends Component
     public function deleteTransaction()
     {
         DB::transaction(function () {
-            $this->transaction->transactionDetails()->delete(); // Delete related transaction details
-            $this->transaction->delete(); // Delete the transaction record
+            // Loop through details to trigger model events for stock management
+            foreach ($this->transaction->transactionDetails as $detail) {
+                $detail->delete();
+            }
+            // Now delete the transaction itself
+            $this->transaction->delete();
         });
 
         session()->flash('message', 'Transaksi berhasil dihapus.');

@@ -247,20 +247,7 @@ class PointOfSale extends Component
                     'price' => $item['price'],
                 ]);
 
-                $remainingQuantity = $item['quantity'];
-                foreach ($product->productBatches()->orderBy('expiration_date', 'asc')->get() as $batch) {
-                    if ($remainingQuantity <= 0) break;
-                    $deductible = min($remainingQuantity, $batch->stock);
-                    $batch->stock -= $deductible;
-                    $batch->save();
-                    StockMovement::create([
-                        'product_batch_id' => $batch->id,
-                        'type' => 'PJ',
-                        'quantity' => -$deductible,
-                        'remarks' => 'Penjualan',
-                    ]);
-                    $remainingQuantity -= $deductible;
-                }
+                
             }
         });
 

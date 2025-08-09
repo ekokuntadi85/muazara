@@ -195,28 +195,7 @@ class InvoiceCreate extends Component
                     'price' => $item['price'],
                 ]);
 
-                // Reduce stock from product batches (FEFO)
-                $product = Product::find($item['product_id']);
-                // Convert quantity to base unit for stock deduction
-                $remainingQuantity = $item['quantity'] * $item['conversion_factor'];
-
-                foreach ($product->productBatches()->orderBy('expiration_date', 'asc')->get() as $batch) {
-                    if ($remainingQuantity <= 0) break;
-
-                    $deductible = min($remainingQuantity, $batch->stock);
-                    $batch->stock -= $deductible;
-                    $batch->save();
-
-                    // Record stock movement for sale
-                    StockMovement::create([
-                        'product_batch_id' => $batch->id,
-                        'type' => 'PJ',
-                        'quantity' => -$deductible, // Negative for stock out
-                        'remarks' => 'Penjualan',
-                    ]);
-
-                    $remainingQuantity -= $deductible;
-                }
+                
             }
         });
 
