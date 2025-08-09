@@ -30,7 +30,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $opname->user->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <button type="button" wire:click="changeView('detail', {{ $opname->id }})" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500">Lihat</button>
+                                    @can('delete-purchase')
                                     <button type="button" wire:click="deleteOpname({{ $opname->id }})" wire:confirm="Apakah Anda yakin ingin menghapus opname ini? Stok akan dikembalikan ke keadaan semula." class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red active:bg-red-700 transition ease-in-out duration-150">Hapus</button>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty

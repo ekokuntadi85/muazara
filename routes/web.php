@@ -100,7 +100,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
         Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');
         Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print');
-        Route::get('/stock-card', StockCard::class)->name('stock-card.index');
     });
     
     // User Management Module
@@ -111,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Stock Opname Module
     Route::middleware(['can:access-products'])->group(function () {
+        Route::get('/stock-card', StockCard::class)->name('stock-card.index');
         Route::get('/stock-opname', InventoryCount::class)->name('stock-opname.index');
     });
     
