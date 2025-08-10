@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    container_name: muazara-app-php
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../:/app
+      - vendor_data:/app/vendor
+    command: sh -c "chown -R www-data:www-data /app/storage /app/bootstrap/cache && php-fpm"
+    depends_on:
+      - db
+    env_file:
+      - ../.env
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: muazara-app-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ../:/app
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.6
+    container_name: muazara-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: '${DB_ROOT_PASSWORD:-secret}'
+      MARIADB_DATABASE: '${DB_DATABASE:-muazara}'
+      MARIADB_USER: '${DB_USERNAME:-user}'
+      MARIADB_PASSWORD: '${DB_PASSWORD:-password}'
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+    driver: local
+  vendor_data:
+    driver: local
