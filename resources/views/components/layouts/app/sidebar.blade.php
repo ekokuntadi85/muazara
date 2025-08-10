@@ -43,7 +43,8 @@
 
                 @can('manage-users')
                     <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>Manajemen Pengguna</flux:navlist.item>
-                    <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manaje BackupDB</flux:navlist.item>
+                                            <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manaje BackupDB</flux:navlist.item>
+                        <flux:navlist.item icon="server" :href="route('database.restore')" :current="request()->routeIs('database.restore')" wire:navigate>Restore Database</flux:navlist.item>
                 @endcan
             </flux:navlist>
 

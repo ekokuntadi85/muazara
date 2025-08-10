@@ -31,6 +31,7 @@ use App\Livewire\LowStockReport;
 use App\Livewire\InventoryCount;
 use App\Livewire\StockCard;
 use App\Livewire\DatabaseBackupManager;
+use App\Livewire\DatabaseRestoreManager;
 use App\Livewire\ProductImportManager;
 use App\Livewire\SlowProductImportManager;
 use Illuminate\Support\Facades\Route;
@@ -105,7 +106,8 @@ Route::middleware(['auth'])->group(function () {
     // User Management Module
     Route::middleware(['role:super-admin'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
-        Route::get('/database-backup', DatabaseBackupManager::class)->name('database.backup');
+            Route::get('database-backups', DatabaseBackupManager::class)->name('database.backup');
+    Route::get('database-restore', DatabaseRestoreManager::class)->name('database.restore');
     });
     
     // Stock Opname Module
