@@ -4,7 +4,7 @@ FROM php:8.3-fpm-alpine AS base
 # Install system dependencies using apk
 # Kita juga menginstall build-deps sebagai virtual package agar bisa dihapus setelah selesai
 RUN apk add --no-cache \
-    # Persistent dependencies
+    # Persistent dependencies\
     git \
     unzip \
     libzip \
@@ -13,6 +13,7 @@ RUN apk add --no-cache \
     libxml2 \
     nodejs \
     npm \
+    mariadb-client \
     && apk add --no-cache --virtual .build-deps \
     # Build-time dependencies
     $PHPIZE_DEPS \
@@ -49,6 +50,9 @@ COPY --from=npm_stage /app/node_modules/ /app/node_modules/
 
 # Copy application code
 COPY . .
+
+# Re-create storage directories since they are in .dockerignore
+RUN mkdir -p storage/framework/views storage/framework/sessions storage/framework/cache storage/logs storage/app/public storage/app/temp_restores
 
 # Set permissions for Laravel storage and cache (user www-data juga di alpine image)
 RUN chown -R www-data:www-data storage bootstrap/cache

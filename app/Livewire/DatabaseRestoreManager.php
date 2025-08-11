@@ -43,7 +43,7 @@ class DatabaseRestoreManager extends Component
 
             // Bangun dan jalankan perintah mysql
             $command = sprintf(
-                'mysql -h%s -u%s -p%s %s < %s',
+                'mariadb -h%s -u%s -p%s --skip-ssl %s < %s',
                 escapeshellarg($host),
                 escapeshellarg($username),
                 escapeshellarg($password),

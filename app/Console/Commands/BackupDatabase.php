@@ -48,7 +48,7 @@ class BackupDatabase extends Command
         }
 
         $command = sprintf(
-            'mysqldump -h%s -u%s -p%s %s > %s',
+            'mariadb-dump -h%s -u%s -p%s --skip-ssl %s > %s',
             escapeshellarg($host),
             escapeshellarg($username),
             escapeshellarg($password),
@@ -62,9 +62,9 @@ class BackupDatabase extends Command
             $this->info('Backup database berhasil dibuat: ' . $backupFileName);
         } else {
             $this->error('Backup database gagal.');
-            $this->error('Error Output: ' . $process->errorOutput());
-            $this->error('Standard Error: ' . $process->errorOutput());
-            $this->error('Standard Output: ' . $process->output());
         }
+        // Debugging: Always log output
+        $this->info('Mariadump Standard Output: ' . $process->output());
+        $this->error('Mariadump Error Output: ' . $process->errorOutput());
     }
 }

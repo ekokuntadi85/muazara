@@ -1,0 +1,23 @@
+
+# Git files
+.git
+.gitignore
+
+# Docker files
+.docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Dependencies installed in the container
+vendor/
+node_modules/
+
+# Laravel storage files (logs, cache, sessions, etc.)
+storage/
+
+# Environment file
+.env
+
+# NPM debug log
+npm-debug.log
