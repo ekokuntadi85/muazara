@@ -8,7 +8,9 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\StockMovement;
+use App\Models\TransactionDetailBatch;
 use App\Models\ProductUnit;
+use App\Services\StockService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -24,6 +26,7 @@ class PointOfSale extends Component
 
     public $cart_items = [];
     public $customer_id;
+    public $customer_search = '';
     public $total_price = 0;
     public $search = '';
     public $amount_paid;
@@ -184,6 +187,17 @@ class PointOfSale extends Component
         $this->calculateTotalPrice();
     }
 
+    public function checkStock($index)
+    {
+        $item = $this->cart_items[$index];
+        $product = Product::find($item['product_id']);
+        $totalStockInBaseUnits = $product->productBatches->sum('stock');
+
+        if ($totalStockInBaseUnits < $item['quantity']) {
+            session()->flash('error', 'Stok untuk ' . $item['product_name'] . ' tidak lagi mencukupi.');
+        }
+    }
+
     private function calculateTotalPrice()
     {
         $this->total_price = array_sum(array_column($this->cart_items, 'subtotal'));
@@ -215,13 +229,14 @@ class PointOfSale extends Component
 
         DB::transaction(function () use (&$transaction, &$stockIsSufficient, &$insufficientItemName) {
             foreach ($this->cart_items as $item) {
-                $product = Product::where('id', $item['product_id'])->lockForUpdate()->first();
-                $totalStockInBaseUnits = $product->productBatches()->sum('stock');
+                $product = Product::with('productBatches')->where('id', $item['product_id'])->lockForUpdate()->first();
+                $totalStockInBaseUnits = $product->productBatches->sum('stock');
 
                 if ($totalStockInBaseUnits < $item['quantity']) {
                     $stockIsSufficient = false;
                     $insufficientItemName = $item['product_name'];
-                    return; // Rollback transaction
+                    DB::rollBack();
+                    return;
                 }
             }
 
@@ -239,7 +254,7 @@ class PointOfSale extends Component
             ]);
 
             foreach ($this->cart_items as $item) {
-                TransactionDetail::create([
+                $detail = TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
                     'product_unit_id' => $item['product_unit_id'],
@@ -247,7 +262,7 @@ class PointOfSale extends Component
                     'price' => $item['price'],
                 ]);
 
-                
+                (new StockService())->decrementStock($detail);
             }
         });
 
@@ -277,9 +292,13 @@ class PointOfSale extends Component
         $this->resetErrorBag();
     }
 
+    public function getCustomersProperty()
+    {
+        return Customer::where('name', 'like', '%'.$this->customer_search.'%')->get();
+    }
+
     public function render()
     {
-        $customers = Customer::all();
         $products = Product::query();
 
         if (!empty($this->search)) {
@@ -289,6 +308,9 @@ class PointOfSale extends Component
 
         $products = $products->with(['productUnits', 'productBatches'])->paginate(10);
 
-        return view('livewire.point-of-sale', compact('customers', 'products'));
+        return view('livewire.point-of-sale', [
+            'products' => $products,
+            'customers' => $this->customers,
+        ]);
     }
 }

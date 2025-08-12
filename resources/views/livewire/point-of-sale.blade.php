@@ -64,9 +64,9 @@
                             <p class="font-bold text-gray-900 dark:text-white">{{ $item['product_name'] }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-300">Rp {{ number_format($item['price'], 0) }} / {{ $item['unit_name'] }}</p>
                             <div class="flex items-center mt-2">
-                                <button wire:click="updateQuantity({{ $index }}, {{ $item['original_quantity_input'] - 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">-</button>
+                                <button wire:click="updateQuantity({{ $index }}, {{ $item['original_quantity_input'] - 1 }}); checkStock({{ $index }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">-</button>
                                 <input type="text" value="{{ $item['original_quantity_input'] }}" readonly class="w-12 text-center bg-transparent font-semibold text-gray-900 dark:text-white">
-                                <button wire:click="updateQuantity({{ $index }}, {{ $item['original_quantity_input'] + 1 }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">+</button>
+                                <button wire:click="updateQuantity({{ $index }}, {{ $item['original_quantity_input'] + 1 }}); checkStock({{ $index }})" class="px-3 py-1 rounded-md bg-gray-200 dark:bg-gray-600 text-lg font-bold">+</button>
                             </div>
                         </div>
                         <div class="text-right">

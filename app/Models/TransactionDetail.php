@@ -31,4 +31,9 @@ class TransactionDetail extends Model
     {
         return $this->belongsTo(ProductUnit::class);
     }
+
+    public function transactionDetailBatches()
+    {
+        return $this->hasMany(TransactionDetailBatch::class);
+    }
 }

@@ -21,6 +21,9 @@ class TransactionShow extends Component
     public function deleteTransaction()
     {
         DB::transaction(function () {
+            // Load the transactionDetailBatches relationship before deleting
+            $this->transaction->load('transactionDetails.transactionDetailBatches');
+
             // Loop through details to trigger model events for stock management
             foreach ($this->transaction->transactionDetails as $detail) {
                 $detail->delete();
