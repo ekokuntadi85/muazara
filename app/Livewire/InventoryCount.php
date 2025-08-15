@@ -52,7 +52,21 @@ class InventoryCount extends Component
         $product = Product::with('productBatches')->find($productId);
         if (!$product) return;
 
-        foreach ($product->productBatches as $batch) {
+        $batches = $product->productBatches;
+
+        if ($batches->isEmpty()) {
+            // If no batches exist, create a default one to allow opname
+            $batch = ProductBatch::create([
+                'product_id' => $product->id,
+                'batch_number' => 'OPNAME-' . uniqid(),
+                'purchase_price' => 0, // Or fetch last known price, defaulting to 0
+                'stock' => 0,
+                'expiration_date' => null,
+            ]);
+            $batches->push($batch);
+        }
+
+        foreach ($batches as $batch) {
             if (!collect($this->opname_items)->contains('product_batch_id', $batch->id)) {
                 $this->opname_items[] = [
                     'product_batch_id' => $batch->id,

@@ -154,7 +154,10 @@
             </div>
             <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                 <button @click="paymentModal = false" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 mt-2 sm:mt-0">Batal</button>
-                <button wire:click="checkout" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Selesaikan Transaksi</button>
+                <button wire:click="checkout" wire:loading.attr="disabled" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <span wire:loading.remove>Selesaikan Transaksi</span>
+                    <span wire:loading>Memproses...</span>
+                </button>
             </div>
         </div>
     </div>

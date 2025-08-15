@@ -34,6 +34,7 @@ class PointOfSale extends Component
     public $currentDateTime;
     public $loggedInUser;
     public $invoiceNumber;
+    public $isProcessing = false;
 
     // Modal state
     public $isUnitModalVisible = false;
@@ -216,65 +217,73 @@ class PointOfSale extends Component
 
     public function checkout()
     {
-        $this->validate();
+        if ($this->isProcessing) return;
 
-        if ($this->amount_paid < $this->total_price) {
-            $this->addError('amount_paid', 'Jumlah bayar tidak mencukupi.');
-            return;
-        }
+        $this->isProcessing = true;
 
-        $stockIsSufficient = true;
-        $insufficientItemName = '';
-        $transaction = null;
+        try {
+            $this->validate();
 
-        DB::transaction(function () use (&$transaction, &$stockIsSufficient, &$insufficientItemName) {
-            foreach ($this->cart_items as $item) {
-                $product = Product::with('productBatches')->where('id', $item['product_id'])->lockForUpdate()->first();
-                $totalStockInBaseUnits = $product->productBatches->sum('stock');
-
-                if ($totalStockInBaseUnits < $item['quantity']) {
-                    $stockIsSufficient = false;
-                    $insufficientItemName = $item['product_name'];
-                    DB::rollBack();
-                    return;
-                }
+            if ($this->amount_paid < $this->total_price) {
+                $this->addError('amount_paid', 'Jumlah bayar tidak mencukupi.');
+                return;
             }
 
-            $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
+            $stockIsSufficient = true;
+            $insufficientItemName = '';
+            $transaction = null;
 
-            $transaction = Transaction::create([
-                'type' => 'POS',
-                'payment_status' => 'paid',
-                'total_price' => $this->total_price,
-                'amount_paid' => $this->amount_paid,
-                'change' => $this->change,
-                'customer_id' => $this->customer_id,
-                'user_id' => Auth::id(),
-                'invoice_number' => $this->invoiceNumber,
-            ]);
+            DB::transaction(function () use (&$transaction, &$stockIsSufficient, &$insufficientItemName) {
+                foreach ($this->cart_items as $item) {
+                    $product = Product::with('productBatches')->where('id', $item['product_id'])->lockForUpdate()->first();
+                    $totalStockInBaseUnits = $product->productBatches->sum('stock');
 
-            foreach ($this->cart_items as $item) {
-                $detail = TransactionDetail::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $item['product_id'],
-                    'product_unit_id' => $item['product_unit_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
+                    if ($totalStockInBaseUnits < $item['quantity']) {
+                        $stockIsSufficient = false;
+                        $insufficientItemName = $item['product_name'];
+                        DB::rollBack();
+                        return;
+                    }
+                }
+
+                $this->invoiceNumber = 'POS-' . Carbon::now()->format('YmdHis');
+
+                $transaction = Transaction::create([
+                    'type' => 'POS',
+                    'payment_status' => 'paid',
+                    'total_price' => $this->total_price,
+                    'amount_paid' => $this->amount_paid,
+                    'change' => $this->change,
+                    'customer_id' => $this->customer_id,
+                    'user_id' => Auth::id(),
+                    'invoice_number' => $this->invoiceNumber,
                 ]);
 
-                (new StockService())->decrementStock($detail);
+                foreach ($this->cart_items as $item) {
+                    $detail = TransactionDetail::create([
+                        'transaction_id' => $transaction->id,
+                        'product_id' => $item['product_id'],
+                        'product_unit_id' => $item['product_unit_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]);
+
+                    
+                }
+            });
+
+            if (!$stockIsSufficient) {
+                $this->addError('cart_items', 'Stok untuk ' . $insufficientItemName . ' tidak lagi mencukupi.');
+                return;
             }
-        });
 
-        if (!$stockIsSufficient) {
-            $this->addError('cart_items', 'Stok untuk ' . $insufficientItemName . ' tidak lagi mencukupi.');
-            return;
-        }
-
-        if ($transaction) {
-            session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
-            $this->dispatch('transaction-completed', ['transactionId' => $transaction->id]);
-            $this->resetAll();
+            if ($transaction) {
+                session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
+                $this->dispatch('transaction-completed', ['transactionId' => $transaction->id]);
+                $this->resetAll();
+            }
+        } finally {
+            $this->isProcessing = false;
         }
     }
 
