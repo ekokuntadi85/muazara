@@ -12,10 +12,10 @@ class TransactionDetailObserver
     /**
      * Handle the TransactionDetail "created" event.
      */
-    // public function created(TransactionDetail $detail): void
-    // {
-    //     $this->decrementStock($detail);
-    // }
+    public function created(TransactionDetail $detail): void
+    {
+        (new StockService())->decrementStock($detail);
+    }
 
     /**
      * Handle the TransactionDetail "deleted" event.

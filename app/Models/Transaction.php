@@ -35,4 +35,13 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionDetail::class);
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($transaction) {
+            $transaction->transactionDetails()->each(function ($detail) {
+                $detail->delete();
+            });
+        });
+    }
 }
