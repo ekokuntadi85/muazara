@@ -14,8 +14,12 @@ use App\Models\StockOpname;
 use App\Observers\StockOpnameObserver;
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
+    public const HOME = '/dashboard';
+
     /**
      * Register any application services.
      */

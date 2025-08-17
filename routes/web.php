@@ -36,8 +36,12 @@ use App\Livewire\ProductImportManager;
 use App\Livewire\SlowProductImportManager;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', ProductManager::class)->name('home');
+
     Route::view('dashboard', 'dashboard')
         ->middleware(['verified', 'can:access-dashboard'])
         ->name('dashboard');
@@ -57,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customers', CustomerManager::class)->name('customers.index');
     Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
     Route::get('/customers/{customer}/edit', CustomerEdit::class)->name('customers.edit');
+    Route::get('kartu-monitoring-suhu', \App\Livewire\KartuMonitoringSuhuManager::class)->name('kartu-monitoring-suhu');
+    Route::get('kartu-monitoring-suhu/print/{month}', [App\Http\Controllers\KartuMonitoringSuhuController::class, 'printPdf'])->name('kartu-monitoring-suhu.print');
 
     // Product Modules
     Route::middleware(['can:access-products'])->group(function () {
@@ -119,6 +125,7 @@ Route::middleware(['auth'])->group(function () {
     // Product Import Module
     Route::get('/imports', ProductImportManager::class)->name('products.import');
     Route::get('/slow-imports', SlowProductImportManager::class)->name('products.slow-import');
+    
 
     // cetak
     Route::get('/print/receipt/{transactionId}', [App\Http\Controllers\DocumentController::class, 'printReceipt'])->name('print.receipt');

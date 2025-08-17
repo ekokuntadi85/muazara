@@ -29,6 +29,11 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /app
 
+# --- Create a non-root user ---
+ARG UID=1000
+ARG GID=1000
+RUN addgroup -g $GID zen && adduser -u $UID -G zen -s /bin/sh -D zen
+
 # --- NPM Build Stage ---
 FROM base AS npm_stage
 COPY package.json package-lock.json ./

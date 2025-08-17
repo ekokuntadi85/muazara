@@ -43,9 +43,10 @@
 
                 @can('manage-users')
                     <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>Manajemen Pengguna</flux:navlist.item>
-                                            <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manaje BackupDB</flux:navlist.item>
-                        <flux:navlist.item icon="server" :href="route('database.restore')" :current="request()->routeIs('database.restore')" wire:navigate>Restore Database</flux:navlist.item>
+                    <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manaje BackupDB</flux:navlist.item>
+                    <flux:navlist.item icon="server" :href="route('database.restore')" :current="request()->routeIs('database.restore')" wire:navigate>Restore Database</flux:navlist.item>
                 @endcan
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('kartu-monitoring-suhu')" :current="request()->routeIs('kartu-monitoring-suhu')" wire:navigate>Kartu Monitoring Suhu</flux:navlist.item>
             </flux:navlist>
 
             <flux:spacer />
