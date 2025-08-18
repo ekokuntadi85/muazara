@@ -20,7 +20,7 @@ class DatabaseRestoreManager extends Component
     public function restoreDatabase()
     {
         $this->validate([
-            'sqlFile' => 'required|file|mimes:sql,txt',
+                        'sqlFile' => 'required|file|mimes:sql,txt,bin', // 'bin' for application/octet-stream
         ]);
 
         $this->isRestoring = true;

@@ -65,11 +65,11 @@
         <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600">
             <div class="flex justify-between items-start">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($kartu->waktu_pengukuran)->format('d') }}</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Waktu: {{ \Carbon\Carbon::parse($kartu->waktu_pengukuran)->format('H:i') }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Ruangan: {{ $kartu->suhu_ruangan }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Pendingin: {{ $kartu->suhu_pendingin }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">User: {{ $kartu->user?->name }}</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Tanggal : {{ \Carbon\Carbon::parse($kartu->waktu_pengukuran)->format('d') }}</h3>
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Waktu : {{ \Carbon\Carbon::parse($kartu->waktu_pengukuran)->format('H:i') }}</p>
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Suhu Ruangan : {{ $kartu->suhu_ruangan }}</p>
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Suhu Pendingin : {{ $kartu->suhu_pendingin }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">User : {{ $kartu->user?->name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <button wire:click="edit({{ $kartu->id }})" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full text-xs dark:bg-green-600 dark:hover:bg-green-700">Edit</button>
