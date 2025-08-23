@@ -49,6 +49,9 @@ RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist
 # --- Final Application Stage ---
 FROM base AS final_app
 
+# Copy composer executable
+COPY --from=composer_stage /usr/bin/composer /usr/bin/composer
+
 # Copy dependencies from previous stages
 COPY --from=composer_stage /app/vendor/ /app/vendor/
 COPY --from=npm_stage /app/node_modules/ /app/node_modules/

@@ -8,9 +8,9 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-      - vendor_data:/app/vendor
       - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
-    command: sh -c "chown -R www-data:www-data /app/storage /app/bootstrap/cache && php-fpm"
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    command: sh -c "php-fpm"
     depends_on:
       - db
     env_file:
@@ -47,6 +47,4 @@ services:
 
 volumes:
   db_data:
-    driver: local
-  vendor_data:
     driver: local
