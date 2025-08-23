@@ -76,12 +76,9 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     @php
-                        $currentBalance = $initialBalance;
+                        $currentBalance = $finalBalance;
                     @endphp
                     @forelse($stockMovements as $movement)
-                        @php
-                            $currentBalance += $movement->quantity;
-                        @endphp
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ \Carbon\Carbon::parse($movement->created_at)->format('d/m/Y H:i') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $movement->type }}</td>
@@ -90,6 +87,9 @@
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $movement->productBatch->batch_number }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $currentBalance }}</td>
                         </tr>
+                        @php
+                            $currentBalance -= $movement->quantity;
+                        @endphp
                     @empty
                         <tr>
                             <td colspan="6" class="text-center py-10 text-gray-500 dark:text-gray-400">Tidak ada pergerakan stok dalam periode ini.</td>
@@ -103,12 +103,9 @@
     <!-- Mobile Card View for History -->
     <div class="block md:hidden space-y-4">
         @php
-            $currentBalance = $initialBalance;
+            $currentBalance = $finalBalance;
         @endphp
         @forelse($stockMovements as $movement)
-            @php
-                $currentBalance += $movement->quantity;
-            @endphp
             <div class="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div class="flex justify-between items-start mb-2">
                     <div>
@@ -136,6 +133,9 @@
                     </div>
                 </div>
             </div>
+            @php
+                $currentBalance -= $movement->quantity;
+            @endphp
         @empty
         <div class="text-center py-10 px-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
             <p class="text-gray-500 dark:text-gray-400">Tidak ada pergerakan stok dalam periode ini.</p>

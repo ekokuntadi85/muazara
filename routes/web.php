@@ -114,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users', UserManager::class)->name('users.index');
             Route::get('database-backups', DatabaseBackupManager::class)->name('database.backup');
     Route::get('database-restore', DatabaseRestoreManager::class)->name('database.restore');
+    Route::get('stock-consistency-check', \App\Livewire\StockConsistencyCheck::class)->name('stock-consistency.index');
     });
     
     // Stock Opname Module
@@ -121,6 +122,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stock-card', StockCard::class)->name('stock-card.index');
         Route::get('/stock-opname', InventoryCount::class)->name('stock-opname.index');
     });
+
+    
     
     // Product Import Module
     Route::get('/imports', ProductImportManager::class)->name('products.import');

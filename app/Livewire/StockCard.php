@@ -108,7 +108,7 @@ class StockCard extends Component
                                     $query->where('product_id', $this->selectedProductId);
                                 })
                                 ->whereBetween('created_at', [$this->startDate, $this->endDate]) // Filter movements within period
-                                ->orderBy('created_at', 'asc');
+                                ->orderBy('created_at', 'desc');
 
         $stockMovements = $query->paginate(10);
 
