@@ -16,7 +16,7 @@ class TransactionFactory extends Factory
         $totalPrice = $this->faker->randomFloat(2, 10000, 1000000);
 
         return [
-            'type' => $this->faker->randomElement(['sales', 'purchase']),
+            'type' => $this->faker->randomElement(['pos', 'invoice']),
             'payment_status' => $this->faker->randomElement(['paid', 'unpaid']),
             'total_price' => $totalPrice,
             'amount_paid' => $totalPrice,
