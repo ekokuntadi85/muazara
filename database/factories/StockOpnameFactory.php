@@ -24,6 +24,7 @@ class StockOpnameFactory extends Factory
         return [
             'notes' => $this->faker->sentence(),
             'opname_date' => $this->faker->date(),
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

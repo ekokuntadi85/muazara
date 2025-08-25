@@ -5,9 +5,11 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use Spatie\Permission\Models\Permission;
 
 class ExampleTest extends TestCase
 {
+    use RefreshDatabase;
 
     /** @test */
     public function test_returns_a_successful_response(): void
@@ -16,6 +18,10 @@ class ExampleTest extends TestCase
         $user = User::factory()->create([
             'email_verified_at' => now(),
         ]);
+
+        // Ensure the permission exists and assign it to the user
+        Permission::firstOrCreate(['name' => 'access-dashboard']);
+        $user->givePermissionTo('access-dashboard');
 
         // Authenticate the user
         $this->actingAs($user);

@@ -44,7 +44,8 @@ RUN rm -rf node_modules && npm install
 FROM base AS composer_stage
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist
+RUN composer install --no-interaction --no-scripts --prefer-dist
+RUN chown -R www-data:www-data vendor
 
 # --- Final Application Stage ---
 FROM base AS final_app
