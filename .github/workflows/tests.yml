@@ -56,6 +56,9 @@ jobs:
           php artisan config:clear
           php artisan cache:clear
 
+      - name: Debug StockOpnameDetailFactory
+        run: cat database/factories/StockOpnameDetailFactory.php
+
       - name: Build Assets
         run: npm run build
 
