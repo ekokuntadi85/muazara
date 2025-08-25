@@ -1,5 +1,5 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-    <div class="w-full max-w-sm p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+<div class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="w-full sm:max-w-sm p-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700">
         <x-auth-header :title="__('Login MuazaraApp')" :description="__('Pilih Nama dan masukkan passwordmu')" />
 
         <!-- Session Status -->
