@@ -25,6 +25,7 @@ class StockOpnameTest extends TestCase
         Permission::firstOrCreate(['name' => 'access-products']);
         $user->givePermissionTo('access-products');
         $this->actingAs($user); // Authenticate a user for tests
+        $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
     }
 
     /** @test */
