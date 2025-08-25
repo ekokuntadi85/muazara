@@ -25,7 +25,7 @@ class StockOpnameDetailFactory extends Factory
             'stock_opname_id' => \App\Models\StockOpname::factory(),
             'product_batch_id' => \App\Models\ProductBatch::factory(),
             'system_stock' => $this->faker->numberBetween(1, 100),
-            'physical_stock' => $this->faker->numberBetween(1, 100),
+                        'physical_stock' => $this->faker->numberBetween(1, 100),
         ];
     }
 }
