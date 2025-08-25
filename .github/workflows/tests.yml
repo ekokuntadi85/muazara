@@ -50,6 +50,12 @@ jobs:
       - name: Run Migrations
         run: php artisan migrate --force
 
+      - name: Clear Caches and Rebuild Autoload
+        run: |
+          composer dump-autoload
+          php artisan config:clear
+          php artisan cache:clear
+
       - name: Build Assets
         run: npm run build
 
