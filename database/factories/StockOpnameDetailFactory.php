@@ -23,7 +23,6 @@ class StockOpnameDetailFactory extends Factory
     {
         return [
             'stock_opname_id' => \App\Models\StockOpname::factory(),
-            'product_id' => \App\Models\Product::factory(),
             'product_batch_id' => \App\Models\ProductBatch::factory(),
             'system_stock' => $this->faker->numberBetween(1, 100),
             'counted_stock' => $this->faker->numberBetween(1, 100),
