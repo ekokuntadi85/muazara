@@ -7,8 +7,6 @@ use Tests\TestCase;
 use App\Models\User;
 
 class ExampleTest extends TestCase
-{
-    use RefreshDatabase;
 
     /** @test */
     public function test_returns_a_successful_response(): void

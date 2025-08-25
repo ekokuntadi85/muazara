@@ -24,7 +24,6 @@ class StockOpnameFactory extends Factory
         return [
             'notes' => $this->faker->sentence(),
             'opname_date' => $this->faker->date(),
-            'status' => $this->faker->randomElement(['pending', 'completed']),
         ];
     }
 }
