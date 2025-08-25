@@ -10,6 +10,8 @@ use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Database\Factories\StockOpnameFactory;
+use Database\Factories\StockOpnameDetailFactory;
 
 class StockOpnameTest extends TestCase
 {

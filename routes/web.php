@@ -121,6 +121,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:access-products'])->group(function () {
         Route::get('/stock-card', StockCard::class)->name('stock-card.index');
         Route::get('/stock-opname', InventoryCount::class)->name('stock-opname.index');
+        Route::post('/stock-opnames', [App\Http\Controllers\StockOpnameController::class, 'store']);
     });
 
     
