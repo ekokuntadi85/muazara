@@ -13,7 +13,7 @@ class ExampleTest extends TestCase
 
     public function test_returns_a_successful_response(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email_verified_at' => now()]);
         $this->actingAs($user);
 
         $response = $this->get('/dashboard');

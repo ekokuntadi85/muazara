@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Database\Factories\StockOpnameFactory;
 use Database\Factories\StockOpnameDetailFactory;
+use Spatie\Permission\Models\Permission;
 
 class StockOpnameTest extends TestCase
 {
@@ -20,7 +21,10 @@ class StockOpnameTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->actingAs(User::factory()->create()); // Authenticate a user for tests
+        $user = User::factory()->create();
+        Permission::firstOrCreate(['name' => 'access-products']);
+        $user->givePermissionTo('access-products');
+        $this->actingAs($user); // Authenticate a user for tests
     }
 
     /** @test */
