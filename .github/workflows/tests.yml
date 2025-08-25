@@ -18,6 +18,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+
+      - name: Debug StockOpnameDetailFactory After Checkout
+        run: cat database/factories/StockOpnameDetailFactory.php
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
