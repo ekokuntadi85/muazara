@@ -8,6 +8,17 @@ use App\Models\StockMovement;
 class StockOpnameDetailObserver
 {
     /**
+     * Handle the StockOpnameDetail "creating" event.
+     */
+    public function creating(StockOpnameDetail $detail): void
+    {
+        $systemStock = (int) $detail->system_stock;
+        $physicalStock = (int) $detail->physical_stock;
+
+        $detail->difference = $physicalStock - $systemStock;
+    }
+
+    /**
      * Handle the StockOpnameDetail "created" event.
      */
     public function created(StockOpnameDetail $detail): void
