@@ -68,13 +68,32 @@
                     @error('product_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
+                    <label for="product_unit_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Satuan</label>
+                    <select id="product_unit_id" wire:model.live="product_unit_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" @if(empty($product_units)) disabled @endif>
+                        <option value="">Pilih Satuan</option>
+                        @foreach($product_units as $unit)
+                            <option value="{{ $unit['id'] }}">{{ $unit['name'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('product_unit_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+                <div>
                     <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah</label>
-                    <input type="number" id="quantity" wire:model="quantity" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
-                    @error('quantity') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    <input type="number" id="quantity" wire:model.live="quantity" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @if($stock_warning)
+                        <span class="text-red-500 text-xs mt-1">{{ $stock_warning }}</span>
+                    @else
+                        @error('quantity') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    @endif
+                </div>
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
+                    <input type="number" id="price" wire:model="price" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                    @error('price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="text-right mt-6">
-                <button type="button" wire:click="addItem()" class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-green-500 dark:hover:bg-green-600">Tambah Item ke Keranjang</button>
+                <button type="button" wire:click="addItem()" @if(!empty($stock_warning)) disabled @endif class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-green-500 dark:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed">Tambah Item ke Keranjang</button>
             </div>
         </div>
 

@@ -6,11 +6,11 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\TransactionDetailBatch;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-
 use Livewire\Attributes\Title;
 
 #[Title('Buat Transaksi')]
@@ -159,18 +159,43 @@ class TransactionCreate extends Component
                 'total_price' => $this->total_price,
                 'due_date' => $this->due_date,
                 'customer_id' => $this->customer_id,
-                'user_id' => Auth::id(), // Assign current logged in user
+                'user_id' => Auth::id(),
             ]);
 
             foreach ($this->transaction_items as $item) {
-                TransactionDetail::create([
+                $detail = TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ]);
 
-                
+                $product = Product::find($item['product_id']);
+                $remainingQuantity = $item['quantity'];
+
+                $batches = $product->productBatches()->where('stock', '>', 0)->orderBy('expiration_date', 'asc')->get();
+
+                foreach ($batches as $batch) {
+                    if ($remainingQuantity <= 0) {
+                        break;
+                    }
+
+                    $quantityToDeduct = min($remainingQuantity, $batch->stock);
+
+                    $batch->decrement('stock', $quantityToDeduct);
+
+                    TransactionDetailBatch::create([
+                        'transaction_detail_id' => $detail->id,
+                        'product_batch_id' => $batch->id,
+                        'quantity' => $quantityToDeduct,
+                    ]);
+
+                    $remainingQuantity -= $quantityToDeduct;
+                }
+
+                if ($remainingQuantity > 0) {
+                    throw ValidationException::withMessages(['quantity' => 'Stok produk ' . $product->name . ' tidak mencukupi.']);
+                }
             }
         });
 

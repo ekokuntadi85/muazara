@@ -6,11 +6,11 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\TransactionDetailBatch;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-
 use Livewire\Attributes\Title;
 
 #[Title('Edit Transaksi')]
@@ -29,8 +29,11 @@ class TransactionEdit extends Component
     public $selectedProductName = '';
 
     public $product_id;
+    public $product_units = [];
+    public $product_unit_id;
     public $quantity;
     public $price;
+    public $stock_warning = '';
     public $transaction_items = [];
     public $original_transaction_items = []; // To store original quantities for stock adjustment
 
@@ -51,6 +54,7 @@ class TransactionEdit extends Component
 
     protected $itemRules = [
         'product_id' => 'required|exists:products,id',
+        'product_unit_id' => 'required|exists:product_units,id',
         'quantity' => 'required|integer|min:1',
         'price' => 'required|numeric|min:0',
     ];
@@ -120,46 +124,78 @@ class TransactionEdit extends Component
 
     public function selectProduct($productId)
     {
-        $product = Product::find($productId);
+        $product = Product::with('productUnits')->find($productId);
         if ($product) {
             $this->product_id = $product->id;
             $this->selectedProductName = $product->name;
-            $this->price = $product->selling_price; // Auto-fill price
+            $this->product_units = $product->productUnits;
+            $this->product_unit_id = null; // Reset unit selection
+            $this->price = null; // Reset price
+            $this->quantity = ''; // Reset quantity
             $this->searchProduct = ''; // Clear search input
             $this->searchResults = []; // Clear search results
         }
     }
 
+    private function checkStockAvailability()
+    {
+        $this->stock_warning = '';
+        if (!$this->product_id || !$this->product_unit_id || !$this->quantity || $this->quantity <= 0) {
+            return;
+        }
+
+        $product = Product::find($this->product_id);
+        $selectedUnit = collect($this->product_units)->firstWhere('id', $this->product_unit_id);
+
+        if (!$product || !$selectedUnit) {
+            return;
+        }
+
+        $requestedStockInBaseUnit = $this->quantity * $selectedUnit['conversion_factor'];
+
+        if ($product->total_stock < $requestedStockInBaseUnit) {
+            $this->stock_warning = 'Stok tidak mencukupi. Stok tersedia: ' . floor($product->total_stock / $selectedUnit['conversion_factor']) . ' ' . $selectedUnit['name'] . '.';
+        }
+    }
+
+    public function updatedProductUnitId($unitId)
+    {
+        if ($unitId) {
+            $selectedUnit = collect($this->product_units)->firstWhere('id', $unitId);
+            if ($selectedUnit) {
+                $this->price = $selectedUnit['selling_price'];
+            }
+        }
+        $this->checkStockAvailability();
+    }
+
+    public function updatedQuantity()
+    {
+        $this->checkStockAvailability();
+    }
+
     public function addItem()
     {
+        $this->checkStockAvailability();
+        if (!empty($this->stock_warning)) {
+            return;
+        }
+
         $this->validate($this->itemRules);
 
         $product = Product::find($this->product_id);
+        $selectedUnit = collect($this->product_units)->firstWhere('id', $this->product_unit_id);
 
-        // Check stock before adding item
-        // Need to consider existing quantity if updating an item
-        $currentQuantityInForm = 0;
-        foreach ($this->transaction_items as $item) {
-            if ($item['product_id'] == $this->product_id) {
-                $currentQuantityInForm += $item['quantity'];
-            }
-        }
-
-        $availableStock = $product->total_stock - $currentQuantityInForm;
-
-        if ($availableStock < $this->quantity) {
-            throw ValidationException::withMessages([
-                'quantity' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $availableStock,
-            ]);
-        }
-
-        $this->transaction_items[] = [
+        $items = $this->transaction_items;
+        $items[] = [
             'product_id' => $this->product_id,
-            'product_name' => $product->name,
+            'product_unit_id' => $this->product_unit_id,
+            'product_name' => $product->name . ' (' . $selectedUnit['name'] . ')',
             'quantity' => $this->quantity,
             'price' => $this->price,
             'subtotal' => $this->quantity * $this->price,
         ];
+        $this->transaction_items = $items;
 
         $this->calculateTotalPrice();
         $this->resetItemForm();
@@ -182,20 +218,22 @@ class TransactionEdit extends Component
         $this->validate();
 
         DB::transaction(function () {
-            $transaction = Transaction::findOrFail($this->transactionId);
+            $transaction = Transaction::with('transactionDetails.transactionDetailBatches.productBatch')->findOrFail($this->transactionId);
 
-            // Revert stock for original items
-            foreach ($this->original_transaction_items as $originalItem) {
-                $product = Product::find($originalItem['product_id']);
-                if ($product) {
-                    // Find a batch to add stock back to (simplistic: add to any batch)
-                    $batch = $product->productBatches()->first();
-                    if ($batch) {
-                        $batch->stock += $originalItem['quantity'];
-                        $batch->save();
+            // Revert stock based on transactionDetailBatches
+            foreach ($transaction->transactionDetails as $detail) {
+                foreach ($detail->transactionDetailBatches as $detailBatch) {
+                    if ($detailBatch->productBatch) {
+                        $detailBatch->productBatch->increment('stock', $detailBatch->quantity);
                     }
                 }
             }
+
+            // Delete old transaction detail batches
+            $transaction->transactionDetails()->each(function ($detail) {
+                $detail->transactionDetailBatches()->delete();
+            });
+
 
             $transaction->update([
                 'type' => $this->type,
@@ -203,54 +241,49 @@ class TransactionEdit extends Component
                 'total_price' => $this->total_price,
                 'due_date' => $this->due_date,
                 'customer_id' => $this->customer_id,
-                'user_id' => Auth::id(), // Assign current logged in user
+                'user_id' => Auth::id(),
             ]);
 
-            // Sync transaction details and deduct new stock
-            $existingDetailIds = $transaction->transactionDetails->pluck('id')->toArray();
-            $updatedDetailIds = [];
+            $currentDetailIds = collect($this->transaction_items)->pluck('id')->filter();
+            $transaction->transactionDetails()->whereNotIn('id', $currentDetailIds)->delete();
 
             foreach ($this->transaction_items as $item) {
-                if (isset($item['id'])) {
-                    // Update existing detail
-                    $detail = TransactionDetail::find($item['id']);
-                    if ($detail) {
-                        $detail->update([
-                            'product_id' => $item['product_id'],
-                            'quantity' => $item['quantity'],
-                            'price' => $item['price'],
-                        ]);
-                        $updatedDetailIds[] = $detail->id;
-                    }
-                } else {
-                    // Create new detail
-                    $detail = TransactionDetail::create([
-                        'transaction_id' => $transaction->id,
+                $detail = $transaction->transactionDetails()->updateOrCreate(
+                    ['id' => $item['id'] ?? null],
+                    [
                         'product_id' => $item['product_id'],
                         'quantity' => $item['quantity'],
                         'price' => $item['price'],
-                    ]);
-                    $updatedDetailIds[] = $detail->id;
-                }
+                    ]
+                );
 
-                // Deduct stock from product batches for new/updated items
                 $product = Product::find($item['product_id']);
                 $remainingQuantity = $item['quantity'];
 
-                foreach ($product->productBatches()->orderBy('expiration_date', 'asc')->get() as $batch) {
-                    if ($remainingQuantity <= 0) break;
+                $batches = $product->productBatches()->where('stock', '>', 0)->orderBy('expiration_date', 'asc')->get();
 
-                    $deductible = min($remainingQuantity, $batch->stock);
-                    $batch->stock -= $deductible;
-                    $batch->save();
-                    $remainingQuantity -= $deductible;
+                foreach ($batches as $batch) {
+                    if ($remainingQuantity <= 0) {
+                        break;
+                    }
+
+                    $quantityToDeduct = min($remainingQuantity, $batch->stock);
+
+                    $batch->decrement('stock', $quantityToDeduct);
+
+                    TransactionDetailBatch::create([
+                        'transaction_detail_id' => $detail->id,
+                        'product_batch_id' => $batch->id,
+                        'quantity' => $quantityToDeduct,
+                    ]);
+
+                    $remainingQuantity -= $quantityToDeduct;
+                }
+
+                if ($remainingQuantity > 0) {
+                    throw ValidationException::withMessages(['quantity' => 'Stok produk tidak mencukupi.']);
                 }
             }
-
-            // Delete details that are no longer in the list
-            TransactionDetail::where('transaction_id', $transaction->id)
-                             ->whereNotIn('id', $updatedDetailIds)
-                             ->delete();
         });
 
         session()->flash('message', 'Transaksi berhasil diperbarui.');

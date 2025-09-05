@@ -10,13 +10,24 @@
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Pembelian #{{ $purchase->invoice_number }}</h2>
                 <p class="text-md text-gray-500 dark:text-gray-400">Dari: {{ $purchase->supplier->name }}</p>
-            </div>
-            <div class="mt-4 md:mt-0 text-right">
-                <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">Total: Rp {{ number_format($purchase->total_price, 0) }}</p>
+                <p class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2">Total: Rp {{ number_format($purchase->total_price, 0) }}</p>
                 <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
                     {{ $purchase->payment_status == 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' }}">
                     {{ ucfirst($purchase->payment_status) }}
                 </span>
+            </div>
+            <div class="flex space-x-2 mt-4 md:mt-0">
+                @can('delete-purchase')
+                <a href="{{ route('purchases.edit', $purchase->id) }}" class="w-full md:w-auto text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">Edit</a>
+                @can('manage-users')
+                <button wire:click="deletePurchase()" wire:confirm="Yakin hapus pembelian ini?" class="w-full md:w-auto text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">Hapus</button>
+                @endcan
+                @endcan
+                @can('delete-purchase')
+                @if ($purchase->payment_status === 'unpaid')
+                    <button wire:click="markAsPaid()" wire:confirm="Tandai lunas?" class="w-full md:w-auto px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">Tandai Lunas</button>
+                @endif
+                @endcan
             </div>
         </div>
 
@@ -69,20 +80,8 @@
             </div>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex flex-col-reverse md:flex-row md:justify-between md:items-center">
-            <div class="flex space-x-2 mt-4 md:mt-0">
-                @can('delete-purchase')
-                <a href="{{ route('purchases.edit', $purchase->id) }}" class="w-full md:w-auto text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">Edit</a>
-                @can('manage-users')
-                <button wire:click="deletePurchase()" wire:confirm="Yakin hapus pembelian ini?" class="w-full md:w-auto text-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">Hapus</button>
-                @endcan
-                @endcan
-            </div>
-            @can('delete-purchase')
-            @if ($purchase->payment_status === 'unpaid')
-                <button wire:click="markAsPaid()" wire:confirm="Tandai lunas?" class="w-full md:w-auto px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">Tandai Lunas</button>
-            @endif
-            @endcan
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+            <!-- Footer can be used for notes or other info in the future -->
         </div>
     </div>
 </div>
