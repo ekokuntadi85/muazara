@@ -1,4 +1,4 @@
-# Muazara - Aplikasi Manajemen Inventaris & Point of Sale (POS)
+# Muazara - Aplikasi Manajemen Inventaris & Point of Sale (POS) untuk Apotek
 
 Muazara adalah aplikasi berbasis web yang dirancang untuk membantu mengelola operasional bisnis, dengan fokus pada manajemen inventaris (stok barang), pembelian, dan penjualan melalui antarmuka Point of Sale (POS) yang terintegrasi.
 
@@ -52,10 +52,10 @@ Metode instalasi yang direkomendasikan adalah menggunakan Docker untuk memastika
     ```
 
 2.  **Konfigurasi Environment**
-    Salin file `.env.example` menjadi `.env`. Tidak ada perubahan yang diperlukan jika Anda menggunakan konfigurasi Docker bawaan.
+    Salin file `.env.sample` menjadi `.env`. Tidak ada perubahan yang diperlukan jika Anda menggunakan konfigurasi Docker bawaan.
 
     ```bash
-    cp .env.example .env
+    cp .env.sample .env
     ```
 
 3.  **Build dan Jalankan Container Docker**
@@ -65,39 +65,32 @@ Metode instalasi yang direkomendasikan adalah menggunakan Docker untuk memastika
     docker-compose up -d --build
     ```
 
-4.  **Install Dependensi PHP**
-    Jalankan Composer di dalam container `app`.
-
-    ```bash
-    docker-compose exec app composer install
-    ```
-
-5.  **Generate Application Key**
+4.  **Generate Application Key**
 
     ```bash
     docker-compose exec app php artisan key:generate
     ```
 
-6.  **Jalankan Migrasi dan Seeder Database**
+5.  **Jalankan Migrasi dan Seeder Database**
     Perintah ini akan membuat struktur tabel dan mengisi data awal yang diperlukan.
 
     ```bash
-    docker-compose exec app php artisan migrate --seed
+    docker-compose exec app php artisan migrate
+    docker-compose exec app php artisan db:seed
     ```
 
-7.  **Install Dependensi Node.js & Build Aset**
+6.  **Install Dependensi Node.js & Build Aset**
 
     ```bash
-    docker-compose exec app npm install
     docker-compose exec app npm run build
     ```
 
-8.  **Link Storage**
+7.  **Link Storage**
     Agar file yang diunggah dapat diakses publik.
 
     ```bash
     docker-compose exec app php artisan storage:link
     ```
 
-9.  **Selesai!**
+8.  **Selesai!**
     Aplikasi sekarang dapat diakses melalui browser di alamat `http://localhost`.
