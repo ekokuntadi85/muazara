@@ -25,7 +25,7 @@
     <div wire:loading.class.delay="opacity-50" wire:target="checkStockConsistency, fixStockInconsistencies">
         @if ($checkPerformed)
             @if (!empty($inconsistentProducts))
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg dark:border-gray-700">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg dark:border-gray-700 mb-4">
                      <div class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 dark:bg-red-800 dark:border-red-600 dark:text-red-200 flex justify-between items-center">
                         <div>
                             <h3 class="font-bold">Ditemukan {{ count($inconsistentProducts) }} Ketidaksesuaian</h3>
@@ -72,9 +72,44 @@
                     </div>
                 </div>
             @else
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 dark:bg-green-800 dark:border-green-600 dark:text-green-200" role="alert">
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 dark:bg-green-800 dark:border-green-600 dark:text-green-200" role="alert">
                     <p class="font-bold">Pemeriksaan Selesai</p>
                     <p>Tidak ditemukan adanya ketidaksesuaian stok. Semua data sudah konsisten.</p>
+                </div>
+            @endif
+
+            {{-- Negative Stock Products Section --}}
+            @if (!empty($negativeStockProducts))
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg dark:border-gray-700 mb-4">
+                    <div class="p-4 bg-orange-100 border-l-4 border-orange-500 text-orange-700 dark:bg-orange-800 dark:border-orange-600 dark:text-orange-200">
+                        <h3 class="font-bold">Ditemukan {{ count($negativeStockProducts) }} Produk dengan Stok Negatif!</h3>
+                        <p>Produk-produk berikut memiliki stok di bawah nol.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Nama Produk</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok (Batch)</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Stok (Kartu Stok)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                @foreach ($negativeStockProducts as $product)
+                                    @php
+                                        $product = (object) $product;
+                                        $batchStock = $product->product_table_stock ?? 0;
+                                        $cardStock = $product->calculated_stock ?? 0;
+                                    @endphp
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{{ $product->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center font-semibold {{ $batchStock < 0 ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-200' }}">{{ number_format($batchStock, 0, ',', '.') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center font-semibold {{ $cardStock < 0 ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-200' }}">{{ number_format($cardStock, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             @endif
         @else

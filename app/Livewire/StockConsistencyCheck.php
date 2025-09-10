@@ -12,11 +12,15 @@ use Livewire\Component;
 class StockConsistencyCheck extends Component
 {
     public $inconsistentProducts = [];
+    public $negativeStockProducts = []; // New property for negative stock
     public $checkPerformed = false;
 
     public function checkStockConsistency()
     {
         $this->checkPerformed = false;
+        $this->inconsistentProducts = [];
+        $this->negativeStockProducts = [];
+
         $productBatchesSub = DB::table('product_batches')
             ->select('product_id', DB::raw('SUM(stock) as product_batch_stock'))
             ->groupBy('product_id');
@@ -26,7 +30,8 @@ class StockConsistencyCheck extends Component
             ->select('product_batches.product_id', DB::raw('SUM(stock_movements.quantity) as stock_movement_stock'))
             ->groupBy('product_batches.product_id');
 
-        $this->inconsistentProducts = Product::query()
+        // Query to find inconsistent products
+        $inconsistent = Product::query()
             ->leftJoinSub($productBatchesSub, 'pb', function ($join) {
                 $join->on('products.id', '=', 'pb.product_id');
             })
@@ -40,8 +45,29 @@ class StockConsistencyCheck extends Component
                 DB::raw('COALESCE(sm.stock_movement_stock, 0) as calculated_stock')
             )
             ->whereRaw('COALESCE(pb.product_batch_stock, 0) != COALESCE(sm.stock_movement_stock, 0)')
-            ->get()
-            ->toArray();
+            ->get();
+
+        $this->inconsistentProducts = $inconsistent->toArray();
+
+        // Query to find products with negative stock
+        $negative = Product::query()
+            ->leftJoinSub($productBatchesSub, 'pb', function ($join) {
+                $join->on('products.id', '=', 'pb.product_id');
+            })
+            ->leftJoinSub($stockMovementsSub, 'sm', function ($join) {
+                $join->on('products.id', '=', 'sm.product_id');
+            })
+            ->select(
+                'products.id',
+                'products.name',
+                DB::raw('COALESCE(pb.product_batch_stock, 0) as product_table_stock'),
+                DB::raw('COALESCE(sm.stock_movement_stock, 0) as calculated_stock')
+            )
+            ->whereRaw('COALESCE(pb.product_batch_stock, 0) < 0') // Negative in batches
+            ->orWhereRaw('COALESCE(sm.stock_movement_stock, 0) < 0') // Negative in movements
+            ->get();
+
+        $this->negativeStockProducts = $negative->toArray();
 
         $this->checkPerformed = true;
     }

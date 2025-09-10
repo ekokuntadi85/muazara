@@ -16,6 +16,16 @@ class StockService
             $quantityToDecrement = $detail->quantity;
             $product = $detail->product;
 
+            // Calculate total available stock for the product
+            $totalAvailableStock = $product->productBatches()->sum('stock');
+
+            // --- NEW CHECK ---
+            if ($quantityToDecrement > $totalAvailableStock) {
+                // Throw an exception to prevent over-selling
+                throw new \Exception('Insufficient stock for product: ' . $product->name . '. Available: ' . $totalAvailableStock . ', Requested: ' . $quantityToDecrement);
+            }
+            // --- END NEW CHECK ---
+
             $batches = $product->productBatches()
                 ->where('stock', '>', 0)
                 ->orderBy('expiration_date', 'asc')

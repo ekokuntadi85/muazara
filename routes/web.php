@@ -24,7 +24,7 @@ use App\Livewire\TransactionEdit;
 use App\Livewire\PointOfSale;
 use App\Livewire\AccountsReceivable;
 use App\Livewire\InvoiceCreate;
-use App\Livewire\SalesReport;
+use App\Livewire\SalesReportCenter;
 use App\Livewire\UserManager;
 use App\Livewire\ExpiringStockReport;
 use App\Livewire\LowStockReport;
@@ -102,7 +102,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Reporting Modules
     Route::middleware(['can:access-reports'])->group(function () {
-        Route::get('/reports/sales', SalesReport::class)->name('reports.sales');
+        Route::get('/reports/sales', SalesReportCenter::class)->name('reports.sales');
         Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
         Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');

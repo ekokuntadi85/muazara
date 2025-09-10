@@ -2,16 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Exports\SalesSummaryExport;
 use Livewire\Component;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
-
+use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Title;
 
 #[Title('Laporan Penjualan')]
-class SalesReport extends Component
+class SummaryReport extends Component
 {
     use WithPagination;
 
@@ -34,6 +35,11 @@ class SalesReport extends Component
         $this->endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
     }
 
+    public function exportExcel()
+    {
+        return Excel::download(new SalesSummaryExport($this->startDate, $this->endDate), 'laporan-penjualan-ringkasan.xlsx');
+    }
+
     public function render()
     {
         $baseQuery = Transaction::whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
@@ -50,7 +56,7 @@ class SalesReport extends Component
                 ->orderBy('date', 'desc')
                 ->paginate(5);
 
-            return view('livewire.sales-report', [
+            return view('livewire.summary-report', [
                 'dailySummaries' => $dailySummaries
             ]);
         } else {
@@ -61,7 +67,7 @@ class SalesReport extends Component
 
             $this->dailyTotalRevenue = Transaction::whereDate('created_at', $this->selectedDate)->sum('total_price');
 
-            return view('livewire.sales-report', [
+            return view('livewire.summary-report', [
                 'transactions' => $transactions
             ]);
         }

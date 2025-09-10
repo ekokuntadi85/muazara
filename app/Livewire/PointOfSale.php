@@ -229,20 +229,15 @@ class PointOfSale extends Component
                 return;
             }
 
-            $stockIsSufficient = true;
-            $insufficientItemName = '';
-            $transaction = null;
+            DB::beginTransaction();
 
-            DB::transaction(function () use (&$transaction, &$stockIsSufficient, &$insufficientItemName) {
+            try {
                 foreach ($this->cart_items as $item) {
                     $product = Product::with('productBatches')->where('id', $item['product_id'])->lockForUpdate()->first();
                     $totalStockInBaseUnits = $product->productBatches->sum('stock');
 
                     if ($totalStockInBaseUnits < $item['quantity']) {
-                        $stockIsSufficient = false;
-                        $insufficientItemName = $item['product_name'];
-                        DB::rollBack();
-                        return;
+                        throw new \Exception('Stok untuk ' . $item['product_name'] . ' tidak lagi mencukupi sebelum proses.');
                     }
                 }
 
@@ -270,18 +265,19 @@ class PointOfSale extends Component
 
                     
                 }
-            });
 
-            if (!$stockIsSufficient) {
-                $this->addError('cart_items', 'Stok untuk ' . $insufficientItemName . ' tidak lagi mencukupi.');
-                return;
-            }
+                DB::commit();
 
-            if ($transaction) {
                 session()->flash('message', 'Transaksi POS berhasil dicatat dengan No. Nota: ' . $this->invoiceNumber);
                 $this->dispatch('transaction-completed', ['transactionId' => $transaction->id]);
                 $this->resetAll();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $this->addError('cart_items', $e->getMessage());
+                \Log::error('POS Checkout Error: ' . $e->getMessage(), ['exception' => $e]);
             }
+
         } finally {
             $this->isProcessing = false;
         }

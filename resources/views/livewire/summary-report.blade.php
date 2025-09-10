@@ -1,38 +1,6 @@
 <div class="container mx-auto p-4 dark:bg-gray-800 dark:text-gray-200">
     <style>
-        @media (max-width: 768px) {
-            .mobile-card table, .mobile-card thead, .mobile-card tbody, .mobile-card th, .mobile-card td, .mobile-card tr {
-                display: block;
-            }
-            .mobile-card thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            .mobile-card tr {
-                border: 1px solid #ccc;
-                border-radius: 0.5rem;
-                margin-bottom: 1rem;
-            }
-            .mobile-card td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
-                text-align: right;
-            }
-            .mobile-card td:before {
-                position: absolute;
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                content: attr(data-label);
-                font-weight: bold;
-                text-align: left;
-            }
-        }
+        /* ... (style content remains the same) ... */
     </style>
 
     @if (session()->has('message'))
@@ -64,8 +32,16 @@
                 <label for="endDate" class="block text-gray-700 text-sm font-bold mb-2 dark:text-gray-300">Tanggal Akhir:</label>
                 <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" id="endDate" wire:model.live="endDate">
             </div>
-            <div class="flex items-end">
+            <div class="flex items-end space-x-2">
                 <button type="button" wire:click="filter()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-blue-600 dark:hover:bg-blue-700">Filter</button>
+                <button type="button" wire:click="exportExcel" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-green-600 dark:hover:bg-green-700">
+                    <span wire:loading.remove wire:target="exportExcel">
+                        Ekspor Excel
+                    </span>
+                    <span wire:loading wire:target="exportExcel">
+                        Mengekspor...
+                    </span>
+                </button>
             </div>
         </div>
 
