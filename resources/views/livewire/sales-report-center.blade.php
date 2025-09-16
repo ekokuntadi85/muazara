@@ -19,6 +19,11 @@
                         wire:click.prevent="$set('activeTab', 'detailed')" 
                         type="button" role="tab">Laporan Rinci</button>
             </li>
+            <li class="mr-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg {{ $activeTab === 'top-selling' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300' }}" 
+                        wire:click.prevent="$set('activeTab', 'top-selling')" 
+                        type="button" role="tab">Produk Terlaris</button>
+            </li>
         </ul>
     </div>
 
@@ -30,6 +35,8 @@
             @livewire('item-report')
         @elseif ($activeTab === 'detailed')
             @livewire('detailed-log-report')
+        @elseif ($activeTab === 'top-selling')
+            @livewire('top-selling-products-report')
         @endif
     </div>
 

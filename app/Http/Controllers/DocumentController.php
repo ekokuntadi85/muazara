@@ -137,4 +137,29 @@ class DocumentController extends Controller
 
         return $pdf->setPaper('a4', 'portrait')->stream('kartu_stok_' . $product->name . '.pdf');
     }
+
+    public function printTopSellingProductsReport(Request $request)
+    {
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+
+        $topProducts = \App\Models\TransactionDetail::query()
+            ->select(
+                'product_id',
+                'product_unit_id',
+                DB::raw('SUM(quantity) as total_quantity')
+            )
+            ->whereHas('transaction', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+            })
+            ->with(['product:id,name', 'productUnit:id,name'])
+            ->groupBy('product_id', 'product_unit_id')
+            ->orderByDesc('total_quantity')
+            ->limit(30)
+            ->get();
+
+        $pdf = Pdf::loadView('documents.top-selling-products-report', compact('topProducts', 'startDate', 'endDate'));
+
+        return $pdf->setPaper('a4', 'portrait')->stream('laporan-produk-terlaris.pdf');
+    }
 }

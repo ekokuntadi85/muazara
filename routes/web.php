@@ -107,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
         Route::get('/reports/expiring-stock/print', [App\Http\Controllers\DocumentController::class, 'printExpiringStockReport'])->name('reports.expiring-stock.print');
         Route::get('/reports/stock-card/print', [App\Http\Controllers\DocumentController::class, 'printStockCard'])->name('reports.stock-card.print');
+        Route::get('/reports/top-selling/print', [App\Http\Controllers\DocumentController::class, 'printTopSellingProductsReport'])->name('reports.top-selling.print');
     });
     
     // User Management Module

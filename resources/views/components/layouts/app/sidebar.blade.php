@@ -39,15 +39,17 @@
                     <flux:navlist.item icon="calendar-days" :href="route('reports.expiring-stock')" :current="request()->routeIs('reports.expiring-stock')" wire:navigate>Laporan Stok Kedaluwarsa</flux:navlist.item>
                     <flux:navlist.item icon="arrow-down-circle" :href="route('reports.low-stock')" :current="request()->routeIs('reports.low-stock')" wire:navigate>Laporan Stok Menipis</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('stock-card.index')" :current="request()->routeIs('stock-card.index')" wire:navigate>Kartu Stok</flux:navlist.item>
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('kartu-monitoring-suhu')" :current="request()->routeIs('kartu-monitoring-suhu')" wire:navigate>Kartu Monitoring Suhu</flux:navlist.item>
                 </flux:navlist.group>
 
                 @can('manage-users')
+                <flux:navlist.group :heading="__('Pengaturan Sistem')" expandable :expanded="false">
                     <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>Manajemen Pengguna</flux:navlist.item>
-                    <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manaje BackupDB</flux:navlist.item>
+                    <flux:navlist.item icon="server" :href="route('database.backup')" :current="request()->routeIs('database.backup')" wire:navigate>Manajemen Backup</flux:navlist.item>
                     <flux:navlist.item icon="server" :href="route('database.restore')" :current="request()->routeIs('database.restore')" wire:navigate>Restore Database</flux:navlist.item>
                     <flux:navlist.item icon="shield-check" :href="route('stock-consistency.index')" :current="request()->routeIs('stock-consistency.index')" wire:navigate>Integritas Stok</flux:navlist.item>
+                </flux:navlist.group>
                 @endcan
-                    <flux:navlist.item icon="clipboard-document-list" :href="route('kartu-monitoring-suhu')" :current="request()->routeIs('kartu-monitoring-suhu')" wire:navigate>Kartu Monitoring Suhu</flux:navlist.item>
             </flux:navlist>
 
             <flux:spacer />
@@ -170,5 +172,12 @@
         @vite('resources/js/app.js')
         @stack('scripts')
         @fluxScripts
+        <script>
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('open-in-new-tab', (event) => {
+                    window.open(event.url, '_blank');
+                });
+            });
+        </script>
     </body>
 </html>
