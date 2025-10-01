@@ -45,25 +45,64 @@
             </div>
         </div>
 
-        {{-- Totals and Profit/Loss --}}
-        <div class="text-left text-xl font-bold mb-4 dark:text-gray-100">
-            @if ($viewMode === 'summary')
-                Total Omset ({{ $startDate }} - {{ $endDate }}): Rp {{ number_format($totalRevenue, 0) }}
-            @else
-                Total Omset ({{ $selectedDate }}): Rp {{ number_format($dailyTotalRevenue, 0) }}
-            @endif
-
-            @if ($showProfitLossValue)
-                <div class="text-left text-xl font-bold mt-3 dark:text-gray-100">
-                    Laba/Rugi: Rp {{ number_format($totalProfitLoss, 0) }}
+        {{-- Totals Cards --}}
+        @if ($viewMode === 'summary')
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {{-- Total Revenue Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+                <div class="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                    @svg('heroicon-o-chart-bar', 'h-6 w-6 text-white')
                 </div>
-            @endif
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Total Omset ({{ $startDate }} - {{ $endDate }})</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($totalRevenue, 0) }}</p>
+                </div>
+            </div>
+
+            {{-- Average Daily Revenue Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+                <div class="bg-green-500 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                    @svg('heroicon-o-calendar-days', 'h-6 w-6 text-white')
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Rata-rata Omset Harian</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($averageDailyRevenue, 0) }}</p>
+                </div>
+            </div>
+
+            {{-- Profit/Loss Card (Conditional) --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+                <div class="bg-purple-500 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                    @svg('heroicon-o-scale', 'h-6 w-6 text-white')
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Profit</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($totalProfitLoss, 0) }}</p>
+                </div>
+            </div>
+
+            {{-- Total Stock Value Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center">
+                <div class="bg-yellow-500 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                    @svg('heroicon-o-archive-box', 'h-6 w-6 text-white')
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Total Aset (Modal Stok)</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($totalStockValue, 0) }}</p>
+                </div>
+            </div>
         </div>
+        @else
+            <div class="text-left text-xl font-bold mb-4 dark:text-gray-100">
+                Total Omset ({{ $selectedDate }}): Rp {{ number_format($dailyTotalRevenue, 0) }}
+            </div>
+        @endif
+
 
         <div class="flex items-center mt-4">
             <input type="password" class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" placeholder="Kode Proteksi" wire:model.defer="profitLossCode">
             <button type="button" wire:click="calculateProfitLoss()" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-purple-600 dark:hover:bg-purple-700">
-                Lihat Laba/Rugi
+                Lihat Profit
             </button>
         </div>
         @error('profitLossCode') <span class="text-red-500 text-xs italic">{{ $message }}</span>@enderror

@@ -19,6 +19,8 @@ class SummaryReport extends Component
     public $startDate;
     public $endDate;
     public $totalRevenue = 0;
+    public $averageDailyRevenue = 0;
+    public $totalStockValue = 0;
     public $profitLossCode = '';
     public $totalProfitLoss = 0;
     public $showProfitLossValue = false;
@@ -46,6 +48,20 @@ class SummaryReport extends Component
 
         if ($this->viewMode === 'summary') {
             $this->totalRevenue = (clone $baseQuery)->sum('total_price');
+
+            // Calculate average daily revenue
+            $startDate = Carbon::parse($this->startDate);
+            $endDate = Carbon::parse($this->endDate);
+            $numberOfDays = $startDate->diffInDays($endDate) + 1;
+
+            if ($numberOfDays > 0) {
+                $this->averageDailyRevenue = $this->totalRevenue / $numberOfDays;
+            } else {
+                $this->averageDailyRevenue = 0;
+            }
+
+            // Calculate total stock value
+            $this->totalStockValue = DB::table('product_batches')->sum(DB::raw('stock * purchase_price'));
 
             $dailySummaries = (clone $baseQuery)
                 ->select(
