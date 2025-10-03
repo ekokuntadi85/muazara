@@ -27,7 +27,8 @@ class TopSellingProductsExport implements FromQuery, WithHeadings, WithMapping, 
             ->select(
                 'product_id',
                 'product_unit_id',
-                DB::raw('SUM(quantity) as total_quantity')
+                DB::raw('SUM(quantity) as total_quantity'),
+                DB::raw('(SELECT COALESCE(SUM(stock), 0) FROM product_batches WHERE product_batches.product_id = transaction_details.product_id AND product_batches.product_unit_id = transaction_details.product_unit_id) as current_stock')
             )
             ->whereHas('transaction', function ($query) {
                 $query->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
@@ -44,6 +45,7 @@ class TopSellingProductsExport implements FromQuery, WithHeadings, WithMapping, 
             'Peringkat',
             'Nama Item',
             'Jumlah Terjual',
+            'Stok Saat Ini',
             'Satuan',
         ];
     }
@@ -56,6 +58,7 @@ class TopSellingProductsExport implements FromQuery, WithHeadings, WithMapping, 
             $this->rank,
             $row->product->name ?? 'N/A',
             $row->total_quantity,
+            $row->current_stock,
             $row->productUnit->name ?? 'N/A',
         ];
     }

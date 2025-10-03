@@ -57,6 +57,7 @@
                 <th>Peringkat</th>
                 <th>Nama Item</th>
                 <th>Jumlah Terjual</th>
+                <th>Stok Saat Ini</th>
                 <th>Satuan</th>
             </tr>
         </thead>
@@ -66,11 +67,12 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ $item->product->name ?? 'N/A' }}</td>
                     <td class="text-center">{{ number_format($item->total_quantity, 2) }}</td>
+                    <td class="text-center">{{ number_format($item->current_stock, 2) }}</td>
                     <td class="text-center">{{ $item->productUnit->name ?? 'N/A' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">
+                    <td colspan="5" class="text-center">
                         Tidak ada data untuk ditampilkan pada rentang tanggal yang dipilih.
                     </td>
                 </tr>

@@ -147,7 +147,8 @@ class DocumentController extends Controller
             ->select(
                 'product_id',
                 'product_unit_id',
-                DB::raw('SUM(quantity) as total_quantity')
+                DB::raw('SUM(quantity) as total_quantity'),
+                DB::raw('(SELECT COALESCE(SUM(stock), 0) FROM product_batches WHERE product_batches.product_id = transaction_details.product_id AND product_batches.product_unit_id = transaction_details.product_unit_id) as current_stock')
             )
             ->whereHas('transaction', function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
