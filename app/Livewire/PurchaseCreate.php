@@ -35,6 +35,8 @@ class PurchaseCreate extends Component
     public $stock; // This will be the stock in the selected unit
     public $expiration_date;
     public $lastKnownPurchasePrice; // Properti baru untuk menyimpan harga beli terakhir
+    public $currentStock = 0; // Properti baru untuk stok saat ini
+
 
     public $selectedProductUnits = []; // New property for available units for selected product
     public $selectedProductUnitId; // New property for the currently selected unit ID
@@ -120,8 +122,11 @@ class PurchaseCreate extends Component
             return;
         }
 
-        $this->searchResults = Product::where('name', 'like', '%' . $value . '%')
-                                    ->orWhere('sku', 'like', '%' . $value . '%')
+        $this->searchResults = Product::where(function ($query) use ($value) {
+                                        $query->where('name', 'like', '%' . $value . '%')
+                                              ->orWhere('sku', 'like', '%' . $value . '%');
+                                    })
+                                    ->withSum('productBatches', 'stock')
                                     ->limit(10)
                                     ->get();
     }
@@ -134,6 +139,9 @@ class PurchaseCreate extends Component
             $this->selectedProductName = $product->name;
             $this->searchProduct = ''; // Clear search input
             $this->searchResults = []; // Clear search results
+
+            // Calculate and set the current stock
+            $this->currentStock = $product->productBatches()->sum('stock');
 
             $this->selectedProductUnits = $product->productUnits->toArray();
 

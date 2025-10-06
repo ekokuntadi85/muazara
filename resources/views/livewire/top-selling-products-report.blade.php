@@ -49,7 +49,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $item->product->name ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ number_format($item->total_quantity, 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ number_format($item->current_stock, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm @if($item->current_stock < 10) text-red-500 font-bold @else text-gray-500 dark:text-gray-300 @endif">{{ number_format($item->current_stock, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $item->productUnit->name ?? 'N/A' }}</td>
                         </tr>
                     @empty

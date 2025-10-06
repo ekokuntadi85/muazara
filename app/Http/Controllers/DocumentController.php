@@ -147,8 +147,7 @@ class DocumentController extends Controller
             ->select(
                 'product_id',
                 'product_unit_id',
-                DB::raw('SUM(quantity) as total_quantity'),
-                DB::raw('(SELECT COALESCE(SUM(stock), 0) FROM product_batches WHERE product_batches.product_id = transaction_details.product_id AND product_batches.product_unit_id = transaction_details.product_unit_id) as current_stock')
+                DB::raw('SUM(quantity) as total_quantity')
             )
             ->whereHas('transaction', function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
@@ -158,6 +157,30 @@ class DocumentController extends Controller
             ->orderByDesc('total_quantity')
             ->limit(30)
             ->get();
+
+        $topProducts->each(function ($item) {
+            $product = $item->product;
+            if (!$product) {
+                $item->current_stock = 0;
+                return;
+            }
+
+            $batches = \App\Models\ProductBatch::with('productUnit:id,conversion_factor')->where('product_id', $product->id)->get();
+            
+            $totalBaseStock = 0;
+            foreach ($batches as $batch) {
+                $totalBaseStock += $batch->stock * ($batch->productUnit->conversion_factor ?? 1);
+            }
+
+            $soldUnit = $item->productUnit;
+            $soldUnitConversionFactor = $soldUnit->conversion_factor ?? 1;
+
+            if ($soldUnitConversionFactor > 0) {
+                $item->current_stock = $totalBaseStock / $soldUnitConversionFactor;
+            } else {
+                $item->current_stock = 0;
+            }
+        });
 
         $pdf = Pdf::loadView('documents.top-selling-products-report', compact('topProducts', 'startDate', 'endDate'));
 

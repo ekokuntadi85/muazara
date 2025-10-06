@@ -62,16 +62,20 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Harga Beli:</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item->purchase_price, 0) }}</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">Rp {{ number_format($item->display_purchase_price, 0) }} / {{ $item->display_unit_name }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Stok:</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-100">{{ $item->stock }} {{ $item->productUnit->name ?? $item->product->baseUnit->name }}</span>
+                                <span class="text-gray-600 dark:text-gray-400">Kuantitas Beli:</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">{{ rtrim(rtrim(number_format($item->original_input_quantity, 2), '0'), '.') }} {{ $item->display_unit_name }}</span>
                             </div>
-                            <div class="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
-                                <span class="font-semibold text-gray-800 dark:text-gray-100">Subtotal:</span>
-                                <span class="font-bold text-gray-900 dark:text-white">Rp {{ number_format($item->purchase_price * $item->stock, 0) }}</span>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Sisa Stok Batch Ini:</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-100">{{ $item->stock }} {{ $item->product->baseUnit->name }}</span>
                             </div>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">Subtotal:</span>
+                            <span class="font-bold text-gray-900 dark:text-white">Rp {{ number_format($item->display_purchase_price * $item->original_input_quantity, 0) }}</span>
                         </div>
                     </div>
                 @empty

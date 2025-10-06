@@ -16,6 +16,7 @@ class ProductBatch extends Model
         'stock',
         'expiration_date',
         'product_id',
+        'product_unit_id',
     ];
 
     public function product()

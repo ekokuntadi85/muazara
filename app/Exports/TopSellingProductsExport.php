@@ -27,8 +27,7 @@ class TopSellingProductsExport implements FromQuery, WithHeadings, WithMapping, 
             ->select(
                 'product_id',
                 'product_unit_id',
-                DB::raw('SUM(quantity) as total_quantity'),
-                DB::raw('(SELECT COALESCE(SUM(stock), 0) FROM product_batches WHERE product_batches.product_id = transaction_details.product_id AND product_batches.product_unit_id = transaction_details.product_unit_id) as current_stock')
+                DB::raw('SUM(quantity) as total_quantity')
             )
             ->whereHas('transaction', function ($query) {
                 $query->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
@@ -54,11 +53,29 @@ class TopSellingProductsExport implements FromQuery, WithHeadings, WithMapping, 
     {
         $this->rank++;
 
+        $product = $row->product;
+        $current_stock = 0;
+        if ($product) {
+            $batches = \App\Models\ProductBatch::with('productUnit:id,conversion_factor')->where('product_id', $product->id)->get();
+            
+            $totalBaseStock = 0;
+            foreach ($batches as $batch) {
+                $totalBaseStock += $batch->stock * ($batch->productUnit->conversion_factor ?? 1);
+            }
+
+            $soldUnit = $row->productUnit;
+            $soldUnitConversionFactor = $soldUnit->conversion_factor ?? 1;
+
+            if ($soldUnitConversionFactor > 0) {
+                $current_stock = $totalBaseStock / $soldUnitConversionFactor;
+            }
+        }
+
         return [
             $this->rank,
             $row->product->name ?? 'N/A',
             $row->total_quantity,
-            $row->current_stock,
+            $current_stock,
             $row->productUnit->name ?? 'N/A',
         ];
     }

@@ -67,7 +67,7 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ $item->product->name ?? 'N/A' }}</td>
                     <td class="text-center">{{ number_format($item->total_quantity, 2) }}</td>
-                    <td class="text-center">{{ number_format($item->current_stock, 2) }}</td>
+                    <td class="text-center" style="@if($item->current_stock < 10) color: red; font-weight: bold; @endif">{{ number_format($item->current_stock, 2) }}</td>
                     <td class="text-center">{{ $item->productUnit->name ?? 'N/A' }}</td>
                 </tr>
             @empty

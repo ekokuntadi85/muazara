@@ -50,8 +50,9 @@
                     @if(!empty($searchResults))
                         <ul class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto dark:bg-gray-800 dark:border-gray-600">
                             @foreach($searchResults as $product)
-                                <li wire:click="selectProduct({{ $product->id }})" class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600">
-                                    {{ $product->name }} ({{ $product->sku }})
+                                <li wire:click="selectProduct({{ $product->id }})" class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 flex justify-between">
+                                    <span>{{ $product->name }} ({{ $product->sku }})</span>
+                                    <span class="text-gray-500 dark:text-gray-400">Stok: {{ (int)$product->product_batches_sum_stock }}</span>
                                 </li>
                             @endforeach
                         </ul>
