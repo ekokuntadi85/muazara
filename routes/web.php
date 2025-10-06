@@ -35,10 +35,13 @@ use App\Livewire\DatabaseRestoreManager;
 use App\Livewire\ProductImportManager;
 use App\Livewire\SlowProductImportManager;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
+
+Route::match(['GET', 'POST'], '/laporan-stok-terlaris', [ReportController::class, 'showReport'])->name('reports.low-stock-analysis');
 
 Route::middleware(['auth'])->group(function () {
 
