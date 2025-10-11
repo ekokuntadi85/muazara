@@ -50,31 +50,31 @@ class TopSellingProductsReport extends Component
             ->whereHas('transaction', function ($query) {
                 $query->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
             })
-            ->with(['product:id,name', 'productUnit:id,name'])
+            ->with([
+                'product:id,name',
+                'product.productBatches.productUnit:id,conversion_factor', // Eager load for stock calculation
+                'productUnit:id,name,conversion_factor'
+            ])
             ->groupBy('product_id', 'product_unit_id')
             ->orderByDesc('total_quantity')
             ->limit(30)
             ->get();
 
         $topProducts->each(function ($item) {
-            $product = $item->product;
-            if (!$product) {
+            if (!$item->product) {
                 $item->current_stock = 0;
                 return;
             }
 
-            $batches = \App\Models\ProductBatch::with('productUnit:id,conversion_factor')->where('product_id', $product->id)->get();
-            
-            $totalBaseStock = 0;
-            foreach ($batches as $batch) {
-                $totalBaseStock += $batch->stock * ($batch->productUnit->conversion_factor ?? 1);
-            }
+            // Calculate total stock from eager-loaded relationships
+            $totalBaseStock = $item->product->productBatches->sum(function ($batch) {
+                return $batch->stock * ($batch->productUnit->conversion_factor ?? 1);
+            });
 
-            $soldUnit = $item->productUnit;
-            $soldUnitConversionFactor = $soldUnit->conversion_factor ?? 1;
+            $soldUnitConversionFactor = $item->productUnit->conversion_factor ?? 1;
 
             if ($soldUnitConversionFactor > 0) {
-                $item->current_stock = $totalBaseStock / $soldUnitConversionFactor;
+                $item->current_stock = floor($totalBaseStock / $soldUnitConversionFactor);
             } else {
                 $item->current_stock = 0;
             }

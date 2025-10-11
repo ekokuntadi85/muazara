@@ -10,6 +10,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class ItemReport extends Component
 {
@@ -99,7 +100,7 @@ class ItemReport extends Component
     {
         $details = null;
         if ($this->selectedProduct) {
-            $query = TransactionDetail::where('product_id', $this->selectedProduct->id)
+            $query = TransactionDetail::where('transaction_details.product_id', $this->selectedProduct->id)
                 ->whereHas('transaction', function ($q) {
                     if ($this->filterType === 'day') {
                         $q->whereDate('created_at', $this->filterDate);
@@ -111,12 +112,10 @@ class ItemReport extends Component
                     }
                 });
 
-            // Calculate total quantity in base unit
-            $this->totalQuantityInBaseUnit = 0;
-            $allDetailsForCalculation = (clone $query)->with('productUnit')->get();
-            foreach ($allDetailsForCalculation as $detail) {
-                $this->totalQuantityInBaseUnit += $detail->quantity * ($detail->productUnit->conversion_factor ?? 1);
-            }
+            // More efficient calculation of total quantity in base unit
+            $this->totalQuantityInBaseUnit = (clone $query)
+                ->join('product_units', 'transaction_details.product_unit_id', '=', 'product_units.id')
+                ->sum(DB::raw('transaction_details.quantity * product_units.conversion_factor'));
 
             $details = $query->with(['transaction:id,invoice_number,created_at', 'productUnit'])
                 ->latest('created_at')
