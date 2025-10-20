@@ -16,16 +16,11 @@ class DocumentController extends Controller
 {
     public function printReceipt($transactionId)
     {
-        $transaction = Transaction::with(['transactionDetails.product', 'customer', 'user'])->findOrFail($transactionId);
-        $agent = new Agent();
+        $transaction = Transaction::with(['transactionDetails.product.baseUnit', 'transactionDetails.productUnit', 'customer', 'user'])->findOrFail($transactionId);
 
-        if ($agent->isMobile()) {
-            return view('documents.receipt-preview', compact('transaction'));
-        }
-
-        $pdf = Pdf::loadView('documents.receipt', compact('transaction'));
-
-        return $pdf->stream('receipt_' . $transaction->invoice_number . '.pdf');
+        // We will now always return a view, specifically designed for thermal printers.
+        // The logic to check for mobile is removed as the thermal view is simple enough for all devices.
+        return view('documents.receipt-thermal', compact('transaction'));
     }
 
     public function printInvoice($transactionId)
