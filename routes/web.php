@@ -41,8 +41,6 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-Route::match(['GET', 'POST'], '/laporan-stok-terlaris', [ReportController::class, 'showReport'])->name('reports.low-stock-analysis');
-
 Route::middleware(['auth'])->group(function () {
 
     Route::view('dashboard', 'dashboard')
@@ -105,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Reporting Modules
     Route::middleware(['can:access-reports'])->group(function () {
+        Route::match(['GET', 'POST'], '/laporan-stok-terlaris', [ReportController::class, 'showReport'])->name('reports.low-stock-analysis');
         Route::get('/reports/sales', SalesReportCenter::class)->name('reports.sales');
         Route::get('/reports/expiring-stock', ExpiringStockReport::class)->name('reports.expiring-stock');
         Route::get('/reports/low-stock', LowStockReport::class)->name('reports.low-stock');
