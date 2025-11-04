@@ -147,3 +147,15 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('confirm-lower-price', (message) => {
+            if (confirm(message)) {
+                Livewire.dispatch('confirmedAddItem');
+            }
+        });
+    });
+</script>
+@endpush
